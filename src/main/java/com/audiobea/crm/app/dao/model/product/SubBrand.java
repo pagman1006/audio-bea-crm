@@ -9,9 +9,12 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import lombok.Data;
 
 @Data
+@JsonIgnoreProperties({"hibernateLazyInitializer"})
 @Entity
 @Table(name = "sub_marcas")
 public class SubBrand implements Serializable {

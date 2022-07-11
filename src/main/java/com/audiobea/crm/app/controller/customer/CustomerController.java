@@ -15,7 +15,7 @@ import com.audiobea.crm.app.dao.model.customer.Customer;
 @RequestMapping("/cliente")
 public class CustomerController {
 
-	@GetMapping("/")
+	@GetMapping
 	@ResponseStatus(value = HttpStatus.ACCEPTED)
 	public List<Customer> getCustomers() {
 		List<Customer> listCustomer = new ArrayList<>();
