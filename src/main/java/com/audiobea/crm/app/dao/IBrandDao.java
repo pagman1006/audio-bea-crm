@@ -6,6 +6,6 @@ import com.audiobea.crm.app.dao.model.product.Brand;
 
 public interface IBrandDao extends CrudRepository<Brand, Long> {
 	
-	Brand findByMarca(String marca);
+	Brand findByBrandName(String marca);
 
 }

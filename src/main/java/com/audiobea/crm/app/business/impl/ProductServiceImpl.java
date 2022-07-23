@@ -34,24 +34,29 @@ public class ProductServiceImpl implements IProductService {
 	public List<Product> getProducts(String marca, String subMarca) {
 		List<Product> products = new ArrayList<>();
 		if (subMarca != null && !subMarca.isBlank()) {
-			SubBrand subBrand = subBrandDao.findBySubMarca(subMarca);
+			SubBrand subBrand = subBrandDao.findBySubBrandName(subMarca);
 			if (subBrand != null) {
 				products = productDao.findBySubBrand(subBrand);
 				return products;
 			}
 		} else if (marca != null && !marca.isBlank()) {
-			Brand brand = brandDao.findByMarca(marca);
-			products = productDao.findBySubBrandIn(brand.getSubMarcas());
+			Brand brand = brandDao.findByBrandName(marca);
+			products = productDao.findBySubBrandIn(brand.getSubBrands());
 		} else {
 			products = StreamSupport.stream(productDao.findAll().spliterator(), false).collect(Collectors.toList());
 		}
 		return products;
 	}
+	
+	@Override
+	public Product getProductById(Long id) {
+		return productDao.findById(id).orElse(null);
+	}
 
 	@Transactional(readOnly = false)
 	@Override
 	public Product saveProduct(Product product) {
-		Product productToSave = productDao.findByName(product.getName());
+		Product productToSave = productDao.findByProductName(product.getProductName());
 		if (productToSave == null) {
 			productDao.save(product);
 		}
@@ -63,7 +68,7 @@ public class ProductServiceImpl implements IProductService {
 	public Product updateProduct(Long id, Product product) {
 		Product productFind = productDao.findById(id).orElse(null);
 		if (productFind != null) {
-			productFind.setName(product.getName());
+			productFind.setProductName(product.getProductName());
 			productFind.setSubBrand(product.getSubBrand());
 			productFind.setPrice(product.getPrice());
 			productFind.setTitle(product.getTitle());
@@ -89,9 +94,9 @@ public class ProductServiceImpl implements IProductService {
 	@Transactional(readOnly = false)
 	@Override
 	public Brand saveBrand(Brand brand) {
-		Brand brandToSave = brandDao.findByMarca(brand.getMarca());
+		Brand brandToSave = brandDao.findByBrandName(brand.getBrandName());
 		if (brandToSave == null) {
-			brand.setMarca(brand.getMarca().toUpperCase());
+			brand.setBrandName(brand.getBrandName().toUpperCase());
 			brandDao.save(brand);
 			brandToSave = brand;
 		}
@@ -103,7 +108,7 @@ public class ProductServiceImpl implements IProductService {
 	public Brand updateBrand(Long id, Brand brand) {
 		Brand brandToSave = brandDao.findById(id).orElse(null);
 		if (brandToSave != null) {
-			brandToSave.setMarca(brand.getMarca().toUpperCase());
+			brandToSave.setBrandName(brand.getBrandName().toUpperCase());
 			brandDao.save(brandToSave);
 		}
 		return brandToSave;
@@ -120,9 +125,9 @@ public class ProductServiceImpl implements IProductService {
 	public List<SubBrand> getSubBrandsByBrandId(Long brandId) {
 		List<SubBrand> listSubBrand = null;
 		Brand brand = brandDao.findById(brandId).orElse(null);
-		if (brand != null && !brand.getSubMarcas().isEmpty()) {
+		if (brand != null && !brand.getSubBrands().isEmpty()) {
 			listSubBrand = new ArrayList<>();
-			listSubBrand = brand.getSubMarcas();
+			listSubBrand = brand.getSubBrands();
 		}
 		return listSubBrand;
 	}
@@ -130,19 +135,19 @@ public class ProductServiceImpl implements IProductService {
 	@Transactional(readOnly = false)
 	@Override
 	public SubBrand saveSubBrand(Long brandId, SubBrand subBrand) {
-		subBrand.setSubMarca(subBrand.getSubMarca().toUpperCase());
+		subBrand.setSubBrandName(subBrand.getSubBrandName().toUpperCase());
 		Brand brand = brandDao.findById(brandId).orElse(null);
 		if (brand != null) {
-			if (brand.getSubMarcas() != null) {
-				brand.getSubMarcas().add(subBrand);
+			if (brand.getSubBrands() != null) {
+				brand.getSubBrands().add(subBrand);
 			} else {
 				List<SubBrand> list = new ArrayList<>();
 				list.add(subBrand);
-				brand.setSubMarcas(list);
+				brand.setSubBrands(list);
 			}
 			brandDao.save(brand);
-			for (SubBrand sb : brand.getSubMarcas()) {
-				if (sb.getSubMarca().equalsIgnoreCase(subBrand.getSubMarca())) {
+			for (SubBrand sb : brand.getSubBrands()) {
+				if (sb.getSubBrandName().equalsIgnoreCase(subBrand.getSubBrandName())) {
 					subBrand = sb;
 				}
 			}
@@ -157,7 +162,7 @@ public class ProductServiceImpl implements IProductService {
 	public SubBrand updateSubBrand(Long subBrandId, SubBrand subBrand) {
 		SubBrand sbToSave = subBrandDao.findById(subBrandId).orElse(null);
 		if (sbToSave != null) {
-			sbToSave.setSubMarca(subBrand.getSubMarca().toUpperCase());
+			sbToSave.setSubBrandName(subBrand.getSubBrandName().toUpperCase());
 			subBrandDao.save(sbToSave);
 		}
 		return sbToSave;

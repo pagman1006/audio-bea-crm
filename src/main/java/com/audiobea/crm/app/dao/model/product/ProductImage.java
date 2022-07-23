@@ -1,4 +1,4 @@
-package com.audiobea.crm.app.dao.model.user;
+package com.audiobea.crm.app.dao.model.product;
 
 import java.io.Serializable;
 
@@ -8,25 +8,22 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import javax.persistence.UniqueConstraint;
 
 import lombok.Data;
 
 @Data
 @Entity
-@Table(name = "authorities", 
-	uniqueConstraints = { 
-			@UniqueConstraint(columnNames = 
-				{ "usuario_id", "authority" }) 
-			})
-public class Role implements Serializable {
-
+@Table(name = "imagenes_productos")
+public class ProductImage implements Serializable {
+	
 	private static final long serialVersionUID = 1L;
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "authority_id")
+	@Column(name = "imagen_id")
 	private Long id;
-	private String authority;
+	
+	@Column(name = "nombre_imagen")
+	private String imageName;
 
 }

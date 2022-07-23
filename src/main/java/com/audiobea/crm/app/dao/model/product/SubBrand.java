@@ -27,6 +27,6 @@ public class SubBrand implements Serializable {
 	private Long id;
 	
 	@Column(name = "sub_marca")
-	private String subMarca;
+	private String subBrandName;
 
 }

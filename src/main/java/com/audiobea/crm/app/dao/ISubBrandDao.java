@@ -6,6 +6,6 @@ import com.audiobea.crm.app.dao.model.product.SubBrand;
 
 public interface ISubBrandDao extends CrudRepository<SubBrand, Long> {
 	
-	SubBrand findBySubMarca(String subMarca);
+	SubBrand findBySubBrandName(String subMarca);
 
 }

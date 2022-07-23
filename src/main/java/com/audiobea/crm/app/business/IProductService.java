@@ -9,6 +9,7 @@ import com.audiobea.crm.app.dao.model.product.SubBrand;
 public interface IProductService {
 	
 	public List<Product> getProducts(String marca, String subMarca);
+	public Product getProductById(Long id);
 	public Product saveProduct(Product product);
 	public Product updateProduct(Long id, Product product); 
 	public boolean deleteProductById(Long Id);

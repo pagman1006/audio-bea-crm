@@ -2,6 +2,7 @@ package com.audiobea.crm.app.dao.model.user;
 
 import java.io.Serializable;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -14,12 +15,15 @@ import lombok.Data;
 @Data
 @Entity
 @Table(name = "tipo_telefono")
-public class TipoTelefono implements Serializable {
+public class PhoneType implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "tipo_telefono_id")
 	private Long id;
-	private String name;
+	
+	@Column(name = "tipo_telefono")
+	private String phoneType;
 }

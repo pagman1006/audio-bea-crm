@@ -28,10 +28,11 @@ public class Brand implements Serializable {
 	@Column(name = "marca_id")
 	private Long id;
 	
-	private String marca;
+	@Column(name = "marca")
+	private String brandName;
 	
 	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	@JoinColumn(name = "marca_id")
-	List<SubBrand> subMarcas;
+	List<SubBrand> subBrands;
 
 }

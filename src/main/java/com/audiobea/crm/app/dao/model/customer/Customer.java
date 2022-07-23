@@ -28,22 +28,19 @@ public class Customer implements Serializable {
 	private Long id;
 	
 	@Column(name = "primer_nombre")
-	private String primerNombre;
+	private String firstName;
 	
 	@Column(name = "segundo_nombre")
-	private String segundoNombre;
+	private String secondName;
 	
 	@Column(name = "apellido_paterno")
-	private String apellidoPaterno;
+	private String firstLastName;
 	
 	@Column(name = "apellido_materno")
-	private String apellidoMaterno;
+	private String secondLastName;
 	
 	@OneToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "usuario_id")
-	private User usuario;
+	private User user;
 	
-//	@Column(name = "tipo_telefono")
-//	private PhoneType tipoTelefono;
-
 }
