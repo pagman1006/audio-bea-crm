@@ -1,4 +1,4 @@
-package com.audiobea.crm.app.dao.model.product;
+package com.audiobea.crm.app.dao.product.model;
 
 import java.io.Serializable;
 import java.util.List;
@@ -19,28 +19,36 @@ import lombok.Data;
 
 @Data
 @Entity
-@Table(name = "productos")
+@Table(name = "products")
 public class Product implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "producto_id")
+	@Column(name = "product_id")
 	private Long id;
 
 	private String productName;
 
-	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REFRESH)
-	@JoinColumn(name = "sub_marca_id")
-	private SubBrand subBrand;
-
 	private Double price;
+	private Double discount;
 	private String title;
 	private String description;
+	private Integer stock;
 	
 	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-	@JoinColumn(name = "producto_id")
+	@JoinColumn(name = "product_id")
 	private List<ProductImage> images;
+	
+	@ManyToOne
+	@JoinColumn(name = "sub_brand_id")
+	private SubBrand subBrand;
+	
+	@ManyToOne
+	@JoinColumn(name = "brand_id")
+	private Brand brand;
+	
+	private boolean enabled;
 
 }

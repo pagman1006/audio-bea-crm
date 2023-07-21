@@ -15,8 +15,8 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.audiobea.crm.app.business.IProductService;
-import com.audiobea.crm.app.dao.model.product.Brand;
-import com.audiobea.crm.app.dao.model.product.SubBrand;
+import com.audiobea.crm.app.dao.product.model.Brand;
+import com.audiobea.crm.app.dao.product.model.SubBrand;
 
 @RestController
 @RequestMapping("/marcas")

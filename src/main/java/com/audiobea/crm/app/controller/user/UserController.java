@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.audiobea.crm.app.business.IUserService;
-import com.audiobea.crm.app.dao.model.user.User;
+import com.audiobea.crm.app.dao.user.model.User;
 
 @RestController
 @RequestMapping("/usuarios")

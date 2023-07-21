@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.audiobea.crm.app.dao.model.customer.Customer;
+import com.audiobea.crm.app.dao.customer.model.Customer;
 
 @RestController
 @RequestMapping("/cliente")

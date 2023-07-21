@@ -24,8 +24,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.audiobea.crm.app.business.IProductService;
 import com.audiobea.crm.app.business.IUploadService;
-import com.audiobea.crm.app.dao.model.product.Product;
-import com.audiobea.crm.app.dao.model.product.ProductImage;
+import com.audiobea.crm.app.dao.product.model.Product;
+import com.audiobea.crm.app.dao.product.model.ProductImage;
 
 @RestController
 @RequestMapping
@@ -39,8 +39,8 @@ public class ProductController {
 
 	@GetMapping(value = "/productos")
 	@ResponseStatus(value = HttpStatus.OK)
-	public List<Product> getProducts(@RequestParam(name = "marca", required = false) String marca,
-			@RequestParam(value = "submarca", required = false) String subMarca) {
+	public List<Product> getProducts(@RequestParam(name = "marca", required = false, defaultValue = "") String marca,
+			@RequestParam(value = "submarca", required = false, defaultValue = "") String subMarca) {
 		System.out.println("Maraca: " + marca + " Submarca: " + subMarca);
 		return productService.getProducts(marca, subMarca);
 	}

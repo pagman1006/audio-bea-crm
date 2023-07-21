@@ -1,4 +1,4 @@
-package com.audiobea.crm.app.dao.model.user;
+package com.audiobea.crm.app.dao.user.model;
 
 import java.io.Serializable;
 import java.util.List;
@@ -18,14 +18,14 @@ import lombok.Data;
 
 @Data
 @Entity
-@Table(name =  "usuarios")
+@Table(name =  "users")
 public class User implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "usuario_id")
+	@Column(name = "user_id")
 	private Long id;
 	
 	@Column(length = 30, unique = true)
@@ -34,15 +34,10 @@ public class User implements Serializable {
 	@Column(length = 60)
 	private String password;
 	
-	@Column(name = "habilitado")
 	private boolean enabled;
 	
 	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-	@JoinColumn(name = "usuario_id")
+	@JoinColumn(name = "user_id")
 	private List<Role> roles;
-	
-	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-	@JoinColumn(name = "usuario_id")
-	private List<Phone> phones;
 
 }

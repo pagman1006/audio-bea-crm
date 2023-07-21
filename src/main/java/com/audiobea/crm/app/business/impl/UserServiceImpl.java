@@ -8,8 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.audiobea.crm.app.business.IUserService;
-import com.audiobea.crm.app.dao.IUserDao;
-import com.audiobea.crm.app.dao.model.user.User;
+import com.audiobea.crm.app.dao.user.IUserDao;
+import com.audiobea.crm.app.dao.user.model.User;
 
 @Service("usuarioService")
 public class UserServiceImpl implements IUserService {

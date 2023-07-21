@@ -1,6 +1,7 @@
-package com.audiobea.crm.app.dao.model.user;
+package com.audiobea.crm.app.dao.product.model;
 
 import java.io.Serializable;
+import java.util.List;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -10,31 +11,29 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import lombok.Data;
 
 @Data
 @Entity
-@Table(name = "telefonos")
-public class Phone implements Serializable {
-	
-	private static final long serialVersionUID = 1L;
+@Table(name = "brands")
+public class Brand implements Serializable {
 
+	private static final long serialVersionUID = 1L;
+	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "telefono_id")
+	@Column(name = "brand_id")
 	private Long id;
 	
-	@Column(name = "numero")
-	private String phoneNumber;
+	private String brandName;
 	
-	@OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-	@JoinColumn(name = "tipo_telefono_id")
-	private PhoneType phoneType;
+	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	@JoinColumn(name = "brand_id")
+	List<SubBrand> subBrands;
 	
-	@Column(name = "habilitado")
 	private boolean enabled;
 
 }

@@ -1,8 +1,8 @@
-package com.audiobea.crm.app.dao;
+package com.audiobea.crm.app.dao.product;
 
 import org.springframework.data.repository.CrudRepository;
 
-import com.audiobea.crm.app.dao.model.product.Brand;
+import com.audiobea.crm.app.dao.product.model.Brand;
 
 public interface IBrandDao extends CrudRepository<Brand, Long> {
 	

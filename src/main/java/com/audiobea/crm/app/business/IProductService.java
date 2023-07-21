@@ -2,9 +2,9 @@ package com.audiobea.crm.app.business;
 
 import java.util.List;
 
-import com.audiobea.crm.app.dao.model.product.Brand;
-import com.audiobea.crm.app.dao.model.product.Product;
-import com.audiobea.crm.app.dao.model.product.SubBrand;
+import com.audiobea.crm.app.dao.product.model.Brand;
+import com.audiobea.crm.app.dao.product.model.Product;
+import com.audiobea.crm.app.dao.product.model.SubBrand;
 
 public interface IProductService {
 	

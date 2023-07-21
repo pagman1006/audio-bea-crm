@@ -2,7 +2,7 @@ package com.audiobea.crm.app.business;
 
 import java.util.List;
 
-import com.audiobea.crm.app.dao.model.customer.Customer;
+import com.audiobea.crm.app.dao.customer.model.Customer;
 
 public interface ICustomerService {
 	

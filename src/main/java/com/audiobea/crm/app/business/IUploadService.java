@@ -14,7 +14,4 @@ public interface IUploadService {
 	public void deleteAll();
 	public void init() throws IOException;
 	
-	public String storeFile(MultipartFile file);
-	public Resource loadFileAsResource(String fileName);
-
 }

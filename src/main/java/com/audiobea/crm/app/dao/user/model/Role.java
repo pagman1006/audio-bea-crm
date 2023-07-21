@@ -1,4 +1,4 @@
-package com.audiobea.crm.app.dao.model.user;
+package com.audiobea.crm.app.dao.user.model;
 
 import java.io.Serializable;
 
@@ -17,7 +17,7 @@ import lombok.Data;
 @Table(name = "authorities", 
 	uniqueConstraints = { 
 			@UniqueConstraint(columnNames = 
-				{ "usuario_id", "authority" }) 
+				{ "user_id", "authority" }) 
 			})
 public class Role implements Serializable {
 

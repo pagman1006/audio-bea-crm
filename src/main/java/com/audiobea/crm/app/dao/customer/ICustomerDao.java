@@ -1,8 +1,8 @@
-package com.audiobea.crm.app.dao;
+package com.audiobea.crm.app.dao.customer;
 
 import org.springframework.data.repository.CrudRepository;
 
-import com.audiobea.crm.app.dao.model.customer.Customer;
+import com.audiobea.crm.app.dao.customer.model.Customer;
 
 public interface ICustomerDao extends CrudRepository<Customer, Long> {
 

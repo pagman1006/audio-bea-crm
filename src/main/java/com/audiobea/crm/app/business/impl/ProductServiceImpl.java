@@ -10,12 +10,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.audiobea.crm.app.business.IProductService;
-import com.audiobea.crm.app.dao.IBrandDao;
-import com.audiobea.crm.app.dao.IProductDao;
-import com.audiobea.crm.app.dao.ISubBrandDao;
-import com.audiobea.crm.app.dao.model.product.Brand;
-import com.audiobea.crm.app.dao.model.product.Product;
-import com.audiobea.crm.app.dao.model.product.SubBrand;
+import com.audiobea.crm.app.dao.product.IBrandDao;
+import com.audiobea.crm.app.dao.product.IProductDao;
+import com.audiobea.crm.app.dao.product.ISubBrandDao;
+import com.audiobea.crm.app.dao.product.model.Brand;
+import com.audiobea.crm.app.dao.product.model.Product;
+import com.audiobea.crm.app.dao.product.model.SubBrand;
 
 @Service("productService")
 @Transactional(readOnly = true)
