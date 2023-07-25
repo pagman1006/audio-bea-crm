@@ -10,6 +10,7 @@ import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 import javax.xml.namespace.QName;
 
+import org.apache.commons.lang.StringUtils;
 import org.jvnet.ws.wadl.Application;
 import org.jvnet.ws.wadl.Doc;
 import org.jvnet.ws.wadl.Param;
@@ -23,6 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -46,7 +48,7 @@ public class WADLController {
 	@Autowired
 	private WebApplicationContext webApplicationContext;
 
-	@RequestMapping(method = RequestMethod.GET, produces = { "application/xml" })
+	@GetMapping(produces = { "application/xml" })
 	public @ResponseBody Application generateWadl(HttpServletRequest request) {
 		Application result = new Application();
 		Doc doc = new Doc();
@@ -109,7 +111,7 @@ public class WADLController {
 							waldParam.setStyle(ParamStyle.QUERY);
 							waldParam.setRequired(param2.required());
 							String defaultValue = cleanDefault(param2.defaultValue());
-							if (!defaultValue.equals("") || !defaultValue.isBlank()) {
+							if (!defaultValue.equals("") || StringUtils.isNotBlank(defaultValue)) {
 								waldParam.setDefault(defaultValue);
 							}
 							waldParam.setType(nm);
@@ -188,8 +190,8 @@ public class WADLController {
 	}
 
 	private String cleanDefault(String value) {
-		value = value.replaceAll("\t", "");
-		value = value.replaceAll("\n", "");
+		value = value.replace("\t", "");
+		value = value.replace("\n", "");
 		return value;
 	}
 

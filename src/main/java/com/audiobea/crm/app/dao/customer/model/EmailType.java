@@ -23,6 +23,6 @@ public class EmailType implements Serializable {
 	@Column(name = "email_type_id")
 	private Long id;
 	
-	private String emailType;
+	private String type;
 
 }

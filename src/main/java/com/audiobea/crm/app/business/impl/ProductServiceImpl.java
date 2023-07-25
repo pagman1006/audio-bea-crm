@@ -5,18 +5,27 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.audiobea.crm.app.business.IProductService;
+import com.audiobea.crm.app.commons.I18Constants;
 import com.audiobea.crm.app.dao.product.IBrandDao;
 import com.audiobea.crm.app.dao.product.IProductDao;
 import com.audiobea.crm.app.dao.product.ISubBrandDao;
 import com.audiobea.crm.app.dao.product.model.Brand;
 import com.audiobea.crm.app.dao.product.model.Product;
 import com.audiobea.crm.app.dao.product.model.SubBrand;
+import com.audiobea.crm.app.exception.NoSuchElementFoundException;
+import com.audiobea.crm.app.utils.Utils;
 
+import lombok.AllArgsConstructor;
+
+@AllArgsConstructor
 @Service("productService")
 @Transactional(readOnly = true)
 public class ProductServiceImpl implements IProductService {
@@ -29,23 +38,25 @@ public class ProductServiceImpl implements IProductService {
 
 	@Autowired
 	private ISubBrandDao subBrandDao;
+	
+	private final MessageSource messageSource;
 
 	@Override
-	public List<Product> getProducts(String marca, String subMarca) {
+	public Page<Product> getProducts(String marca, String subMarca) {
 		List<Product> products = new ArrayList<>();
-		if (subMarca != null && !subMarca.isBlank()) {
+		if (subMarca != null && StringUtils.isNotBlank(subMarca)) {
 			SubBrand subBrand = subBrandDao.findBySubBrandName(subMarca);
 			if (subBrand != null) {
 				products = productDao.findBySubBrand(subBrand);
-				return products;
+				return null;
 			}
-		} else if (marca != null && !marca.isBlank()) {
+		} else if (marca != null && StringUtils.isNotBlank(marca)) {
 			Brand brand = brandDao.findByBrandName(marca);
 			products = productDao.findBySubBrandIn(brand.getSubBrands());
 		} else {
 			products = StreamSupport.stream(productDao.findAll().spliterator(), false).collect(Collectors.toList());
 		}
-		return products;
+		return null;
 	}
 	
 	@Override
@@ -79,16 +90,17 @@ public class ProductServiceImpl implements IProductService {
 
 	@Transactional(readOnly = false)
 	@Override
-	public boolean deleteProductById(Long Id) {
+	public boolean deleteProductById(Long id) {
 		boolean response = false;
-		productDao.deleteById(Id);
+		productDao.deleteById(id);
 		response = true;
 		return response;
 	}
 
 	@Override
-	public List<Brand> getBrands() {
-		return StreamSupport.stream(brandDao.findAll().spliterator(), false).collect(Collectors.toList());
+	public Page<Brand> getBrands() {
+		//return StreamSupport.stream(brandDao.findAll().spliterator(), false).collect(Collectors.toList());
+		return null;
 	}
 
 	@Transactional(readOnly = false)
@@ -122,14 +134,15 @@ public class ProductServiceImpl implements IProductService {
 	}
 
 	@Override
-	public List<SubBrand> getSubBrandsByBrandId(Long brandId) {
+	public Page<SubBrand> getSubBrandsByBrandId(Long brandId) {
 		List<SubBrand> listSubBrand = null;
-		Brand brand = brandDao.findById(brandId).orElse(null);
+		Brand brand = brandDao.findById(brandId).orElseThrow(() ->
+			new NoSuchElementFoundException(Utils.getLocalMessage(messageSource, I18Constants.NO_ITEM_FOUND.getKey(), String.valueOf(brandId))));
 		if (brand != null && !brand.getSubBrands().isEmpty()) {
-			listSubBrand = new ArrayList<>();
 			listSubBrand = brand.getSubBrands();
 		}
-		return listSubBrand;
+		//return listSubBrand;
+		return null;
 	}
 
 	@Transactional(readOnly = false)

@@ -151,3 +151,17 @@ INSERT INTO `sub_brands` (`sub_brand_name`, `brand_id`, `enabled`) VALUES ('RENE
 INSERT INTO `sub_brands` (`sub_brand_name`, `brand_id`, `enabled`) VALUES ('RENEGADE LIMITED 1.7L', 22, b'1');
 INSERT INTO `sub_brands` (`sub_brand_name`, `brand_id`, `enabled`) VALUES ('RENEGADE SPORT 1.7L', 22, b'1');
 
+## USERS
+insert into users (`enabled`, `password`, `username`) values (true, "fhjkfldsafirehfdsalkfdsah", "andresg");
+insert into users (`enabled`, `password`, `username`) values (true, "fhjkfldsafirehfdsalkfdsah", "andresg1006");
+insert into users (`enabled`, `password`, `username`) values (true, "fhjkfldsafirehfdsalkfdsah", "pandres");
+insert into users (`enabled`, `password`, `username`) values (true, "fhjkfldsafirehfdsalkfdsah", "pandres1006");
+
+## AUTHORITIES
+insert into authorities (`authority`, `user_id`) values ("ADMIN",1);
+insert into authorities (`authority`, `user_id`) values ("USER",1);
+insert into authorities (`authority`, `user_id`) values ("ADMIN",2);
+insert into authorities (`authority`, `user_id`) values ("USER",3);
+insert into authorities (`authority`, `user_id`) values ("ADMIN",4);
+
+

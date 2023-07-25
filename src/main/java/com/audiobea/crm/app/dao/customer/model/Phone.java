@@ -32,7 +32,5 @@ public class Phone implements Serializable {
 	@OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	@JoinColumn(name = "phone_type_id")
 	private PhoneType phoneType;
-	
 	private boolean enabled;
-
 }

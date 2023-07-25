@@ -8,8 +8,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.UUID;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
@@ -21,14 +19,13 @@ import com.audiobea.crm.app.business.IUploadService;
 @Service
 public class UploadServiceImpl implements IUploadService {
 
-	private final Logger log = LoggerFactory.getLogger(getClass());
+//	private final Logger log = LoggerFactory.getLogger(getClass());
 
-	private final static String UPLOADS_FOLDER = "uploads";
+	private static final String UPLOADS_FOLDER = "uploads";
 
 	@Override
 	public Resource load(String filename) throws MalformedURLException {
 		Path pathImage = getPath(filename);
-		log.info("PathImage " + pathImage);
 		Resource resource = null;
 		resource = new UrlResource(pathImage.toUri());
 		if (!resource.exists() || !resource.isReadable()) {
@@ -41,7 +38,6 @@ public class UploadServiceImpl implements IUploadService {
 	public String copy(MultipartFile file) throws IOException {
 		String uniqueFileName = UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
 		Path rootPath = getPath(uniqueFileName);
-		log.info("rootPath: " + rootPath);
 		Files.copy(file.getInputStream(), rootPath);
 		return uniqueFileName;
 	}
@@ -50,10 +46,8 @@ public class UploadServiceImpl implements IUploadService {
 	public boolean delete(String filename) {
 		Path rootPath = getPath(filename);
 		File file = rootPath.toFile();
-		if (file.exists() && file.canRead()) {
-			if (file.delete()) {
+		if (file.exists() && file.canRead() && file.delete()) {
 				return true;
-			}
 		}
 		return false;
 	}

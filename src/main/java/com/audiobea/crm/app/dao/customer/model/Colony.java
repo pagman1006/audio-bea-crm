@@ -25,7 +25,7 @@ public class Colony implements Serializable {
 	@Column(name = "colony_id")
 	private Long id;
 	
-	private String colony;
+	private String name;
 	private String postalCode;
 	
 	@ManyToOne

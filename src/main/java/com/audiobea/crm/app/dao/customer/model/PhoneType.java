@@ -24,5 +24,5 @@ public class PhoneType implements Serializable {
 	@Column(name = "phone_type_id")
 	private Long id;
 	
-	private String phoneType;
+	private String type;
 }

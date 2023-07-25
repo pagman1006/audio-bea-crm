@@ -41,7 +41,6 @@ public class ProductController {
 	@ResponseStatus(value = HttpStatus.OK)
 	public List<Product> getProducts(@RequestParam(name = "marca", required = false, defaultValue = "") String marca,
 			@RequestParam(value = "submarca", required = false, defaultValue = "") String subMarca) {
-		System.out.println("Maraca: " + marca + " Submarca: " + subMarca);
 		return productService.getProducts(marca, subMarca);
 	}
 

@@ -32,7 +32,7 @@ public class Brand implements Serializable {
 	
 	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	@JoinColumn(name = "brand_id")
-	List<SubBrand> subBrands;
+	private List<SubBrand> subBrands;
 	
 	private boolean enabled;
 
