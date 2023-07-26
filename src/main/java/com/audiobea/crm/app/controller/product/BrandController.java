@@ -3,14 +3,15 @@ package com.audiobea.crm.app.controller.product;
 import com.audiobea.crm.app.business.IProductService;
 import com.audiobea.crm.app.commons.I18Constants;
 import com.audiobea.crm.app.commons.ResponseData;
-import com.audiobea.crm.app.controller.dto.DtoInBrand;
-import com.audiobea.crm.app.controller.dto.DtoInSubBrand;
+import com.audiobea.crm.app.commons.dto.DtoInBrand;
+import com.audiobea.crm.app.commons.dto.DtoInSubBrand;
 import com.audiobea.crm.app.controller.mapper.BrandMapper;
 import com.audiobea.crm.app.controller.mapper.ListBrandsMapper;
 import com.audiobea.crm.app.controller.mapper.ListSubBrandsMapper;
 import com.audiobea.crm.app.controller.mapper.SubBrandMapper;
 import com.audiobea.crm.app.dao.product.model.Brand;
 import com.audiobea.crm.app.dao.product.model.SubBrand;
+import com.audiobea.crm.app.exception.NoSuchElementFoundException;
 import com.audiobea.crm.app.exception.NoSuchElementsFoundException;
 import com.audiobea.crm.app.utils.Utils;
 import lombok.AllArgsConstructor;
@@ -48,7 +49,7 @@ public class BrandController {
     // Brand
     @GetMapping
     public ResponseEntity<ResponseData<DtoInBrand>> getBrands(@RequestParam(name = "brand", defaultValue = "", required = false) String brandName) {
-        Page<Brand> pageable = productService.getBrands();
+        Page<Brand> pageable = productService.getBrands(brandName);
         if (pageable == null || pageable.getContent().isEmpty()) {
             throw new NoSuchElementsFoundException(
                     Utils.getLocalMessage(messageSource, I18Constants.NO_ITEMS_FOUND.getKey()));
@@ -61,7 +62,7 @@ public class BrandController {
 
     @PostMapping
     public ResponseEntity<DtoInBrand> addBrand(@RequestBody Brand brand) {
-        return new ResponseEntity(brandMapper.brandToDtoInBrand(productService.saveBrand(brand)), HttpStatus.CREATED);
+        return new ResponseEntity<>(brandMapper.brandToDtoInBrand(productService.saveBrand(brand)), HttpStatus.CREATED);
     }
 
     @PutMapping("/{brand-id}")
@@ -71,10 +72,13 @@ public class BrandController {
 
     @DeleteMapping("/{brand-id}")
     @ResponseStatus(code = HttpStatus.OK)
-    public String deleteBrandById(@PathVariable(value = "brand-id") Long brandId) {
-        String respuesta = productService.deleteBrandById(brandId) ? "Se eliminó correctamente"
-                : "Error, ocurrió un error al eliminar el registro";
-        return respuesta;
+    public ResponseEntity<String> deleteBrandById(@PathVariable(value = "brand-id") Long brandId) {
+        boolean deleted = productService.deleteBrandById(brandId);
+        if (!deleted) {
+            throw new NoSuchElementFoundException(
+                    Utils.getLocalMessage(messageSource, I18Constants.NO_ITEM_FOUND.getKey()));
+        }
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     // SubBrand
@@ -102,15 +106,19 @@ public class BrandController {
     @ResponseStatus(code = HttpStatus.CREATED)
     public ResponseEntity<DtoInSubBrand> updateSubBrand(@PathVariable(value = "brand-id") Long id,
                                    @PathVariable(value = "sub-brand-id") Long subBrandId, @RequestBody SubBrand subBrand) {
-        return new ResponseEntity<>(subBrandMapper.subBrandToDtoInSubBrand(productService.updateSubBrand(id, subBrand)), HttpStatus.CREATED);
+        return new ResponseEntity<>(subBrandMapper.subBrandToDtoInSubBrand(productService.updateSubBrand(subBrandId, subBrand)), HttpStatus.CREATED);
     }
 
     @DeleteMapping("/{brand-id}/sub-brands/{sub-brand-id}")
     @ResponseStatus(code = HttpStatus.OK)
-    public String deleteSubBrandById(@PathVariable(value = "sub-brand-id") Long subBrandId) {
-        String respuesta = productService.deleteSubBrandById(subBrandId) ? "Se eliminó correctamente"
-                : "Error, ocurrió un error al eliminar el registro";
-        return respuesta;
+    public ResponseEntity<String> deleteSubBrandById(@PathVariable(value = "sub-brand-id") Long subBrandId) {
+
+        boolean deleted = productService.deleteSubBrandById(subBrandId);
+        if (!deleted) {
+            throw new NoSuchElementFoundException(
+                    Utils.getLocalMessage(messageSource, I18Constants.NO_ITEM_FOUND.getKey()));
+        }
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
 }

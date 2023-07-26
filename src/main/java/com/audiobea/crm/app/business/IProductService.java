@@ -15,7 +15,7 @@ public interface IProductService {
 	public Product updateProduct(Long id, Product product); 
 	public boolean deleteProductById(Long id);
 	
-	public Page<Brand> getBrands();
+	public Page<Brand> getBrands(String brandName);
 	public Brand saveBrand(Brand brand);
 	public Brand updateBrand(Long id, Brand brand);
 	public boolean deleteBrandById(Long id);

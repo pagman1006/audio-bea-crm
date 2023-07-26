@@ -5,8 +5,8 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
 
-import com.audiobea.crm.app.controller.dto.DtoInPhone;
-import com.audiobea.crm.app.controller.dto.EnumPhoneType;
+import com.audiobea.crm.app.commons.dto.DtoInPhone;
+import com.audiobea.crm.app.commons.dto.EnumPhoneType;
 import com.audiobea.crm.app.dao.customer.model.Phone;
 import com.audiobea.crm.app.dao.customer.model.PhoneType;
 

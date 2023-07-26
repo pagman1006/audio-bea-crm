@@ -1,4 +1,4 @@
-package com.audiobea.crm.app.controller.dto;
+package com.audiobea.crm.app.commons.dto;
 
 import java.io.Serializable;
 import java.util.List;
@@ -6,13 +6,14 @@ import java.util.List;
 import lombok.Data;
 
 @Data
-public class DtoInBrand implements Serializable {
+public class DtoInUser implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 	
 	private Long id;
-	private String brandName;
-	private List<DtoInSubBrand> subBrands;
+	private String username;
+	private String password;
 	private boolean enabled;
-
+	
+	private List<DtoInRole> roles;
 }

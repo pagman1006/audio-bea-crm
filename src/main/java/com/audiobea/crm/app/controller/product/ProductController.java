@@ -6,9 +6,19 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.audiobea.crm.app.commons.I18Constants;
+import com.audiobea.crm.app.commons.ResponseData;
+import com.audiobea.crm.app.commons.dto.DtoInProduct;
+import com.audiobea.crm.app.controller.mapper.ListProductsMapper;
+import com.audiobea.crm.app.exception.NoSuchElementsFoundException;
+import com.audiobea.crm.app.utils.Utils;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -27,6 +37,8 @@ import com.audiobea.crm.app.business.IUploadService;
 import com.audiobea.crm.app.dao.product.model.Product;
 import com.audiobea.crm.app.dao.product.model.ProductImage;
 
+@AllArgsConstructor
+
 @RestController
 @RequestMapping
 public class ProductController {
@@ -37,11 +49,23 @@ public class ProductController {
 	@Autowired
 	private IUploadService uploadService;
 
+	@Autowired
+	private ListProductsMapper listProductsMapper;
+
+	private final MessageSource messageSource;
+
 	@GetMapping(value = "/productos")
 	@ResponseStatus(value = HttpStatus.OK)
-	public List<Product> getProducts(@RequestParam(name = "marca", required = false, defaultValue = "") String marca,
+	public ResponseEntity<ResponseData<DtoInProduct>> getProducts(@RequestParam(name = "marca", required = false, defaultValue = "") String marca,
 			@RequestParam(value = "submarca", required = false, defaultValue = "") String subMarca) {
-		return productService.getProducts(marca, subMarca);
+		Page<Product> pageable = productService.getProducts(marca, subMarca);
+		if (pageable == null || pageable.getContent().isEmpty()) {
+			throw new NoSuchElementsFoundException(
+					Utils.getLocalMessage(messageSource, I18Constants.NO_ITEMS_FOUND.getKey()));
+		}
+		ResponseData<DtoInProduct> response = new ResponseData<>(listProductsMapper.productsToDtoInProducts(pageable.getContent()), pageable.getNumber(),
+				pageable.getSize(), pageable.getTotalElements(), pageable.getTotalPages());
+		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 
 	@PostMapping("/productos")

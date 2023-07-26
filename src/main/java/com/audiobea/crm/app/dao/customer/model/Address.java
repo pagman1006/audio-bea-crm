@@ -30,12 +30,4 @@ public class Address implements Serializable {
 	@JoinColumn(name = "colony_id")
 	private Colony colony;
 	
-	@ManyToOne
-	@JoinColumn(name = "city_id")
-	private City city;
-	
-	@ManyToOne
-	@JoinColumn(name = "state_id")
-	private State state;
-	
 }

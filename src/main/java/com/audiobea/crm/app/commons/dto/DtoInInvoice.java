@@ -1,4 +1,4 @@
-package com.audiobea.crm.app.controller.dto;
+package com.audiobea.crm.app.commons.dto;
 
 import java.io.Serializable;
 import java.util.Date;

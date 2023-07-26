@@ -5,8 +5,8 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
 
-import com.audiobea.crm.app.controller.dto.DtoInEmail;
-import com.audiobea.crm.app.controller.dto.EnumEmailType;
+import com.audiobea.crm.app.commons.dto.DtoInEmail;
+import com.audiobea.crm.app.commons.dto.EnumEmailType;
 import com.audiobea.crm.app.dao.customer.model.Email;
 import com.audiobea.crm.app.dao.customer.model.EmailType;
 
