@@ -21,7 +21,7 @@ public enum EnumPhoneType {
 	
 	private String code;
 	
-	private EnumPhoneType(final String code) {
+	EnumPhoneType(final String code) {
 		this.code = code;
 	}
 	
