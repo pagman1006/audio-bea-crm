@@ -41,6 +41,7 @@ public class Customer implements Serializable {
 	@JsonFormat(pattern = "yyyy-MM-dd")
 	@DateTimeFormat(pattern = "yyyy-MM-dd")
 	private Date birthday;
+	private boolean enabled;
 	
 	@OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.DETACH)
 	@JoinColumn(name = "user_id")
@@ -61,7 +62,5 @@ public class Customer implements Serializable {
 	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
 	@JoinColumn(name = "user_id")
 	private List<Invoice> invoices;
-	
-	private boolean enabled;
 	
 }

@@ -15,6 +15,4 @@ public class DtoInAddress implements Serializable {
 	private String indoorNumber;
 	
 	private DtoInColony colony;
-	private DtoInCity city;
-	private DtoInState state;
 }

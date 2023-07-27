@@ -12,8 +12,5 @@ public class DtoInColony implements Serializable {
 	private Long id;
 	private String name;
 	private String postalCode;
-	
-	private DtoInCity city;
-	private DtoInState state;
 
 }

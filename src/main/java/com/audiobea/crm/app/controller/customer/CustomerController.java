@@ -2,6 +2,8 @@ package com.audiobea.crm.app.controller.customer;
 
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.data.domain.Page;
@@ -32,50 +34,61 @@ import lombok.AllArgsConstructor;
 @RestController
 @RequestMapping("/customers")
 public class CustomerController {
+	
+	private static final Logger logger = LoggerFactory.getLogger(CustomerController.class);
 
-    private final MessageSource messageSource;
-    @Autowired
-    private ICustomerService customerService;
-    @Autowired
-    private ListCustomerMapper listCustomerMapper;
-    @Autowired
-    private CustomerMapper customerMapper;
+	private final MessageSource messageSource;
+	@Autowired
+	private ICustomerService customerService;
+	@Autowired
+	private ListCustomerMapper listCustomerMapper;
+	@Autowired
+	private CustomerMapper customerMapper;
 
-    @GetMapping
-    public ResponseEntity<ResponseData<DtoInCustomer>> getCustomers(
-            @RequestParam(name = "firstName", defaultValue = "", required = false) String firstName,
-            @RequestParam(name = "secondName", defaultValue = "", required = false) String secondName,
-            @RequestParam(name = "firstLastName", defaultValue = "", required = false) String firstLastName,
-            @RequestParam(name = "secondLastName", defaultValue = "", required = false) String secondLastName,
-            @RequestParam(name = "page", defaultValue = "0", required = false) Integer page,
-            @RequestParam(name = "pageSize", defaultValue = "10", required = false) Integer pageSize) {
+	@GetMapping
+	public ResponseEntity<ResponseData<DtoInCustomer>> getCustomers(
+			@RequestParam(name = "firstName", defaultValue = "", required = false) String firstName,
+			@RequestParam(name = "secondName", defaultValue = "", required = false) String secondName,
+			@RequestParam(name = "firstLastName", defaultValue = "", required = false) String firstLastName,
+			@RequestParam(name = "secondLastName", defaultValue = "", required = false) String secondLastName,
+			@RequestParam(name = "page", defaultValue = "0", required = false) Integer page,
+			@RequestParam(name = "pageSize", defaultValue = "10", required = false) Integer pageSize) {
 
-        Page<Customer> pageable = customerService.getCustomers(firstName, secondName, firstLastName, secondLastName,
-                page, pageSize);
-        if (pageable == null || pageable.getContent().isEmpty()) {
-            throw new NoSuchElementsFoundException(
-                    Utils.getLocalMessage(messageSource, I18Constants.NO_ITEMS_FOUND.getKey()));
-        }
-        List<DtoInCustomer> listCustomers = listCustomerMapper.listCustomersToListDtoInCustomers(pageable.getContent());
-        ResponseData<DtoInCustomer> response = new ResponseData<>(listCustomers, pageable.getNumber(),
-                pageable.getSize(), pageable.getTotalElements(), pageable.getTotalPages());
-        return new ResponseEntity<>(response, HttpStatus.OK);
-    }
+		Page<Customer> pageable = customerService.getCustomers(firstName, secondName, firstLastName, secondLastName,
+				page, pageSize);
+		if (pageable == null || pageable.getContent().isEmpty()) {
+			throw new NoSuchElementsFoundException(
+					Utils.getLocalMessage(messageSource, I18Constants.NO_ITEMS_FOUND.getKey()));
+		}
+		List<DtoInCustomer> listCustomers = listCustomerMapper.listCustomersToListDtoInCustomers(pageable.getContent());
+		ResponseData<DtoInCustomer> response = new ResponseData<>(listCustomers, pageable.getNumber(),
+				pageable.getSize(), pageable.getTotalElements(), pageable.getTotalPages());
+		return new ResponseEntity<>(response, HttpStatus.OK);
+	}
 
-    @PostMapping
-    public ResponseEntity<DtoInCustomer> saveCustomer(@RequestBody Customer customer) {
-        return new ResponseEntity<>(customerMapper.customerToDtoInCustomer(customerService.saveCustomer(customer)),
-                HttpStatus.CREATED);
-    }
+	@PostMapping
+	public ResponseEntity<DtoInCustomer> saveCustomer(@RequestBody DtoInCustomer customer) {
+		logger.debug("DtoIntCustomer: {}", customer);
+		Customer customerToSave = customerMapper.customerDtoInToCustomer(customer);
+		logger.debug("CustomerToSave: {}", customerToSave);
+		return new ResponseEntity<>(
+				customerMapper.customerToDtoInCustomer(
+						customerService.saveCustomer(customerToSave)),
+				HttpStatus.CREATED);
+	}
 
-    @PutMapping("/{id}")
-    public ResponseEntity<DtoInCustomer> updateCustomer(@PathVariable(name = "id") Long id,
-                                                        @RequestBody Customer customer) {
-        return new ResponseEntity<>(customerMapper.customerToDtoInCustomer(customerService.updateCustomer(id, customer)), HttpStatus.CREATED);
-    }
+	@PutMapping("/{id}")
+	public ResponseEntity<DtoInCustomer> updateCustomer(@PathVariable(name = "id") Long id,
+			@RequestBody DtoInCustomer customer) {
+		return new ResponseEntity<>(
+				customerMapper.customerToDtoInCustomer(
+						customerService.updateCustomer(id, customerMapper.customerDtoInToCustomer(customer))),
+				HttpStatus.CREATED);
+	}
 
-    @GetMapping("/{id}")
-    public ResponseEntity<DtoInCustomer> getCustomer(@PathVariable(name = "id") Long id) {
-        return new ResponseEntity<>(customerMapper.customerToDtoInCustomer(customerService.getCustomerById(id)), HttpStatus.CREATED);
-    }
+	@GetMapping("/{id}")
+	public ResponseEntity<DtoInCustomer> getCustomer(@PathVariable(name = "id") Long id) {
+		return new ResponseEntity<>(customerMapper.customerToDtoInCustomer(customerService.getCustomerById(id)),
+				HttpStatus.CREATED);
+	}
 }
