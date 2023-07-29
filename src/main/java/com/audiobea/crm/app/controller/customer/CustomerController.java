@@ -2,6 +2,10 @@ package com.audiobea.crm.app.controller.customer;
 
 import java.util.List;
 
+import javax.ws.rs.Consumes;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,20 +23,18 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.audiobea.crm.app.business.ICustomerService;
-import com.audiobea.crm.app.commons.I18Constants;
 import com.audiobea.crm.app.commons.ResponseData;
 import com.audiobea.crm.app.commons.dto.DtoInCustomer;
 import com.audiobea.crm.app.controller.mapper.CustomerMapper;
 import com.audiobea.crm.app.controller.mapper.ListCustomerMapper;
 import com.audiobea.crm.app.dao.customer.model.Customer;
-import com.audiobea.crm.app.exception.NoSuchElementsFoundException;
-import com.audiobea.crm.app.utils.Utils;
+import com.audiobea.crm.app.utils.Validator;
 
 import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
 @RestController
-@RequestMapping("/customers")
+@RequestMapping("/v1/audio-bea/customers")
 public class CustomerController {
 	
 	private static final Logger logger = LoggerFactory.getLogger(CustomerController.class);
@@ -46,6 +48,7 @@ public class CustomerController {
 	private CustomerMapper customerMapper;
 
 	@GetMapping
+	@Produces({MediaType.APPLICATION_JSON})
 	public ResponseEntity<ResponseData<DtoInCustomer>> getCustomers(
 			@RequestParam(name = "firstName", defaultValue = "", required = false) String firstName,
 			@RequestParam(name = "secondName", defaultValue = "", required = false) String secondName,
@@ -56,10 +59,7 @@ public class CustomerController {
 
 		Page<Customer> pageable = customerService.getCustomers(firstName, secondName, firstLastName, secondLastName,
 				page, pageSize);
-		if (pageable == null || pageable.getContent().isEmpty()) {
-			throw new NoSuchElementsFoundException(
-					Utils.getLocalMessage(messageSource, I18Constants.NO_ITEMS_FOUND.getKey()));
-		}
+		Validator.validatePage(pageable, messageSource);
 		List<DtoInCustomer> listCustomers = listCustomerMapper.listCustomersToListDtoInCustomers(pageable.getContent());
 		ResponseData<DtoInCustomer> response = new ResponseData<>(listCustomers, pageable.getNumber(),
 				pageable.getSize(), pageable.getTotalElements(), pageable.getTotalPages());
@@ -67,6 +67,8 @@ public class CustomerController {
 	}
 
 	@PostMapping
+	@Produces({MediaType.APPLICATION_JSON})
+    @Consumes({MediaType.APPLICATION_JSON})
 	public ResponseEntity<DtoInCustomer> saveCustomer(@RequestBody DtoInCustomer customer) {
 		logger.debug("DtoIntCustomer: {}", customer);
 		Customer customerToSave = customerMapper.customerDtoInToCustomer(customer);
@@ -78,6 +80,8 @@ public class CustomerController {
 	}
 
 	@PutMapping("/{id}")
+	@Produces({MediaType.APPLICATION_JSON})
+    @Consumes({MediaType.APPLICATION_JSON})
 	public ResponseEntity<DtoInCustomer> updateCustomer(@PathVariable(name = "id") Long id,
 			@RequestBody DtoInCustomer customer) {
 		return new ResponseEntity<>(
@@ -87,6 +91,7 @@ public class CustomerController {
 	}
 
 	@GetMapping("/{id}")
+	@Produces({MediaType.APPLICATION_JSON})
 	public ResponseEntity<DtoInCustomer> getCustomer(@PathVariable(name = "id") Long id) {
 		return new ResponseEntity<>(customerMapper.customerToDtoInCustomer(customerService.getCustomerById(id)),
 				HttpStatus.CREATED);

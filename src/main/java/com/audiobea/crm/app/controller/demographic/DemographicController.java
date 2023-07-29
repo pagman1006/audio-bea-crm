@@ -2,6 +2,10 @@ package com.audiobea.crm.app.controller.demographic;
 
 import java.util.List;
 
+import javax.ws.rs.Consumes;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.data.domain.Page;
@@ -28,7 +32,7 @@ import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
 @RestController
-@RequestMapping("/demographics")
+@RequestMapping("/v1/audio-bea/demographics")
 public class DemographicController {
 
     private final MessageSource messageSource;
@@ -43,6 +47,7 @@ public class DemographicController {
     private ColonyMapper colonyMapper;
 
     @GetMapping("/colonies")
+    @Produces({MediaType.APPLICATION_JSON})
     public ResponseEntity<ResponseData<DtoInColony>> getColonies(@RequestParam(name = "state", required = false) String state, 
     		@RequestParam(name = "city", required = false) String city, 
     		@RequestParam(name = "codePostal", required = false) String codePostal, 
@@ -60,8 +65,10 @@ public class DemographicController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
     
-    @PostMapping
-    public ResponseEntity<DtoInColony> saveCustomer(@RequestBody Colony colony) {
+    @PostMapping("/colonies")
+    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({MediaType.APPLICATION_JSON})
+    public ResponseEntity<DtoInColony> saveColonies(@RequestBody Colony colony) {
         return new ResponseEntity<>(colonyMapper.colonyToDtoInColony(colonyService.saveColony(colony)), HttpStatus.CREATED);
     }
 
