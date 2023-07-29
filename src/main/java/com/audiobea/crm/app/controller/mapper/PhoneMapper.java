@@ -16,11 +16,24 @@ public interface PhoneMapper {
 	@Mapping(target = "phoneType", source="phoneType", qualifiedByName = "enumTypePhone")
 	DtoInPhone phoneToDtoInPhone(Phone phone);
 	
+	@Mapping(target = "phoneType", source="phoneType", qualifiedByName = "typePhone")
+	Phone phoneDtoToPhone(DtoInPhone dtoPhone);
+	
 	@Named("enumTypePhone")
 	default EnumPhoneType mapEnumtype(PhoneType phoneType) {
 		if (phoneType == null || StringUtils.isBlank(phoneType.getType())) {
 			return null;
 		}
 		return EnumPhoneType.valueOf(phoneType.getType());
+	}
+	
+	@Named("typePhone")
+	default PhoneType mapPhone(EnumPhoneType type) {
+		if (type == null) {
+			return null;
+		}
+		PhoneType phoneType = new PhoneType();
+		phoneType.setType(type.name());
+		return phoneType;
 	}
 }

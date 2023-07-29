@@ -1,5 +1,9 @@
 package com.audiobea.crm.app.controller.user;
 
+import javax.ws.rs.Consumes;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.data.domain.Page;
@@ -27,7 +31,7 @@ import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
 @RestController
-@RequestMapping("/users")
+@RequestMapping("/v1/audio-bea/users")
 public class UserController {
 
 	@Autowired
@@ -36,6 +40,7 @@ public class UserController {
 	private final MessageSource messageSource;
 
 	@GetMapping
+	@Produces({MediaType.APPLICATION_JSON})
 	public ResponseEntity<ResponseData<User>> getUsers(
 			@RequestParam(name = "username", defaultValue = "", required = false) String username,
 			@RequestParam(name = "role", defaultValue = "", required = false) String role,
@@ -52,23 +57,29 @@ public class UserController {
 	}
 
 	@PostMapping
+	@Produces({MediaType.APPLICATION_JSON})
+    @Consumes({MediaType.APPLICATION_JSON})
 	public ResponseEntity<User> addUser(@RequestBody User requestUser) {
 		return new ResponseEntity<>(userService.saveUser(requestUser), HttpStatus.CREATED);
 	}
 
 	@GetMapping("/{id}")
+	@Produces({MediaType.APPLICATION_JSON})
 	@ResponseStatus(code = HttpStatus.OK)
 	public ResponseEntity<User> getUser(@PathVariable(value = "id") Long id) {
 		return new ResponseEntity<>(userService.getUserById(id), HttpStatus.CREATED);
 	}
 
 	@PutMapping("/{id}")
+	@Produces({MediaType.APPLICATION_JSON})
+    @Consumes({MediaType.APPLICATION_JSON})
 	@ResponseStatus(code = HttpStatus.OK)
 	public ResponseEntity<User> updateUser(@PathVariable(value = "id") Long id, @RequestBody User user) {
 		return new ResponseEntity<>(userService.updateUser(id, user), HttpStatus.CREATED);
 	}
 
 	@DeleteMapping("/{id}")
+	@Produces({MediaType.APPLICATION_JSON})
 	@ResponseStatus(code = HttpStatus.OK)
 	public ResponseEntity<User> deleteUserById(@PathVariable(value = "id") Long id) {
 		userService.deleteUserById(id);

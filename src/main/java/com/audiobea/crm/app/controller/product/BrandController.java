@@ -24,9 +24,13 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+import javax.ws.rs.Consumes;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+
 @AllArgsConstructor
 @RestController
-@RequestMapping("/brands")
+@RequestMapping("/v1/audio-bea/brands")
 public class BrandController {
 
     @Autowired
@@ -48,6 +52,7 @@ public class BrandController {
 
     // Brand
     @GetMapping
+    @Produces({MediaType.APPLICATION_JSON})
     public ResponseEntity<ResponseData<DtoInBrand>> getBrands(@RequestParam(name = "brand", defaultValue = "", required = false) String brandName) {
         Page<Brand> pageable = productService.getBrands(brandName);
         if (pageable == null || pageable.getContent().isEmpty()) {
@@ -61,16 +66,21 @@ public class BrandController {
     }
 
     @PostMapping
+    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({MediaType.APPLICATION_JSON})
     public ResponseEntity<DtoInBrand> addBrand(@RequestBody Brand brand) {
         return new ResponseEntity<>(brandMapper.brandToDtoInBrand(productService.saveBrand(brand)), HttpStatus.CREATED);
     }
 
     @PutMapping("/{brand-id}")
+    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({MediaType.APPLICATION_JSON})
     public ResponseEntity<DtoInBrand> updateBrand(@PathVariable("brand-id") Long brandId, @RequestBody Brand brand) {
         return new ResponseEntity<>(brandMapper.brandToDtoInBrand(productService.updateBrand(brandId, brand)), HttpStatus.CREATED);
     }
 
     @DeleteMapping("/{brand-id}")
+    @Produces({MediaType.APPLICATION_JSON})
     @ResponseStatus(code = HttpStatus.OK)
     public ResponseEntity<String> deleteBrandById(@PathVariable(value = "brand-id") Long brandId) {
         boolean deleted = productService.deleteBrandById(brandId);
@@ -83,6 +93,7 @@ public class BrandController {
 
     // SubBrand
     @GetMapping("/{brand-id}/sub-brands")
+    @Produces({MediaType.APPLICATION_JSON})
     @ResponseStatus(code = HttpStatus.OK)
     public ResponseEntity<ResponseData<DtoInSubBrand>> getSubBrandsByBrandId(@PathVariable(value = "brand-id") Long brandId) {
         Page<SubBrand> pageable = productService.getSubBrandsByBrandId(brandId);
@@ -97,12 +108,16 @@ public class BrandController {
     }
 
     @PostMapping("/{brand-id}/sub-brands")
+    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({MediaType.APPLICATION_JSON})
     @ResponseStatus(code = HttpStatus.CREATED)
     public ResponseEntity<DtoInSubBrand> addSubBrand(@PathVariable(value = "brand-id") Long brandId, @RequestBody SubBrand subBrand) {
         return new ResponseEntity<>(subBrandMapper.subBrandToDtoInSubBrand(productService.saveSubBrand(brandId, subBrand)), HttpStatus.CREATED);
     }
 
     @PutMapping("/{brand-id}/sub-brands/{sub-brand-id}")
+    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({MediaType.APPLICATION_JSON})
     @ResponseStatus(code = HttpStatus.CREATED)
     public ResponseEntity<DtoInSubBrand> updateSubBrand(@PathVariable(value = "brand-id") Long id,
                                    @PathVariable(value = "sub-brand-id") Long subBrandId, @RequestBody SubBrand subBrand) {
@@ -110,6 +125,7 @@ public class BrandController {
     }
 
     @DeleteMapping("/{brand-id}/sub-brands/{sub-brand-id}")
+    @Produces({MediaType.APPLICATION_JSON})
     @ResponseStatus(code = HttpStatus.OK)
     public ResponseEntity<String> deleteSubBrandById(@PathVariable(value = "sub-brand-id") Long subBrandId) {
 

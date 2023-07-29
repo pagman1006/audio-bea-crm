@@ -1,5 +1,6 @@
 package com.audiobea.crm.app.dao.customer.model;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
@@ -28,6 +29,7 @@ import lombok.Data;
 @Table(name = "customers")
 public class Customer implements Serializable {
 
+	@Serial
 	private static final long serialVersionUID = 1L;
 	
 	@Id
@@ -41,6 +43,7 @@ public class Customer implements Serializable {
 	@JsonFormat(pattern = "yyyy-MM-dd")
 	@DateTimeFormat(pattern = "yyyy-MM-dd")
 	private Date birthday;
+	private boolean enabled;
 	
 	@OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.DETACH)
 	@JoinColumn(name = "user_id")
@@ -61,7 +64,5 @@ public class Customer implements Serializable {
 	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
 	@JoinColumn(name = "user_id")
 	private List<Invoice> invoices;
-	
-	private boolean enabled;
 	
 }

@@ -38,3 +38,7 @@ build/
 ### Mac Files ###
 .DS_Store/
 !**/.DS_Store/
+
+### Properties & SQL Files ###
+*.properties
+*.sql
