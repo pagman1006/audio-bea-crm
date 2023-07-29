@@ -1,8 +1,10 @@
 HELP.md
 target/
 !.mvn/wrapper/maven-wrapper.jar
+.mvn
 !**/src/main/**/target/
 !**/src/test/**/target/
+uploads/
 
 ### STS ###
 .apt_generated
@@ -31,3 +33,12 @@ build/
 
 ### VS Code ###
 .vscode/
+
+
+### Mac Files ###
+.DS_Store/
+!**/.DS_Store/
+
+### Properties & SQL Files ###
+*.properties
+*.sql

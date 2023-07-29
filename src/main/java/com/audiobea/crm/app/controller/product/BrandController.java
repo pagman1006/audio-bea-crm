@@ -1,83 +1,140 @@
 package com.audiobea.crm.app.controller.product;
 
+import com.audiobea.crm.app.business.IProductService;
+import com.audiobea.crm.app.commons.I18Constants;
+import com.audiobea.crm.app.commons.ResponseData;
+import com.audiobea.crm.app.commons.dto.DtoInBrand;
+import com.audiobea.crm.app.commons.dto.DtoInSubBrand;
+import com.audiobea.crm.app.controller.mapper.BrandMapper;
+import com.audiobea.crm.app.controller.mapper.ListBrandsMapper;
+import com.audiobea.crm.app.controller.mapper.ListSubBrandsMapper;
+import com.audiobea.crm.app.controller.mapper.SubBrandMapper;
+import com.audiobea.crm.app.dao.product.model.Brand;
+import com.audiobea.crm.app.dao.product.model.SubBrand;
+import com.audiobea.crm.app.exception.NoSuchElementFoundException;
+import com.audiobea.crm.app.exception.NoSuchElementsFoundException;
+import com.audiobea.crm.app.utils.Utils;
+import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
+import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
 
-import com.audiobea.crm.app.business.IProductService;
-import com.audiobea.crm.app.dao.model.product.Brand;
-import com.audiobea.crm.app.dao.model.product.SubBrand;
-
+@AllArgsConstructor
 @RestController
-@RequestMapping("/marcas")
+@RequestMapping("/v1/audio-bea/brands")
 public class BrandController {
 
-	@Autowired
-	private IProductService productService;
+    @Autowired
+    private IProductService productService;
 
-	// Brand
-	@GetMapping
-	@ResponseStatus(code = HttpStatus.OK)
-	public List<Brand> getBrands() {
-		return productService.getBrands();
-	}
+    @Autowired
+    private ListBrandsMapper listBrandsMapper;
 
-	@PostMapping
-	@ResponseStatus(code = HttpStatus.CREATED)
-	public Brand addBrand(@RequestBody Brand brand) {
-		return productService.saveBrand(brand);
-	}
+    @Autowired
+    private ListSubBrandsMapper listSubBrandsMapper;
 
-	@PutMapping("/{brand-id}")
-	@ResponseStatus(code = HttpStatus.CREATED)
-	public Brand updateBrand(@PathVariable("brand-id") Long brandId, @RequestBody Brand brand) {
-		return productService.updateBrand(brandId, brand);
-	}
+    @Autowired
+    private BrandMapper brandMapper;
 
-	@DeleteMapping("/{brand-id}")
-	@ResponseStatus(code = HttpStatus.OK)
-	public String deleteBrandById(@PathVariable(value = "brand-id") Long brandId) {
-		String respuesta = productService.deleteBrandById(brandId) ? "Se eliminó correctamente"
-				: "Error, ocurrió un error al eliminar el registro";
-		return respuesta;
-	}
+    @Autowired
+    private SubBrandMapper subBrandMapper;
 
-	// SubBrand
-	@GetMapping("/{brand-id}/sub-marcas")
-	@ResponseStatus(code = HttpStatus.OK)
-	public List<SubBrand> getSubBrandsByBrandId(@PathVariable(value = "brand-id") Long brandId) {
-		return productService.getSubBrandsByBrandId(brandId);
-	}
+    private final MessageSource messageSource;
 
-	@PostMapping("/{brand-id}/sub-marcas")
-	@ResponseStatus(code = HttpStatus.CREATED)
-	public SubBrand addSubBrand(@PathVariable(value = "brand-id") Long brandId, @RequestBody SubBrand subBrand) {
-		return productService.saveSubBrand(brandId, subBrand);
-	}
+    // Brand
+    @GetMapping
+    @Produces({MediaType.APPLICATION_JSON})
+    public ResponseEntity<ResponseData<DtoInBrand>> getBrands(@RequestParam(name = "brand", defaultValue = "", required = false) String brandName) {
+        Page<Brand> pageable = productService.getBrands(brandName);
+        if (pageable == null || pageable.getContent().isEmpty()) {
+            throw new NoSuchElementsFoundException(
+                    Utils.getLocalMessage(messageSource, I18Constants.NO_ITEMS_FOUND.getKey()));
+        }
+        List<DtoInBrand> listBrands = listBrandsMapper.brandsToDtoInBrands(pageable.getContent());
+        ResponseData<DtoInBrand> response = new ResponseData<>(listBrands, pageable.getNumber(),
+                pageable.getSize(), pageable.getTotalElements(), pageable.getTotalPages());
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
 
-	@PutMapping("/{brand-id}/sub-marcas/{sub-brand-id}")
-	@ResponseStatus(code = HttpStatus.CREATED)
-	public SubBrand updateSubBrand(@PathVariable(value = "brand-id") Long id,
-			@PathVariable(value = "sub-brand-id") Long subBrandId, @RequestBody SubBrand subBrand) {
-		return productService.updateSubBrand(id, subBrand);
-	}
+    @PostMapping
+    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({MediaType.APPLICATION_JSON})
+    public ResponseEntity<DtoInBrand> addBrand(@RequestBody Brand brand) {
+        return new ResponseEntity<>(brandMapper.brandToDtoInBrand(productService.saveBrand(brand)), HttpStatus.CREATED);
+    }
 
-	@DeleteMapping("/{brand-id}/sub-marcas/{sub-brand-id}")
-	@ResponseStatus(code = HttpStatus.OK)
-	public String deleteSubBrandById(@PathVariable(value = "sub-brand-id") Long subBrandId) {
-		String respuesta = productService.deleteSubBrandById(subBrandId) ? "Se eliminó correctamente"
-				: "Error, ocurrió un error al eliminar el registro";
-		return respuesta;
-	}
+    @PutMapping("/{brand-id}")
+    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({MediaType.APPLICATION_JSON})
+    public ResponseEntity<DtoInBrand> updateBrand(@PathVariable("brand-id") Long brandId, @RequestBody Brand brand) {
+        return new ResponseEntity<>(brandMapper.brandToDtoInBrand(productService.updateBrand(brandId, brand)), HttpStatus.CREATED);
+    }
+
+    @DeleteMapping("/{brand-id}")
+    @Produces({MediaType.APPLICATION_JSON})
+    @ResponseStatus(code = HttpStatus.OK)
+    public ResponseEntity<String> deleteBrandById(@PathVariable(value = "brand-id") Long brandId) {
+        boolean deleted = productService.deleteBrandById(brandId);
+        if (!deleted) {
+            throw new NoSuchElementFoundException(
+                    Utils.getLocalMessage(messageSource, I18Constants.NO_ITEM_FOUND.getKey()));
+        }
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    // SubBrand
+    @GetMapping("/{brand-id}/sub-brands")
+    @Produces({MediaType.APPLICATION_JSON})
+    @ResponseStatus(code = HttpStatus.OK)
+    public ResponseEntity<ResponseData<DtoInSubBrand>> getSubBrandsByBrandId(@PathVariable(value = "brand-id") Long brandId) {
+        Page<SubBrand> pageable = productService.getSubBrandsByBrandId(brandId);
+        if (pageable == null || pageable.getContent().isEmpty()) {
+            throw new NoSuchElementsFoundException(
+                    Utils.getLocalMessage(messageSource, I18Constants.NO_ITEMS_FOUND.getKey()));
+        }
+        List<DtoInSubBrand> listSubBrands = listSubBrandsMapper.subBrandsToDtoInSubBrands(pageable.getContent());
+        ResponseData<DtoInSubBrand> response = new ResponseData<>(listSubBrands, pageable.getNumber(),
+                pageable.getSize(), pageable.getTotalElements(), pageable.getTotalPages());
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @PostMapping("/{brand-id}/sub-brands")
+    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({MediaType.APPLICATION_JSON})
+    @ResponseStatus(code = HttpStatus.CREATED)
+    public ResponseEntity<DtoInSubBrand> addSubBrand(@PathVariable(value = "brand-id") Long brandId, @RequestBody SubBrand subBrand) {
+        return new ResponseEntity<>(subBrandMapper.subBrandToDtoInSubBrand(productService.saveSubBrand(brandId, subBrand)), HttpStatus.CREATED);
+    }
+
+    @PutMapping("/{brand-id}/sub-brands/{sub-brand-id}")
+    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({MediaType.APPLICATION_JSON})
+    @ResponseStatus(code = HttpStatus.CREATED)
+    public ResponseEntity<DtoInSubBrand> updateSubBrand(@PathVariable(value = "brand-id") Long id,
+                                   @PathVariable(value = "sub-brand-id") Long subBrandId, @RequestBody SubBrand subBrand) {
+        return new ResponseEntity<>(subBrandMapper.subBrandToDtoInSubBrand(productService.updateSubBrand(subBrandId, subBrand)), HttpStatus.CREATED);
+    }
+
+    @DeleteMapping("/{brand-id}/sub-brands/{sub-brand-id}")
+    @Produces({MediaType.APPLICATION_JSON})
+    @ResponseStatus(code = HttpStatus.OK)
+    public ResponseEntity<String> deleteSubBrandById(@PathVariable(value = "sub-brand-id") Long subBrandId) {
+
+        boolean deleted = productService.deleteSubBrandById(subBrandId);
+        if (!deleted) {
+            throw new NoSuchElementFoundException(
+                    Utils.getLocalMessage(messageSource, I18Constants.NO_ITEM_FOUND.getKey()));
+        }
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
 
 }

@@ -1,9 +1,20 @@
 package com.audiobea.crm.app.controller.product;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
+
+import javax.ws.rs.Consumes;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -11,44 +22,115 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.audiobea.crm.app.business.IProductService;
-import com.audiobea.crm.app.dao.model.product.Product;
+import com.audiobea.crm.app.business.IUploadService;
+import com.audiobea.crm.app.commons.I18Constants;
+import com.audiobea.crm.app.commons.ResponseData;
+import com.audiobea.crm.app.commons.dto.DtoInProduct;
+import com.audiobea.crm.app.controller.mapper.ListProductsMapper;
+import com.audiobea.crm.app.dao.product.model.Product;
+import com.audiobea.crm.app.dao.product.model.ProductImage;
+import com.audiobea.crm.app.exception.NoSuchElementsFoundException;
+import com.audiobea.crm.app.utils.Utils;
 
+import lombok.AllArgsConstructor;
+
+@AllArgsConstructor
 @RestController
-@RequestMapping
+@RequestMapping("/v1/audio-bea/products")
 public class ProductController {
 
 	@Autowired
 	private IProductService productService;
 
-	@GetMapping(value = { "/productos", "/marcas/{marca}/submarcas/{submarca}/productos" })
+	@Autowired
+	private IUploadService uploadService;
+
+	@Autowired
+	private ListProductsMapper listProductsMapper;
+
+	private final MessageSource messageSource;
+
+	@GetMapping
+	@Produces({MediaType.APPLICATION_JSON})
 	@ResponseStatus(value = HttpStatus.OK)
-	public List<Product> getProducts(@PathVariable(value = "marca", required = false) String marca,
-			@PathVariable(value = "submarca", required = false) String submarca) {
-		return productService.getProducts(marca, submarca);
+	public ResponseEntity<ResponseData<DtoInProduct>> getProducts(
+			@RequestParam(name = "marca", required = false, defaultValue = "") String marca,
+			@RequestParam(value = "submarca", required = false, defaultValue = "") String subMarca) {
+		Page<Product> pageable = productService.getProducts(marca, subMarca);
+		if (pageable == null || pageable.getContent().isEmpty()) {
+			throw new NoSuchElementsFoundException(
+					Utils.getLocalMessage(messageSource, I18Constants.NO_ITEMS_FOUND.getKey()));
+		}
+		ResponseData<DtoInProduct> response = new ResponseData<>(
+				listProductsMapper.productsToDtoInProducts(pageable.getContent()), pageable.getNumber(),
+				pageable.getSize(), pageable.getTotalElements(), pageable.getTotalPages());
+		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 
-	@PostMapping("/productos")
+	@PostMapping
+	@Produces({MediaType.APPLICATION_JSON})
+    @Consumes({MediaType.APPLICATION_JSON})
 	@ResponseStatus(value = HttpStatus.OK)
-	public String addProduct(@RequestBody Product product) {
-		
-		System.out.println(product.toString());
-		
-		String result = productService.saveProduct(product) ? "Producto insertado"
-				: "Error, ocurrió un error al guardar el producto";
-		return result;
+	public Product addProduct(@RequestBody Product product) {
+		return productService.saveProduct(product);
 	}
 
-	@PutMapping("/productos/{id}")
-	public String updateProduct(@PathVariable("id") Long id, @RequestBody Product product) {
-		return productService.updateProduct(id, product) ? "Se actualizó correctamente el producto"
-				: "Error, ocurrió un error al actualizar el producto";
+	@PostMapping(path = "/{id}/image", consumes = { MediaType.MULTIPART_FORM_DATA })
+	@Produces({MediaType.APPLICATION_JSON})
+    @Consumes({MediaType.APPLICATION_JSON})
+	@ResponseStatus(value = HttpStatus.OK)
+	public String uploadImage(@PathVariable("id") Long id,
+			@RequestPart(name = "file", required = false) MultipartFile image) {
+		String uniqueFileName = null;
+		if (!image.isEmpty()) {
+			try {
+				uniqueFileName = uploadService.copy(image);
+				Product product = productService.getProductById(id);
+				if (product.getImages() == null || product.getImages().isEmpty()) {
+					List<ProductImage> listImages = new ArrayList<>();
+					ProductImage pImage = new ProductImage();
+					pImage.setImageName(uniqueFileName);
+					listImages.add(pImage);
+					product.setImages(listImages);
+				} else {
+					ProductImage pImage = new ProductImage();
+					pImage.setImageName(uniqueFileName);
+					product.getImages().add(pImage);
+				}
+				productService.saveProduct(product);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		return uniqueFileName;
 	}
 
-	@DeleteMapping("/productos/{id}")
+	@PostMapping(path = "/{id}/images", consumes = { MediaType.MULTIPART_FORM_DATA })
+	@Produces({MediaType.APPLICATION_JSON})
+    @Consumes({MediaType.APPLICATION_JSON})
+	@ResponseStatus(value = HttpStatus.OK)
+	public List<String> uploadImages(@PathVariable("id") Long id,
+			@RequestPart(name = "file", required = false) MultipartFile[] images) {
+
+		return Arrays.asList(images).stream().map(image -> uploadImage(id, image)).collect(Collectors.toList());
+	}
+
+	@PutMapping("/{id}")
+	@Produces({MediaType.APPLICATION_JSON})
+    @Consumes({MediaType.APPLICATION_JSON})
+	public Product updateProduct(@PathVariable("id") Long id, @RequestBody Product product) {
+		return productService.updateProduct(id, product);
+	}
+
+	@DeleteMapping("/{id}")
+	@Produces({MediaType.APPLICATION_JSON})
 	public String deleteProductById(@PathVariable("id") Long id) {
 		return productService.deleteProductById(id) ? "Se eliminó correctamente el producto"
 				: "Error, ocurrió un error al eliminar el producto";
