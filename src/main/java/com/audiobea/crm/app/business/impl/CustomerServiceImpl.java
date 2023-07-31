@@ -28,27 +28,30 @@ public class CustomerServiceImpl implements ICustomerService {
     private ICustomerDao customerDao;
 
     @Override
-    public Page<Customer> getCustomers(String firstName, String secondName, String firstLastName, String secondLastName,
-                                       Integer page, Integer pageSize) {
+    public Page<Customer> getCustomers(String firstName, String firstLastName, Integer page, Integer pageSize) {
 
         Pageable pageable = PageRequest.of(page, pageSize,
                 Sort.by(Constants.FIRST_LAST_NAME).and(Sort.by(Constants.FIRST_NAME)));
-        if (StringUtils.isBlank(firstName) && StringUtils.isBlank(secondName) && StringUtils.isBlank(
-                firstLastName) && StringUtils.isBlank(secondLastName)) {
-            return customerDao.findAll(pageable);
+
+        if (StringUtils.isNotBlank(firstName) && StringUtils.isNotBlank(firstLastName)) {
+            return customerDao.findByFirstNameContainsAndFirstLastNameContains(firstName, firstLastName, pageable);
         }
-        return customerDao
-                .findByFirstNameContainsOrSecondNameContainsOrFirstLastNameContainsOrSecondLastNameContains(
-                        firstName, secondName, firstLastName, secondLastName, pageable);
+        if (StringUtils.isNotBlank(firstName)) {
+            return customerDao.findByFirstNameContains(firstName, pageable);
+        }
+        if (StringUtils.isNotBlank(firstLastName)) {
+            return customerDao.findByFirstLastNameContains(firstLastName, pageable);
+        }
+        return customerDao.findAll(pageable);
     }
 
-    @Transactional(readOnly = false)
+    @Transactional
     @Override
     public Customer saveCustomer(Customer customer) {
         return customerDao.save(customer);
     }
 
-    @Transactional(readOnly = false)
+    @Transactional
     @Override
     public Customer updateCustomer(Long customerId, Customer customer) {
         Customer customerUpdate = customerDao.findById(customerId).orElseThrow(() ->

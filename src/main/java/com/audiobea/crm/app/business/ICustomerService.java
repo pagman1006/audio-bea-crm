@@ -1,14 +1,17 @@
 package com.audiobea.crm.app.business;
 
+import com.audiobea.crm.app.dao.customer.model.Customer;
 import org.springframework.data.domain.Page;
 
-import com.audiobea.crm.app.dao.customer.model.Customer;
-
 public interface ICustomerService {
-	
-	public Page<Customer> getCustomers(String firstName, String secondName, String firstLastName, String secondLastName, Integer page, Integer pageSize);
-	public Customer saveCustomer(Customer customer);
-	public Customer updateCustomer(Long customerId, Customer customer);
-	public boolean deleteCustomer(Long customerId);
-	public Customer getCustomerById(Long customerId);
+
+    Page<Customer> getCustomers(String firstName, String firstLastName, Integer page, Integer pageSize);
+
+    Customer saveCustomer(Customer customer);
+
+    Customer updateCustomer(Long customerId, Customer customer);
+
+    boolean deleteCustomer(Long customerId);
+
+    Customer getCustomerById(Long customerId);
 }

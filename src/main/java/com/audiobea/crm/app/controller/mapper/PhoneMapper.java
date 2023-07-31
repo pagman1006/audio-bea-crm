@@ -20,7 +20,7 @@ public interface PhoneMapper {
 	Phone phoneDtoToPhone(DtoInPhone dtoPhone);
 	
 	@Named("enumTypePhone")
-	default EnumPhoneType mapEnumtype(PhoneType phoneType) {
+	default EnumPhoneType mapEnumType(PhoneType phoneType) {
 		if (phoneType == null || StringUtils.isBlank(phoneType.getType())) {
 			return null;
 		}

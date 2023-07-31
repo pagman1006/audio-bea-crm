@@ -14,13 +14,26 @@ import com.audiobea.crm.app.dao.customer.model.EmailType;
 public interface EmailMapper {
 
 	@Mapping(target = "emailType", source="emailType", qualifiedByName = "enumTypeEmail")
-	DtoInEmail phoneToDtoInPhone(Email email);
+	DtoInEmail emailToDtoInEmail(Email email);
+
+	@Mapping(target = "emailType", source="emailType", qualifiedByName = "typeEmail")
+	Email emailDtoInToPhone(DtoInEmail dtoEmail);
 	
 	@Named("enumTypeEmail")
-	default EnumEmailType mapEnumtype(EmailType emailType) {
+	default EnumEmailType mapEnumType(EmailType emailType) {
 		if (emailType == null || StringUtils.isBlank(emailType.getType())) {
 			return null;
 		}
 		return EnumEmailType.valueOf(emailType.getType());
+	}
+
+	@Named("typeEmail")
+	default EmailType mapEmail(EnumEmailType type) {
+		if (type == null) {
+			return null;
+		}
+		EmailType emailType = new EmailType();
+		emailType.setType(type.name());
+		return emailType;
 	}
 }
