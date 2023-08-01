@@ -9,8 +9,9 @@ import com.audiobea.crm.app.commons.dto.DtoInEmail;
 import com.audiobea.crm.app.commons.dto.EnumEmailType;
 import com.audiobea.crm.app.dao.customer.model.Email;
 import com.audiobea.crm.app.dao.customer.model.EmailType;
+import com.audiobea.crm.app.utils.Constants;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = Constants.SPRING)
 public interface EmailMapper {
 
 	@Mapping(target = "emailType", source="emailType", qualifiedByName = "enumTypeEmail")

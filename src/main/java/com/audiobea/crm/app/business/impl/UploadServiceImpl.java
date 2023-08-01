@@ -1,28 +1,26 @@
 package com.audiobea.crm.app.business.impl;
 
-import com.audiobea.crm.app.business.IColonyService;
-import com.audiobea.crm.app.business.IUploadService;
-import com.audiobea.crm.app.commons.I18Constants;
-import com.audiobea.crm.app.commons.dto.DtoInFileExcel;
-import com.audiobea.crm.app.commons.dto.DtoInFileResponse;
-import com.audiobea.crm.app.controller.mapper.ColonyMapper;
-import com.audiobea.crm.app.controller.mapper.ListColonyMapper;
-import com.audiobea.crm.app.dao.customer.IStateDao;
-import com.audiobea.crm.app.dao.customer.model.City;
-import com.audiobea.crm.app.dao.customer.model.Colony;
-import com.audiobea.crm.app.dao.customer.model.State;
-import com.audiobea.crm.app.exception.NoSuchElementsFoundException;
-import com.audiobea.crm.app.utils.ExcelHelper;
-import com.audiobea.crm.app.utils.Utils;
-import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+import java.util.UUID;
+
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.core.io.Resource;
@@ -31,14 +29,20 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.FileSystemUtils;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.*;
+import com.audiobea.crm.app.business.IUploadService;
+import com.audiobea.crm.app.commons.I18Constants;
+import com.audiobea.crm.app.commons.dto.DtoInFileExcel;
+import com.audiobea.crm.app.commons.dto.DtoInFileResponse;
+import com.audiobea.crm.app.dao.customer.IStateDao;
+import com.audiobea.crm.app.dao.customer.model.City;
+import com.audiobea.crm.app.dao.customer.model.Colony;
+import com.audiobea.crm.app.dao.customer.model.State;
+import com.audiobea.crm.app.exception.NoSuchElementsFoundException;
+import com.audiobea.crm.app.utils.ExcelHelper;
+import com.audiobea.crm.app.utils.Utils;
+
+import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @AllArgsConstructor
@@ -53,15 +57,6 @@ public class UploadServiceImpl implements IUploadService {
 
     @Autowired
     private IStateDao stateDao;
-
-    @Autowired
-    private IColonyService colonyService;
-
-    @Autowired
-    private ListColonyMapper listColonyMapper;
-
-    @Autowired
-    private ColonyMapper colonyMapper;
 
     @Override
     public Resource load(String filename) throws MalformedURLException {

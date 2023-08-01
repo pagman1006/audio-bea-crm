@@ -1,11 +1,10 @@
 package com.audiobea.crm.app.business;
 
-import java.util.List;
+import org.springframework.data.domain.Page;
 
 import com.audiobea.crm.app.dao.product.model.Brand;
 import com.audiobea.crm.app.dao.product.model.Product;
 import com.audiobea.crm.app.dao.product.model.SubBrand;
-import org.springframework.data.domain.Page;
 
 public interface IProductService {
 	

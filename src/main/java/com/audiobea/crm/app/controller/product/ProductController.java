@@ -30,14 +30,13 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.audiobea.crm.app.business.IProductService;
 import com.audiobea.crm.app.business.IUploadService;
-import com.audiobea.crm.app.commons.I18Constants;
 import com.audiobea.crm.app.commons.ResponseData;
 import com.audiobea.crm.app.commons.dto.DtoInProduct;
 import com.audiobea.crm.app.controller.mapper.ListProductsMapper;
+import com.audiobea.crm.app.controller.mapper.ProductMapper;
 import com.audiobea.crm.app.dao.product.model.Product;
 import com.audiobea.crm.app.dao.product.model.ProductImage;
-import com.audiobea.crm.app.exception.NoSuchElementsFoundException;
-import com.audiobea.crm.app.utils.Utils;
+import com.audiobea.crm.app.utils.Validator;
 
 import lombok.AllArgsConstructor;
 
@@ -54,6 +53,9 @@ public class ProductController {
 
 	@Autowired
 	private ListProductsMapper listProductsMapper;
+	
+	@Autowired
+	private ProductMapper productMapper;
 
 	private final MessageSource messageSource;
 
@@ -64,10 +66,7 @@ public class ProductController {
 			@RequestParam(name = "marca", required = false, defaultValue = "") String marca,
 			@RequestParam(value = "submarca", required = false, defaultValue = "") String subMarca) {
 		Page<Product> pageable = productService.getProducts(marca, subMarca);
-		if (pageable == null || pageable.getContent().isEmpty()) {
-			throw new NoSuchElementsFoundException(
-					Utils.getLocalMessage(messageSource, I18Constants.NO_ITEMS_FOUND.getKey()));
-		}
+		Validator.validatePage(pageable, messageSource);
 		ResponseData<DtoInProduct> response = new ResponseData<>(
 				listProductsMapper.productsToDtoInProducts(pageable.getContent()), pageable.getNumber(),
 				pageable.getSize(), pageable.getTotalElements(), pageable.getTotalPages());
@@ -78,8 +77,8 @@ public class ProductController {
 	@Produces({MediaType.APPLICATION_JSON})
     @Consumes({MediaType.APPLICATION_JSON})
 	@ResponseStatus(value = HttpStatus.OK)
-	public Product addProduct(@RequestBody Product product) {
-		return productService.saveProduct(product);
+	public Product addProduct(@RequestBody DtoInProduct product) {
+		return productService.saveProduct(productMapper.productDtoInToProduct(product));
 	}
 
 	@PostMapping(path = "/{id}/image", consumes = { MediaType.MULTIPART_FORM_DATA })
@@ -125,8 +124,8 @@ public class ProductController {
 	@PutMapping("/{id}")
 	@Produces({MediaType.APPLICATION_JSON})
     @Consumes({MediaType.APPLICATION_JSON})
-	public Product updateProduct(@PathVariable("id") Long id, @RequestBody Product product) {
-		return productService.updateProduct(id, product);
+	public Product updateProduct(@PathVariable("id") Long id, @RequestBody DtoInProduct product) {
+		return productService.updateProduct(id, productMapper.productDtoInToProduct(product));
 	}
 
 	@DeleteMapping("/{id}")

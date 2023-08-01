@@ -3,6 +3,8 @@ package com.audiobea.crm.app.utils;
 public class Constants {
     private Constants() {}
 
+    public static final String SPRING = "spring";
+    
     public static final String xs_namespace = "http://www.w3.org/2001/XMLSchema";
     public static final String TITLE_WADL = "Spring REST Service WADL";
     public static String TYPE = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";

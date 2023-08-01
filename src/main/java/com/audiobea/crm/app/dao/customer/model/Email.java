@@ -34,7 +34,6 @@ public class Email implements Serializable {
 	@OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	@JoinColumn(name = "email_type_id")
 	private EmailType emailType;
-	
 	private boolean enabled;
 
 }
