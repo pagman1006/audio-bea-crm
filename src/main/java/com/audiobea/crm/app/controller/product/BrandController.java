@@ -65,8 +65,10 @@ public class BrandController {
 	@GetMapping
 	@Produces({ MediaType.APPLICATION_JSON })
 	public ResponseEntity<ResponseData<DtoInBrand>> getBrands(
-			@RequestParam(name = "brand", defaultValue = "", required = false) String brandName) {
-		Page<Brand> pageable = productService.getBrands(brandName);
+			@RequestParam(name = "brand", defaultValue = "", required = false) String brandName,
+			@RequestParam(name = "page", defaultValue = "0", required = false) Integer page,
+			@RequestParam(name = "pageSize", defaultValue = "10", required = false) Integer pageSize) {
+		Page<Brand> pageable = productService.getBrands(brandName, page, pageSize);
 		Validator.validatePage(pageable, messageSource);
 		List<DtoInBrand> listBrands = listBrandsMapper.brandsToDtoInBrands(pageable.getContent());
 		ResponseData<DtoInBrand> response = new ResponseData<>(listBrands, pageable.getNumber(), pageable.getSize(),
@@ -108,9 +110,12 @@ public class BrandController {
 	@GetMapping("/{brand-id}/sub-brands")
 	@Produces({ MediaType.APPLICATION_JSON })
 	@ResponseStatus(code = HttpStatus.OK)
-	public ResponseEntity<ResponseData<DtoInSubBrand>> getSubBrandsByBrandId(
+	public ResponseEntity<ResponseData<DtoInSubBrand>> getSubBrandsByBrandId( 
+			@RequestParam(name = "subBrand", defaultValue = "", required = false) String subBrand,
+			@RequestParam(name = "page", defaultValue = "0", required = false) Integer page,
+			@RequestParam(name = "pageSize", defaultValue = "10", required = false) Integer pageSize,
 			@PathVariable(value = "brand-id") Long brandId) {
-		Page<SubBrand> pageable = productService.getSubBrandsByBrandId(brandId);
+		Page<SubBrand> pageable = productService.getSubBrandsByBrandId(brandId, subBrand, page, pageSize);
 		Validator.validatePage(pageable, messageSource);
 		List<DtoInSubBrand> listSubBrands = listSubBrandsMapper.subBrandsToDtoInSubBrands(pageable.getContent());
 		ResponseData<DtoInSubBrand> response = new ResponseData<>(listSubBrands, pageable.getNumber(),

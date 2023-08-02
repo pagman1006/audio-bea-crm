@@ -14,10 +14,12 @@ import com.audiobea.crm.app.utils.Constants;
 @Mapper(componentModel = Constants.SPRING)
 public interface EmailMapper {
 
-	@Mapping(target = "emailType", source="emailType", qualifiedByName = "enumTypeEmail")
+	@Mapping(target = "emailType", source = "emailType", qualifiedByName = "enumTypeEmail")
+	@Mapping(target = "email", source = "emailAddress")
 	DtoInEmail emailToDtoInEmail(Email email);
 
 	@Mapping(target = "emailType", source="emailType", qualifiedByName = "typeEmail")
+	@Mapping(target = "emailAddress", source = "email")
 	Email emailDtoInToPhone(DtoInEmail dtoEmail);
 	
 	@Named("enumTypeEmail")

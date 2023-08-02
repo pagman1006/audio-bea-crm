@@ -67,10 +67,11 @@ public class CustomerServiceImpl implements ICustomerService {
         return customerDao.save(customerUpdate);
     }
 
+    @Transactional
     @Override
     public boolean deleteCustomer(Long customerId) {
-        // TODO Auto-generated method stub
-        return false;
+        customerDao.deleteById(customerId);
+        return true;
     }
 
     @Override

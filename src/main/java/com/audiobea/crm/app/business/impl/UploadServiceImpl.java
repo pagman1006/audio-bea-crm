@@ -38,6 +38,7 @@ import com.audiobea.crm.app.dao.customer.model.City;
 import com.audiobea.crm.app.dao.customer.model.Colony;
 import com.audiobea.crm.app.dao.customer.model.State;
 import com.audiobea.crm.app.exception.NoSuchElementsFoundException;
+import com.audiobea.crm.app.utils.Constants;
 import com.audiobea.crm.app.utils.ExcelHelper;
 import com.audiobea.crm.app.utils.Utils;
 
@@ -48,10 +49,6 @@ import lombok.extern.slf4j.Slf4j;
 @AllArgsConstructor
 @Service
 public class UploadServiceImpl implements IUploadService {
-
-    private static final String UPLOADS_FOLDER = "uploads";
-    public static String[] HEADERs = {"id", "cp", "colonia", "ciudad", "estado"};
-    public static String SHEET = "data";
 
     private final MessageSource messageSource;
 
@@ -86,12 +83,12 @@ public class UploadServiceImpl implements IUploadService {
 
     @Override
     public void deleteAll() {
-        FileSystemUtils.deleteRecursively(Paths.get(UPLOADS_FOLDER).toFile());
+        FileSystemUtils.deleteRecursively(Paths.get(Constants.UPLOADS_FOLDER).toFile());
     }
 
     @Override
     public void init() throws IOException {
-        Files.createDirectory(Paths.get(UPLOADS_FOLDER));
+        Files.createDirectory(Paths.get(Constants.UPLOADS_FOLDER));
     }
 
     @Override
@@ -175,7 +172,7 @@ public class UploadServiceImpl implements IUploadService {
 
     public Set<State> excelToListStates(InputStream input) {
         try (Workbook workbook = new XSSFWorkbook(input)) {
-            Sheet sheet = workbook.getSheet(SHEET);
+            Sheet sheet = workbook.getSheet(Constants.SHEET);
             Iterator<Row> rows = sheet.iterator();
             int rowNumber = 0;
 
@@ -200,14 +197,10 @@ public class UploadServiceImpl implements IUploadService {
                         case 2 -> file.setColony(Utils.removeAccents(currentCell.getStringCellValue()));
                         case 3 -> file.setCity(Utils.removeAccents(currentCell.getStringCellValue()));
                         case 4 -> file.setState(Utils.removeAccents(currentCell.getStringCellValue()));
-                        default -> {
-                        }
+                        default -> { break; }
                     }
                     cellIdx++;
                 }
-
-
-                // Colony -> City -> State
                 String nameState = file.getState();
                 String nameCity = file.getCity();
                 String nameColony = file.getColony();
@@ -222,24 +215,8 @@ public class UploadServiceImpl implements IUploadService {
                     state.setCities(new ArrayList<>());
                     listSetStates.add(state);
                 }
-
-                City city = null;
-                if (state.getCities() != null && !state.getCities().isEmpty()) {
-                    city = state.getCities().stream().filter(c -> c.getName().equals(nameCity))
-                            .toList().stream().findFirst().orElse(null);
-                }
-
-                if (city == null) {
-                    city = new City();
-                    city.setName(nameCity);
-                    city.setColonies(new ArrayList<>());
-                    state.getCities().add(city);
-                }
-
-                Colony colony = new Colony();
-                colony.setName(nameColony);
-                colony.setPostalCode(codePostal);
-                city.getColonies().add(colony);
+                City city = setCity(state, nameCity);
+                city.getColonies().add(setColony(nameColony, codePostal));
             }
             return listSetStates;
         } catch (IOException e) {
@@ -247,8 +224,30 @@ public class UploadServiceImpl implements IUploadService {
         }
     }
 
-    public Path getPath(String filename) {
-        return Paths.get(UPLOADS_FOLDER).resolve(filename).toAbsolutePath();
+    private City setCity(State state, String nameCity) {
+		City city = new City();
+		if (state.getCities() != null && !state.getCities().isEmpty()) {
+            city = state.getCities().stream().filter(c -> c.getName().equals(nameCity))
+                    .toList().stream().findFirst().orElse(null);
+        }
+        if (city == null) {
+            city = new City();
+            city.setName(nameCity);
+            city.setColonies(new ArrayList<>());
+            state.getCities().add(city);
+        }
+		return city;
+	}
+
+	private Colony setColony(String nameColony, String codePostal) {
+    	Colony colony = new Colony();
+    	colony.setName(nameColony);
+        colony.setPostalCode(codePostal);
+    	return colony;
+	}
+
+	public Path getPath(String filename) {
+        return Paths.get(Constants.UPLOADS_FOLDER).resolve(filename).toAbsolutePath();
     }
 
 }

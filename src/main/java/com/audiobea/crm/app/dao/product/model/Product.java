@@ -45,10 +45,6 @@ public class Product implements Serializable {
 	@JoinColumn(name = "sub_brand_id")
 	private SubBrand subBrand;
 	
-	@ManyToOne
-	@JoinColumn(name = "brand_id")
-	private Brand brand;
-	
 	private boolean enabled;
 
 }

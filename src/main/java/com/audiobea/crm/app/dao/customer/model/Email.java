@@ -29,7 +29,8 @@ public class Email implements Serializable {
 	@Column(name = "email_id")
 	private Long id;
 	
-	private String email;
+	@Column(name = "email")
+	private String emailAddress;
 	
 	@OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	@JoinColumn(name = "email_type_id")

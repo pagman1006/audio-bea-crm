@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
@@ -39,7 +38,9 @@ import com.audiobea.crm.app.dao.product.model.ProductImage;
 import com.audiobea.crm.app.utils.Validator;
 
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @AllArgsConstructor
 @RestController
 @RequestMapping("/v1/audio-bea/products")
@@ -53,19 +54,20 @@ public class ProductController {
 
 	@Autowired
 	private ListProductsMapper listProductsMapper;
-	
+
 	@Autowired
 	private ProductMapper productMapper;
 
 	private final MessageSource messageSource;
 
 	@GetMapping
-	@Produces({MediaType.APPLICATION_JSON})
-	@ResponseStatus(value = HttpStatus.OK)
+	@Produces({ MediaType.APPLICATION_JSON })
 	public ResponseEntity<ResponseData<DtoInProduct>> getProducts(
-			@RequestParam(name = "marca", required = false, defaultValue = "") String marca,
-			@RequestParam(value = "submarca", required = false, defaultValue = "") String subMarca) {
-		Page<Product> pageable = productService.getProducts(marca, subMarca);
+			@RequestParam(name = "brand", required = false, defaultValue = "") String brand,
+			@RequestParam(value = "subBrand", required = false, defaultValue = "") String subBrand,
+			@RequestParam(name = "page", defaultValue = "0", required = false) Integer page,
+			@RequestParam(name = "pageSize", defaultValue = "10", required = false) Integer pageSize) {
+		Page<Product> pageable = productService.getProducts(brand, subBrand, page, pageSize);
 		Validator.validatePage(pageable, messageSource);
 		ResponseData<DtoInProduct> response = new ResponseData<>(
 				listProductsMapper.productsToDtoInProducts(pageable.getContent()), pageable.getNumber(),
@@ -74,18 +76,18 @@ public class ProductController {
 	}
 
 	@PostMapping
-	@Produces({MediaType.APPLICATION_JSON})
-    @Consumes({MediaType.APPLICATION_JSON})
-	@ResponseStatus(value = HttpStatus.OK)
-	public Product addProduct(@RequestBody DtoInProduct product) {
-		return productService.saveProduct(productMapper.productDtoInToProduct(product));
+	@Produces({ MediaType.APPLICATION_JSON })
+	@Consumes({ MediaType.APPLICATION_JSON })
+	public ResponseEntity<DtoInProduct> addProduct(@RequestBody DtoInProduct product) {
+		log.debug("DtoInProduct: {}", product);
+		return new ResponseEntity<>(productMapper.productToDtoInProduct(
+				productService.saveProduct(productMapper.productDtoInToProduct(product))), HttpStatus.CREATED);
 	}
 
 	@PostMapping(path = "/{id}/image", consumes = { MediaType.MULTIPART_FORM_DATA })
-	@Produces({MediaType.APPLICATION_JSON})
-    @Consumes({MediaType.APPLICATION_JSON})
-	@ResponseStatus(value = HttpStatus.OK)
-	public String uploadImage(@PathVariable("id") Long id,
+	@Produces({ MediaType.APPLICATION_JSON })
+	@Consumes({ MediaType.APPLICATION_JSON })
+	public ResponseEntity<String> uploadImage(@PathVariable("id") Long id,
 			@RequestPart(name = "file", required = false) MultipartFile image) {
 		String uniqueFileName = null;
 		if (!image.isEmpty()) {
@@ -108,31 +110,37 @@ public class ProductController {
 				e.printStackTrace();
 			}
 		}
-		return uniqueFileName;
+		return new ResponseEntity<>(uniqueFileName, HttpStatus.CREATED);
 	}
 
 	@PostMapping(path = "/{id}/images", consumes = { MediaType.MULTIPART_FORM_DATA })
-	@Produces({MediaType.APPLICATION_JSON})
-    @Consumes({MediaType.APPLICATION_JSON})
+	@Produces({ MediaType.APPLICATION_JSON })
+	@Consumes({ MediaType.APPLICATION_JSON })
 	@ResponseStatus(value = HttpStatus.OK)
-	public List<String> uploadImages(@PathVariable("id") Long id,
+	public ResponseEntity<List<String>> uploadImages(@PathVariable("id") Long id,
 			@RequestPart(name = "file", required = false) MultipartFile[] images) {
-
-		return Arrays.asList(images).stream().map(image -> uploadImage(id, image)).collect(Collectors.toList());
+		List<String> list = new ArrayList<>();
+		for (ResponseEntity<String> r : Arrays.asList(images).stream().map(image -> uploadImage(id, image)).toList()) {
+			list.add(r.getBody());
+		}
+		return new ResponseEntity<>(list, HttpStatus.CREATED);
 	}
 
 	@PutMapping("/{id}")
-	@Produces({MediaType.APPLICATION_JSON})
-    @Consumes({MediaType.APPLICATION_JSON})
-	public Product updateProduct(@PathVariable("id") Long id, @RequestBody DtoInProduct product) {
-		return productService.updateProduct(id, productMapper.productDtoInToProduct(product));
+	@Produces({ MediaType.APPLICATION_JSON })
+	@Consumes({ MediaType.APPLICATION_JSON })
+	public ResponseEntity<DtoInProduct> updateProduct(@PathVariable("id") Long id, @RequestBody DtoInProduct product) {
+		return new ResponseEntity<>(
+				productMapper.productToDtoInProduct(
+						productService.updateProduct(id, productMapper.productDtoInToProduct(product))),
+				HttpStatus.CREATED);
 	}
 
 	@DeleteMapping("/{id}")
-	@Produces({MediaType.APPLICATION_JSON})
-	public String deleteProductById(@PathVariable("id") Long id) {
-		return productService.deleteProductById(id) ? "Se eliminó correctamente el producto"
-				: "Error, ocurrió un error al eliminar el producto";
+	@Produces({ MediaType.APPLICATION_JSON })
+	public ResponseEntity<String> deleteProductById(@PathVariable("id") Long id) {
+		productService.deleteProductById(id);
+		return new ResponseEntity<>(HttpStatus.ACCEPTED);
 	}
 
 }
