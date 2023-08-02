@@ -1,5 +1,6 @@
 package com.audiobea.crm.app.dao.customer.model;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.List;
 
@@ -21,6 +22,7 @@ import lombok.Data;
 @Table(name = "cities")
 public class City implements Serializable, Comparable<City> {
 	
+	@Serial
 	private static final long serialVersionUID = 1L;
 	
 	@Id

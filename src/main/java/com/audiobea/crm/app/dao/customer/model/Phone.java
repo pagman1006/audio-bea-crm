@@ -1,5 +1,6 @@
 package com.audiobea.crm.app.dao.customer.model;
 
+import java.io.Serial;
 import java.io.Serializable;
 
 import javax.persistence.CascadeType;
@@ -20,6 +21,7 @@ import lombok.Data;
 @Table(name = "phones")
 public class Phone implements Serializable {
 	
+	@Serial
 	private static final long serialVersionUID = 1L;
 
 	@Id

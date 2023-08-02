@@ -11,5 +11,5 @@ public class DtoInState implements Serializable {
 	
 	private Long id;
 	private String name;
-
+	
 }

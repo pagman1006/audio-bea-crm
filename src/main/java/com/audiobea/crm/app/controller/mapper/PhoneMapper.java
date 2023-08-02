@@ -9,8 +9,9 @@ import com.audiobea.crm.app.commons.dto.DtoInPhone;
 import com.audiobea.crm.app.commons.dto.EnumPhoneType;
 import com.audiobea.crm.app.dao.customer.model.Phone;
 import com.audiobea.crm.app.dao.customer.model.PhoneType;
+import com.audiobea.crm.app.utils.Constants;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = Constants.SPRING)
 public interface PhoneMapper {
 
 	@Mapping(target = "phoneType", source="phoneType", qualifiedByName = "enumTypePhone")
@@ -20,7 +21,7 @@ public interface PhoneMapper {
 	Phone phoneDtoToPhone(DtoInPhone dtoPhone);
 	
 	@Named("enumTypePhone")
-	default EnumPhoneType mapEnumtype(PhoneType phoneType) {
+	default EnumPhoneType mapEnumType(PhoneType phoneType) {
 		if (phoneType == null || StringUtils.isBlank(phoneType.getType())) {
 			return null;
 		}

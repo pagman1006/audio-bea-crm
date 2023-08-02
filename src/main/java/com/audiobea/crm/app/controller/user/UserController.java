@@ -21,11 +21,13 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.audiobea.crm.app.business.IUserService;
-import com.audiobea.crm.app.commons.I18Constants;
 import com.audiobea.crm.app.commons.ResponseData;
+import com.audiobea.crm.app.commons.dto.DtoInUser;
+import com.audiobea.crm.app.controller.mapper.ListUserMapper;
+import com.audiobea.crm.app.controller.mapper.UserMapper;
+import com.audiobea.crm.app.core.DatoAuditable;
 import com.audiobea.crm.app.dao.user.model.User;
-import com.audiobea.crm.app.exception.NoSuchElementsFoundException;
-import com.audiobea.crm.app.utils.Utils;
+import com.audiobea.crm.app.utils.Validator;
 
 import lombok.AllArgsConstructor;
 
@@ -37,51 +39,58 @@ public class UserController {
 	@Autowired
 	private IUserService userService;
 
+	@Autowired
+	private ListUserMapper listUserMapper;
+
+	@Autowired
+	private UserMapper userMapper;
+
 	private final MessageSource messageSource;
 
-	@GetMapping
-	@Produces({MediaType.APPLICATION_JSON})
-	public ResponseEntity<ResponseData<User>> getUsers(
+	@DatoAuditable
+	@Produces({ MediaType.APPLICATION_JSON })
+	public ResponseEntity<ResponseData<DtoInUser>> getUsers(
 			@RequestParam(name = "username", defaultValue = "", required = false) String username,
 			@RequestParam(name = "role", defaultValue = "", required = false) String role,
 			@RequestParam(name = "page", defaultValue = "0", required = false) Integer page,
 			@RequestParam(name = "pageSize", defaultValue = "10", required = false) Integer pageSize) {
 		Page<User> pageable = userService.getUsers(username, role, page, pageSize);
-		if (pageable == null || pageable.getContent().isEmpty()) {
-			throw new NoSuchElementsFoundException(
-					Utils.getLocalMessage(messageSource, I18Constants.NO_ITEMS_FOUND.getKey()));
-		}
-		ResponseData<User> response = new ResponseData<>(pageable.getContent(), pageable.getNumber(),
-				pageable.getSize(), pageable.getTotalElements(), pageable.getTotalPages());
+		Validator.validatePage(pageable, messageSource);
+		ResponseData<DtoInUser> response = new ResponseData<>(listUserMapper.usersToDtoInUsers(pageable.getContent()),
+				pageable.getNumber(), pageable.getSize(), pageable.getTotalElements(), pageable.getTotalPages());
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 
 	@PostMapping
-	@Produces({MediaType.APPLICATION_JSON})
-    @Consumes({MediaType.APPLICATION_JSON})
-	public ResponseEntity<User> addUser(@RequestBody User requestUser) {
-		return new ResponseEntity<>(userService.saveUser(requestUser), HttpStatus.CREATED);
+	@Produces({ MediaType.APPLICATION_JSON })
+	@Consumes({ MediaType.APPLICATION_JSON })
+	public ResponseEntity<DtoInUser> addUser(@RequestBody DtoInUser requestUser) {
+		return new ResponseEntity<>(
+				userMapper.userToDtoInUser(userService.saveUser(userMapper.userDtoInToUser(requestUser))),
+				HttpStatus.CREATED);
 	}
 
 	@GetMapping("/{id}")
-	@Produces({MediaType.APPLICATION_JSON})
+	@Produces({ MediaType.APPLICATION_JSON })
 	@ResponseStatus(code = HttpStatus.OK)
-	public ResponseEntity<User> getUser(@PathVariable(value = "id") Long id) {
-		return new ResponseEntity<>(userService.getUserById(id), HttpStatus.CREATED);
+	public ResponseEntity<DtoInUser> getUser(@PathVariable(value = "id") Long id) {
+		return new ResponseEntity<>(userMapper.userToDtoInUser(userService.getUserById(id)), HttpStatus.CREATED);
 	}
 
 	@PutMapping("/{id}")
-	@Produces({MediaType.APPLICATION_JSON})
-    @Consumes({MediaType.APPLICATION_JSON})
+	@Produces({ MediaType.APPLICATION_JSON })
+	@Consumes({ MediaType.APPLICATION_JSON })
 	@ResponseStatus(code = HttpStatus.OK)
-	public ResponseEntity<User> updateUser(@PathVariable(value = "id") Long id, @RequestBody User user) {
-		return new ResponseEntity<>(userService.updateUser(id, user), HttpStatus.CREATED);
+	public ResponseEntity<DtoInUser> updateUser(@PathVariable(value = "id") Long id, @RequestBody DtoInUser user) {
+		return new ResponseEntity<>(
+				userMapper.userToDtoInUser(userService.updateUser(id, userMapper.userDtoInToUser(user))),
+				HttpStatus.CREATED);
 	}
 
 	@DeleteMapping("/{id}")
-	@Produces({MediaType.APPLICATION_JSON})
+	@Produces({ MediaType.APPLICATION_JSON })
 	@ResponseStatus(code = HttpStatus.OK)
-	public ResponseEntity<User> deleteUserById(@PathVariable(value = "id") Long id) {
+	public ResponseEntity<String> deleteUserById(@PathVariable(value = "id") Long id) {
 		userService.deleteUserById(id);
 		return new ResponseEntity<>(HttpStatus.ACCEPTED);
 	}

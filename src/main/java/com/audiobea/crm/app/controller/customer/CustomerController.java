@@ -6,8 +6,6 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.data.domain.Page;
@@ -36,8 +34,6 @@ import lombok.AllArgsConstructor;
 @RestController
 @RequestMapping("/v1/audio-bea/customers")
 public class CustomerController {
-	
-	private static final Logger logger = LoggerFactory.getLogger(CustomerController.class);
 
 	private final MessageSource messageSource;
 	@Autowired
@@ -48,17 +44,14 @@ public class CustomerController {
 	private CustomerMapper customerMapper;
 
 	@GetMapping
-	@Produces({MediaType.APPLICATION_JSON})
+	@Produces({ MediaType.APPLICATION_JSON })
 	public ResponseEntity<ResponseData<DtoInCustomer>> getCustomers(
 			@RequestParam(name = "firstName", defaultValue = "", required = false) String firstName,
-			@RequestParam(name = "secondName", defaultValue = "", required = false) String secondName,
 			@RequestParam(name = "firstLastName", defaultValue = "", required = false) String firstLastName,
-			@RequestParam(name = "secondLastName", defaultValue = "", required = false) String secondLastName,
 			@RequestParam(name = "page", defaultValue = "0", required = false) Integer page,
 			@RequestParam(name = "pageSize", defaultValue = "10", required = false) Integer pageSize) {
 
-		Page<Customer> pageable = customerService.getCustomers(firstName, secondName, firstLastName, secondLastName,
-				page, pageSize);
+		Page<Customer> pageable = customerService.getCustomers(firstName, firstLastName, page, pageSize);
 		Validator.validatePage(pageable, messageSource);
 		List<DtoInCustomer> listCustomers = listCustomerMapper.listCustomersToListDtoInCustomers(pageable.getContent());
 		ResponseData<DtoInCustomer> response = new ResponseData<>(listCustomers, pageable.getNumber(),
@@ -67,21 +60,18 @@ public class CustomerController {
 	}
 
 	@PostMapping
-	@Produces({MediaType.APPLICATION_JSON})
-    @Consumes({MediaType.APPLICATION_JSON})
+	@Produces({ MediaType.APPLICATION_JSON })
+	@Consumes({ MediaType.APPLICATION_JSON })
 	public ResponseEntity<DtoInCustomer> saveCustomer(@RequestBody DtoInCustomer customer) {
-		logger.debug("DtoIntCustomer: {}", customer);
-		Customer customerToSave = customerMapper.customerDtoInToCustomer(customer);
-		logger.debug("CustomerToSave: {}", customerToSave);
 		return new ResponseEntity<>(
 				customerMapper.customerToDtoInCustomer(
-						customerService.saveCustomer(customerToSave)),
+						customerService.saveCustomer(customerMapper.customerDtoInToCustomer(customer))),
 				HttpStatus.CREATED);
 	}
 
 	@PutMapping("/{id}")
-	@Produces({MediaType.APPLICATION_JSON})
-    @Consumes({MediaType.APPLICATION_JSON})
+	@Produces({ MediaType.APPLICATION_JSON })
+	@Consumes({ MediaType.APPLICATION_JSON })
 	public ResponseEntity<DtoInCustomer> updateCustomer(@PathVariable(name = "id") Long id,
 			@RequestBody DtoInCustomer customer) {
 		return new ResponseEntity<>(
@@ -91,7 +81,7 @@ public class CustomerController {
 	}
 
 	@GetMapping("/{id}")
-	@Produces({MediaType.APPLICATION_JSON})
+	@Produces({ MediaType.APPLICATION_JSON })
 	public ResponseEntity<DtoInCustomer> getCustomer(@PathVariable(name = "id") Long id) {
 		return new ResponseEntity<>(customerMapper.customerToDtoInCustomer(customerService.getCustomerById(id)),
 				HttpStatus.CREATED);

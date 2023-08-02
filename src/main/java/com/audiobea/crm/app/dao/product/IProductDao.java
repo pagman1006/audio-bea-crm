@@ -1,16 +1,15 @@
 package com.audiobea.crm.app.dao.product;
 
-import java.util.List;
-
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.PagingAndSortingRepository;
 
 import com.audiobea.crm.app.dao.product.model.Product;
-import com.audiobea.crm.app.dao.product.model.SubBrand;
 
 public interface IProductDao extends PagingAndSortingRepository<Product, Long> {
-
-	Product findByProductName(String name);
-	List<Product> findBySubBrand(SubBrand subBrand);
-	List<Product> findBySubBrandIn(List<SubBrand> brands);
+	
+	Page<Product> findBySubBrandBrandBrandNameContainsAndSubBrandSubBrandNameContains(String brandName, String subBrandName, Pageable pageable);
+	Page<Product> findBySubBrandBrandBrandNameContains(String brandName, Pageable pageable);
+	Page<Product> findBySubBrandSubBrandNameContains(String subBrandName, Pageable pageable);
 	
 }

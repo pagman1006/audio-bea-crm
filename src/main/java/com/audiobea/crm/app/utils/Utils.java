@@ -21,6 +21,6 @@ public class Utils {
 			return null;
 		}
 		txt = txt.toUpperCase();
-		return txt.replace("Á", "A").replace("É", "E").replaceAll("Í", "I").replace("Ó", "O").replace("Ú", "U");
+		return txt.replace("Á", "A").replace("É", "E").replace("Í", "I").replace("Ó", "O").replace("Ú", "U");
 	}
 }

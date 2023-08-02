@@ -1,10 +1,11 @@
 package com.audiobea.crm.app.controller;
 
-import static com.audiobea.crm.app.utils.Constants.xs_namespace;
+import static com.audiobea.crm.app.utils.Constants.XS_NAMESPACE;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -173,7 +174,7 @@ public class WADLController {
 
 	private List<Representation> setRepresentations(Set<MediaType> mediaTypes) {
 		if (mediaTypes.isEmpty()) {
-			return null;
+			return Collections.emptyList();
 		}
 		List<Representation> representation = new ArrayList<>();
 		for (MediaType mediaType : mediaTypes) {
@@ -188,10 +189,10 @@ public class WADLController {
 		QName nm = new QName("");
 		String classname = type.toString();
 		if (classname.indexOf("String") >= 0) {
-			nm = new QName(xs_namespace, "string", "xs");
+			nm = new QName(XS_NAMESPACE, "string", "xs");
 
 		} else if (classname.indexOf("Integer") >= 0) {
-			nm = new QName(xs_namespace, "int", "xs");
+			nm = new QName(XS_NAMESPACE, "int", "xs");
 		}
 		return nm;
 	}

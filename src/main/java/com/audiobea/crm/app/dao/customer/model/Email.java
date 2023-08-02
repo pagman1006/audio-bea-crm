@@ -1,5 +1,6 @@
 package com.audiobea.crm.app.dao.customer.model;
 
+import java.io.Serial;
 import java.io.Serializable;
 
 import javax.persistence.CascadeType;
@@ -20,6 +21,7 @@ import lombok.Data;
 @Table(name = "emails")
 public class Email implements Serializable {
 
+	@Serial
 	private static final long serialVersionUID = 1L;
 	
 	@Id
@@ -27,12 +29,12 @@ public class Email implements Serializable {
 	@Column(name = "email_id")
 	private Long id;
 	
-	private String email;
+	@Column(name = "email")
+	private String emailAddress;
 	
 	@OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	@JoinColumn(name = "email_type_id")
 	private EmailType emailType;
-	
 	private boolean enabled;
 
 }
