@@ -193,11 +193,12 @@ public class UploadServiceImpl implements IUploadService {
                     Cell currentCell = cellsInRow.next();
 
                     switch (cellIdx) {
+                    	case 0 -> {}
                         case 1 -> file.setCodePostal(Utils.removeAccents(currentCell.getStringCellValue()));
                         case 2 -> file.setColony(Utils.removeAccents(currentCell.getStringCellValue()));
                         case 3 -> file.setCity(Utils.removeAccents(currentCell.getStringCellValue()));
                         case 4 -> file.setState(Utils.removeAccents(currentCell.getStringCellValue()));
-                        default -> { break; }
+                        default -> {}
                     }
                     cellIdx++;
                 }
@@ -225,7 +226,7 @@ public class UploadServiceImpl implements IUploadService {
     }
 
     private City setCity(State state, String nameCity) {
-		City city = new City();
+		City city = null;
 		if (state.getCities() != null && !state.getCities().isEmpty()) {
             city = state.getCities().stream().filter(c -> c.getName().equals(nameCity))
                     .toList().stream().findFirst().orElse(null);
