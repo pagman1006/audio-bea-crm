@@ -45,15 +45,14 @@ import com.audiobea.crm.app.utils.Constants;
 import com.audiobea.crm.app.utils.ExcelHelper;
 import com.audiobea.crm.app.utils.Utils;
 
-import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@NoArgsConstructor(force = true)
 @Service
 public class UploadServiceImpl implements IUploadService {
 
-	private final MessageSource messageSource;
+	@Autowired
+	private MessageSource messageSource;
 
 	private Integer statesCount = 0;
 	private Integer citiesCount = 0;
