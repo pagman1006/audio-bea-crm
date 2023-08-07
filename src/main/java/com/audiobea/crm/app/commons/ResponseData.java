@@ -4,18 +4,17 @@ import java.io.Serial;
 import java.io.Serializable;
 import java.util.List;
 
-import javax.persistence.Transient;
+import lombok.Getter;
+import lombok.Setter;
 
-import lombok.Data;
-
-@Data
+@Getter
+@Setter
 public class ResponseData<T> implements Serializable {
 
 	@Serial
 	private static final long serialVersionUID = 1L;
 	
-	@Transient
-	private List<T> data;
+	private transient List<T> data;
 	
 	private Integer page;
 	private Integer pageSize;

@@ -67,9 +67,9 @@ public class UserServiceImpl implements IUserService {
 	@Override
 	public boolean deleteUserById(Long id) {
 		boolean response = false;
-		userDao.findById(id).orElseThrow(() -> new NoSuchElementFoundException(
+		User user = userDao.findById(id).orElseThrow(() -> new NoSuchElementFoundException(
 				Utils.getLocalMessage(messageSource, I18Constants.NO_ITEM_FOUND.getKey(), String.valueOf(id))));
-		userDao.deleteById(id);
+		userDao.delete(user);
 		response = true;
 		return response;
 	}

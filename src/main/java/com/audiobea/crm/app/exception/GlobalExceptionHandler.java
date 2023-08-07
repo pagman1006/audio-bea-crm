@@ -64,6 +64,34 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 		log.error("Failed to find the requested element", itemsNotFoundException.getMessage());
 		return buildErrorResponse(itemsNotFoundException, HttpStatus.NOT_FOUND, request);
 	}
+	
+	@ExceptionHandler(ValidFileException.class)
+	@ResponseStatus(HttpStatus.BAD_REQUEST)
+	public ResponseEntity<Object> handleValidFileException(ValidFileException fileNotValidException, WebRequest request) {
+		log.error("Is not a valid excel file!", fileNotValidException.getMessage());
+		return buildErrorResponse(fileNotValidException, HttpStatus.BAD_REQUEST, request);
+	}
+	
+	@ExceptionHandler(UploadFileException.class)
+	@ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+	public ResponseEntity<Object> handleUploadFileException(UploadFileException uploadFileException, WebRequest request) {
+		log.error("Failed to upload file", uploadFileException.getMessage());
+		return buildErrorResponse(uploadFileException, HttpStatus.INTERNAL_SERVER_ERROR, request);
+	}
+	
+	@ExceptionHandler(ParseFileException.class)
+	@ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+	public ResponseEntity<Object> handleParseFileException(ParseFileException parseFileException, WebRequest request) {
+		log.error("Failed to parse excel file", parseFileException.getMessage());
+		return buildErrorResponse(parseFileException, HttpStatus.INTERNAL_SERVER_ERROR, request);
+	}
+	
+	@ExceptionHandler(NoSuchFileException.class)
+	@ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+	public ResponseEntity<Object> handleNoSuchFileException(NoSuchFileException noSuchFileException, WebRequest request) {
+		log.error("Failed to find file", noSuchFileException.getMessage());
+		return buildErrorResponse(noSuchFileException, HttpStatus.INTERNAL_SERVER_ERROR, request);
+	}
 
 	@ExceptionHandler(Exception.class)
 	@ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
