@@ -25,7 +25,6 @@ import com.audiobea.crm.app.commons.ResponseData;
 import com.audiobea.crm.app.commons.dto.DtoInUser;
 import com.audiobea.crm.app.controller.mapper.ListUserMapper;
 import com.audiobea.crm.app.controller.mapper.UserMapper;
-import com.audiobea.crm.app.core.DatoAuditable;
 import com.audiobea.crm.app.dao.user.model.User;
 import com.audiobea.crm.app.utils.Validator;
 
@@ -47,7 +46,7 @@ public class UserController {
 
 	private final MessageSource messageSource;
 
-	@DatoAuditable
+	@GetMapping
 	@Produces({ MediaType.APPLICATION_JSON })
 	public ResponseEntity<ResponseData<DtoInUser>> getUsers(
 			@RequestParam(name = "username", defaultValue = "", required = false) String username,

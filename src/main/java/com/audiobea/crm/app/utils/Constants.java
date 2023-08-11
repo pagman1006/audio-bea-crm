@@ -19,5 +19,7 @@ public class Constants {
     
     public static final String BRAND = "brand";
     public static final String SUB_BRAND = "sub_brand";
+    
+    public static final String CITY_NAME = "name";
 
 }
