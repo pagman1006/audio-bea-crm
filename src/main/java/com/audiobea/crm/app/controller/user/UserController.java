@@ -9,6 +9,8 @@ import org.springframework.context.MessageSource;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -30,6 +32,7 @@ import com.audiobea.crm.app.utils.Validator;
 
 import lombok.AllArgsConstructor;
 
+//@Slf4j
 @AllArgsConstructor
 @RestController
 @RequestMapping("/v1/audio-bea/users")
@@ -37,7 +40,10 @@ public class UserController {
 
 	@Autowired
 	private IUserService userService;
-
+	
+	@Autowired
+	private PasswordEncoder passwordEncoder;
+	
 	@Autowired
 	private ListUserMapper listUserMapper;
 
@@ -45,7 +51,8 @@ public class UserController {
 	private UserMapper userMapper;
 
 	private final MessageSource messageSource;
-
+	
+	@PreAuthorize("hasAuthority('ADMIN')")
 	@GetMapping
 	@Produces({ MediaType.APPLICATION_JSON })
 	public ResponseEntity<ResponseData<DtoInUser>> getUsers(
@@ -64,11 +71,15 @@ public class UserController {
 	@Produces({ MediaType.APPLICATION_JSON })
 	@Consumes({ MediaType.APPLICATION_JSON })
 	public ResponseEntity<DtoInUser> addUser(@RequestBody DtoInUser requestUser) {
-		return new ResponseEntity<>(
-				userMapper.userToDtoInUser(userService.saveUser(userMapper.userDtoInToUser(requestUser))),
-				HttpStatus.CREATED);
+		
+		requestUser.setPassword(passwordEncoder.encode(requestUser.getPassword()));
+		DtoInUser user = userMapper.userToDtoInUser(userService.saveUser(userMapper.userDtoInToUser(requestUser)));
+		
+		return new ResponseEntity<>(user, HttpStatus.CREATED);
 	}
 
+	// TODO: Implementar validacion del mismo usuario
+	@PreAuthorize("hasAuthority('ADMIN') or hasAuthority('USER')")
 	@GetMapping("/{id}")
 	@Produces({ MediaType.APPLICATION_JSON })
 	@ResponseStatus(code = HttpStatus.OK)
@@ -76,6 +87,7 @@ public class UserController {
 		return new ResponseEntity<>(userMapper.userToDtoInUser(userService.getUserById(id)), HttpStatus.CREATED);
 	}
 
+	@PreAuthorize("hasAuthority('ADMIN') or hasAuthority('USER')")
 	@PutMapping("/{id}")
 	@Produces({ MediaType.APPLICATION_JSON })
 	@Consumes({ MediaType.APPLICATION_JSON })
@@ -86,6 +98,7 @@ public class UserController {
 				HttpStatus.CREATED);
 	}
 
+	@PreAuthorize("hasAuthority('ADMIN')")
 	@DeleteMapping("/{id}")
 	@Produces({ MediaType.APPLICATION_JSON })
 	@ResponseStatus(code = HttpStatus.OK)

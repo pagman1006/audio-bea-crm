@@ -11,6 +11,7 @@ import org.springframework.context.MessageSource;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -32,7 +33,7 @@ import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
 @RestController
-@RequestMapping("/v1/audio-bea/customers")
+@RequestMapping("/v1/audio-bea/admin/customers")
 public class CustomerController {
 
 	private final MessageSource messageSource;
@@ -43,6 +44,7 @@ public class CustomerController {
 	@Autowired
 	private CustomerMapper customerMapper;
 
+	@PreAuthorize("hasAuthority('ADMIN')")
 	@GetMapping
 	@Produces({ MediaType.APPLICATION_JSON })
 	public ResponseEntity<ResponseData<DtoInCustomer>> getCustomers(
@@ -59,6 +61,7 @@ public class CustomerController {
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 
+	@PreAuthorize("hasAuthority('USER') or hasAuthority('ADMIN')")
 	@PostMapping
 	@Produces({ MediaType.APPLICATION_JSON })
 	@Consumes({ MediaType.APPLICATION_JSON })
@@ -69,6 +72,7 @@ public class CustomerController {
 				HttpStatus.CREATED);
 	}
 
+	@PreAuthorize("hasAuthority('USER') or hasAuthority('ADMIN')")
 	@PutMapping("/{id}")
 	@Produces({ MediaType.APPLICATION_JSON })
 	@Consumes({ MediaType.APPLICATION_JSON })
@@ -80,6 +84,7 @@ public class CustomerController {
 				HttpStatus.CREATED);
 	}
 
+	@PreAuthorize("hasAuthority('USER') or hasAuthority('ADMIN')")
 	@GetMapping("/{id}")
 	@Produces({ MediaType.APPLICATION_JSON })
 	public ResponseEntity<DtoInCustomer> getCustomer(@PathVariable(name = "id") Long id) {

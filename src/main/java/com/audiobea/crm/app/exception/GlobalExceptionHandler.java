@@ -2,11 +2,14 @@ package com.audiobea.crm.app.exception;
 
 import java.util.Objects;
 
+import javax.security.sasl.AuthenticationException;
+
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -98,6 +101,20 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 	public ResponseEntity<Object> handleAllUncaughtException(Exception exception, WebRequest request) {
 		log.error(UNKNOWN_MESSAGE_ERROR, exception);
 		return buildErrorResponse(exception, UNKNOWN_MESSAGE_ERROR, HttpStatus.INTERNAL_SERVER_ERROR, request);
+	}
+	
+	@ExceptionHandler(AuthenticationException.class)
+	@ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+	public ResponseEntity<Object> handleAuthenticationFailedException(AuthenticationException authenticationException, WebRequest request) {
+		log.error("Failed authorization", authenticationException.getMessage());
+		return buildErrorResponse(authenticationException, "Failed authorization", HttpStatus.FORBIDDEN, request);
+	}
+	
+	@ExceptionHandler(AccessDeniedException.class)
+	@ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+	public ResponseEntity<Object> handleAccessDeniedException(AccessDeniedException accessDeniedException, WebRequest request) {
+		log.error("AccessDenied getMessage() ", accessDeniedException.getMessage());
+		return buildErrorResponse(accessDeniedException, "AccessDenied ", HttpStatus.FORBIDDEN, request);
 	}
 
 	private ResponseEntity<Object> buildErrorResponse(Exception exception, HttpStatus httpStatus, WebRequest request) {
