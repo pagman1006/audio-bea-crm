@@ -14,6 +14,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.validation.constraints.Size;
 
 import lombok.Data;
 
@@ -29,10 +30,15 @@ public class Product implements Serializable {
 	@Column(name = "product_id")
 	private Long id;
 
+	@Size(min = 3, max = 60)
+	@Column(length = 60)
 	private String productName;
 
 	private Double price;
 	private Double discount;
+	
+	@Size(min = 3, max = 60)
+	@Column(length = 60)
 	private String title;
 	private String description;
 	private Integer stock;

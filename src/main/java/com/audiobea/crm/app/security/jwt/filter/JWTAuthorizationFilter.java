@@ -7,6 +7,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -46,7 +47,9 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
 			authentication.getAuthorities().forEach(authority -> log.debug(authority.toString()));
 		}
 		
-		log.debug("Authentication: {}", authentication.getName());
+		if (authentication != null && StringUtils.isNotBlank(authentication.getName())) {
+			log.debug("Authentication: {}", authentication.getName());
+		}
 		SecurityContextHolder.getContext().setAuthentication(authentication);
 		log.debug("SecurityContextHolder setAuthentication");
 		chain.doFilter(request, response);
