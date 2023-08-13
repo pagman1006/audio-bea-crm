@@ -36,14 +36,11 @@ public class JWTServiceImpl implements IJWTService {
 
 	@Override
 	public String create(Authentication auth) throws IOException {
-
 		log.debug("create authenticacion");
-		
 		String username = ((User) auth.getPrincipal()).getUsername();
 		Collection<? extends GrantedAuthority> roles = auth.getAuthorities();
 		Claims claims = Jwts.claims();
 		claims.put("authorities", new ObjectMapper().writeValueAsString(roles));
-
 		return Jwts.builder().setClaims(claims).setSubject(username)
 				.signWith(getSigningKey()).setIssuedAt(new Date())
 				.setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_DATE)).compact();
@@ -62,7 +59,6 @@ public class JWTServiceImpl implements IJWTService {
 
 	@Override
 	public Claims getClaims(String token) {
-		
 		return Jwts.parserBuilder().setSigningKey(getSigningKey()).build().parseClaimsJws(resolve(token)).getBody();
 	}
 
