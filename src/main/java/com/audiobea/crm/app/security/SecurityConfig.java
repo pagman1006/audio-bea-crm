@@ -20,7 +20,6 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
-import org.springframework.security.web.util.matcher.NegatedRequestMatcher;
 import org.springframework.security.web.util.matcher.OrRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
@@ -37,8 +36,6 @@ public class SecurityConfig {
 	private static final RequestMatcher PUBLIC_URLS = new OrRequestMatcher(
 			new AntPathRequestMatcher("/v1/audio-bea/users"),
 			new AntPathRequestMatcher("/v1/audio-bea/"));
-
-	private static final RequestMatcher PROTECTED_URLS = new NegatedRequestMatcher(PUBLIC_URLS);
 
 	@Autowired
 	private IJWTService jwtService;

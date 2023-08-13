@@ -1,6 +1,8 @@
 package com.audiobea.crm.app.security.jwt.business.impl;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.security.Key;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
@@ -19,7 +21,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -43,7 +45,7 @@ public class JWTServiceImpl implements IJWTService {
 		claims.put("authorities", new ObjectMapper().writeValueAsString(roles));
 
 		return Jwts.builder().setClaims(claims).setSubject(username)
-				.signWith(SignatureAlgorithm.HS256, SECRET.getBytes()).setIssuedAt(new Date())
+				.signWith(getSigningKey()).setIssuedAt(new Date())
 				.setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_DATE)).compact();
 	}
 
@@ -60,7 +62,8 @@ public class JWTServiceImpl implements IJWTService {
 
 	@Override
 	public Claims getClaims(String token) {
-		return Jwts.parser().setSigningKey(SECRET.getBytes()).parseClaimsJws(resolve(token)).getBody();
+		
+		return Jwts.parserBuilder().setSigningKey(getSigningKey()).build().parseClaimsJws(resolve(token)).getBody();
 	}
 
 	@Override
@@ -86,5 +89,9 @@ public class JWTServiceImpl implements IJWTService {
 		}
 		return null;
 	}
+	
+	private Key getSigningKey() {
+		  return Keys.hmacShaKeyFor(SECRET.getBytes(StandardCharsets.UTF_8));
+		}
 
 }
