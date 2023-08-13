@@ -10,6 +10,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.validation.constraints.Size;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
@@ -28,6 +29,8 @@ public class SubBrand implements Serializable {
 	@Column(name = "sub_brand_id")
 	private Long id;
 	
+	@Size(min = 3, max = 60)
+	@Column(length = 60)
 	private String subBrandName;
 	
 	@ManyToOne

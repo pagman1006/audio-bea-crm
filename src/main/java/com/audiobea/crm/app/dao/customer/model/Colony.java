@@ -8,6 +8,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.validation.constraints.Size;
 
 import lombok.Data;
 
@@ -23,7 +24,12 @@ public class Colony implements Serializable, Comparable<Colony> {
 	@Column(name = "colony_id")
 	private Long id;
 	
+	@Size(min = 3, max = 60)
+	@Column(length = 60)
 	private String name;
+	
+	@Size(min = 3, max = 5)
+	@Column(length = 5)
 	private String postalCode;
 	
 	@Override

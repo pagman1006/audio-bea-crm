@@ -9,6 +9,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
+import javax.validation.constraints.Size;
 
 import lombok.Data;
 
@@ -27,6 +28,9 @@ public class Role implements Serializable {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "authority_id")
 	private Long id;
+	
+	@Size(min = 3, max = 15)
+	@Column(length = 15)
 	private String authority;
 
 }

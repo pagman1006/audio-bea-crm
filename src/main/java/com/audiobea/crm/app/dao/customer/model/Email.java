@@ -13,6 +13,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.validation.constraints.Size;
 
 import lombok.Data;
 
@@ -29,7 +30,8 @@ public class Email implements Serializable {
 	@Column(name = "email_id")
 	private Long id;
 	
-	@Column(name = "email")
+	@Size(min = 3, max = 60)
+	@Column(name = "email", length = 60)
 	private String emailAddress;
 	
 	@OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)

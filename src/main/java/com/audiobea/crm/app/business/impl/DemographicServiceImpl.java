@@ -18,6 +18,7 @@ import com.audiobea.crm.app.dao.customer.IStateDao;
 import com.audiobea.crm.app.dao.customer.model.City;
 import com.audiobea.crm.app.dao.customer.model.Colony;
 import com.audiobea.crm.app.dao.customer.model.State;
+import com.audiobea.crm.app.utils.Constants;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -44,6 +45,13 @@ public class DemographicServiceImpl implements IDemographicService {
         Pageable pageable = PageRequest.of(page, pageSize, Sort.by("name"));
         return cityDao.findByStateId(stateId, pageable);
     }
+    
+    @Override
+	public Page<City> getAllCities(String state, String city, Integer page, Integer pageSize) {
+    	Pageable pageable = PageRequest.of(page, pageSize, Sort.by(Constants.CITY_NAME));
+    	log.debug("Ingresamos al servicio");
+    	return cityDao.findByStateNameAndCityName(state, city, pageable);
+	}
 
     @Override
     public Page<Colony> findColoniesByStateIdAndCityId(Long stateId, Long cityId, String postalCode, Integer page, Integer pageSize) {
@@ -55,10 +63,11 @@ public class DemographicServiceImpl implements IDemographicService {
         return colonyDao.findByStateIdAndCityId(stateId, cityId, pageable);
     }
 
-    @Override
-    public Page<Colony> findColonies(Long stateId, Long cityId, String codePostal, Integer page, Integer pageSize) {
+	@Override
+	public Page<Colony> getAllColonies(String state, String city, String colony, String codePostal, Integer page, Integer pageSize) {
+		log.debug("State: {}, city: {}, postalCode: {}", state, city, codePostal);
         Pageable pageable = PageRequest.of(page, pageSize, Sort.by("name"));
-        return colonyDao.findAll(pageable);
-    }
+		return colonyDao.findAllByStateNameAndCityNameAndColonyNameCodePostal(state, city, colony, codePostal, pageable);
+	}
 
 }

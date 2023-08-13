@@ -58,13 +58,18 @@ public class WADLController {
 		result.getDoc().add(doc);
 		Resources wadResources = new Resources();
 		wadResources.setBase(getBaseUrl(request));
-		Set<String> pattern = new HashSet<>();
-
 		Map<RequestMappingInfo, HandlerMethod> handledMethods = handlerMapping.getHandlerMethods();
+		wadResources = setupWadResourcesByHandleMethods(wadResources, handledMethods);
+		wadResources.getResource().sort((a, b) -> a.getPath().compareTo(b.getPath()));
+		result.getResources().add(wadResources);
+		return result;
+	}
+
+	private Resources setupWadResourcesByHandleMethods(Resources wadResources,
+			Map<RequestMappingInfo, HandlerMethod> handledMethods) {
+		Set<String> pattern = new HashSet<>();
 		for (Map.Entry<RequestMappingInfo, HandlerMethod> entry : handledMethods.entrySet()) {
-
 			HandlerMethod handlerMethod = entry.getValue();
-
 			Object object = handlerMethod.getBean();
 			Object bean = webApplicationContext.getBean(object.toString());
 
@@ -73,7 +78,6 @@ public class WADLController {
 				continue;
 			}
 			RequestMappingInfo mappingInfo = entry.getKey();
-
 			String uri = mappingInfo.getPathPatternsCondition().getPatterns().toString();
 			pattern.add(uri);
 			Set<RequestMethod> httpMethods = mappingInfo.getMethodsCondition().getMethods();
@@ -97,9 +101,7 @@ public class WADLController {
 				wadlResource.getMethodOrResource().add(wadlMethod);
 			}
 		}
-		wadResources.getResource().sort((a, b) -> a.getPath().compareTo(b.getPath()));
-		result.getResources().add(wadResources);
-		return result;
+		return wadResources;
 	}
 
 	private org.jvnet.ws.wadl.Method setWadlMethod(RequestMethod httpMethod, Method javaMethod) {

@@ -11,6 +11,7 @@ import org.springframework.context.MessageSource;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -76,6 +77,7 @@ public class BrandController {
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 
+	@PreAuthorize("hasAuthority('ADMIN')")
 	@PostMapping
 	@Produces({ MediaType.APPLICATION_JSON })
 	@Consumes({ MediaType.APPLICATION_JSON })
@@ -85,6 +87,7 @@ public class BrandController {
 				HttpStatus.CREATED);
 	}
 
+	@PreAuthorize("hasAuthority('ADMIN')")
 	@PutMapping("/{brand-id}")
 	@Produces({ MediaType.APPLICATION_JSON })
 	@Consumes({ MediaType.APPLICATION_JSON })
@@ -94,6 +97,7 @@ public class BrandController {
 				productService.updateBrand(brandId, brandMapper.brandDtoInToBrand(brand))), HttpStatus.CREATED);
 	}
 
+	@PreAuthorize("hasAuthority('ADMIN')")
 	@DeleteMapping("/{brand-id}")
 	@Produces({ MediaType.APPLICATION_JSON })
 	@ResponseStatus(code = HttpStatus.OK)
@@ -123,6 +127,7 @@ public class BrandController {
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 
+	@PreAuthorize("hasAuthority('ADMIN')")
 	@PostMapping("/{brand-id}/sub-brands")
 	@Produces({ MediaType.APPLICATION_JSON })
 	@Consumes({ MediaType.APPLICATION_JSON })
@@ -135,6 +140,7 @@ public class BrandController {
 				HttpStatus.CREATED);
 	}
 
+	@PreAuthorize("hasAuthority('ADMIN')")
 	@PutMapping("/{brand-id}/sub-brands/{sub-brand-id}")
 	@Produces({ MediaType.APPLICATION_JSON })
 	@Consumes({ MediaType.APPLICATION_JSON })
@@ -147,6 +153,7 @@ public class BrandController {
 				HttpStatus.CREATED);
 	}
 
+	@PreAuthorize("hasAuthority('ADMIN')")
 	@DeleteMapping("/{brand-id}/sub-brands/{sub-brand-id}")
 	@Produces({ MediaType.APPLICATION_JSON })
 	@ResponseStatus(code = HttpStatus.OK)
