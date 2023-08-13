@@ -9,6 +9,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -19,8 +20,6 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import com.audiobea.crm.app.commons.dto.DtoInUser;
 import com.audiobea.crm.app.security.jwt.business.IJWTService;
 import com.audiobea.crm.app.security.jwt.business.impl.JWTServiceImpl;
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
@@ -57,15 +56,11 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 				logger.info("Username desde request InputStream (raw): " + username);
 				logger.info("Password desde request InputStream (raw): " + password);
 
-			} catch (JsonParseException e) {
-				e.printStackTrace();
-			} catch (JsonMappingException e) {
-				e.printStackTrace();
 			} catch (IOException e) {
 				e.printStackTrace();
-			}
+			}  
 		}
-		username = username.trim();
+		username = StringUtils.isNotBlank(username)? username.trim(): null;
 		UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(username, password);
 
 		return authenticationManager.authenticate(authToken);
@@ -78,9 +73,9 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
 		response.addHeader(JWTServiceImpl.HEADER_STRING, JWTServiceImpl.TOKEN_PREFIX + token);
 
-		Map<String, Object> body = new HashMap<String, Object>();
+		Map<String, Object> body = new HashMap<>();
 		body.put("token", token);
-		body.put("user", (org.springframework.security.core.userdetails.User) authResult.getPrincipal());
+		body.put("user", authResult.getPrincipal());
 		body.put("mensaje", String.format("Hola %s, has iniciado sesión con éxito!",
 				((org.springframework.security.core.userdetails.User) authResult.getPrincipal()).getUsername()));
 
@@ -92,7 +87,7 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 	@Override
 	protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response,
 			AuthenticationException failed) throws IOException, ServletException {
-		Map<String, Object> body = new HashMap<String, Object>();
+		Map<String, Object> body = new HashMap<>();
 		body.put("mensaje", "Error de autenticación: username o password incorrecto!");
 		body.put("error", failed.getMessage());
 		
@@ -100,12 +95,5 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 		response.setStatus(401);
 		response.setContentType("application/json");
 	}
-
-	@Override
-	protected AuthenticationManager getAuthenticationManager() {
-		// TODO Auto-generated method stub
-		return super.getAuthenticationManager();
-	}
-
 	
 }

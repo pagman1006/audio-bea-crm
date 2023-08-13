@@ -33,7 +33,7 @@ public class UserDetailService implements UserDetailsService {
 			throw new UsernameNotFoundException("Login Error: Username '" + username + "' not exist!");
 		}
 
-		List<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
+		List<GrantedAuthority> authorities = new ArrayList<>();
 
 		for (Role role : user.getRoles()) {
 			log.debug("Role: {}", role.getAuthority());

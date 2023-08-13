@@ -1,6 +1,5 @@
 package com.audiobea.crm.app.security;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
@@ -37,14 +36,8 @@ public class SecurityConfig {
 			new AntPathRequestMatcher("/v1/audio-bea/users"),
 			new AntPathRequestMatcher("/v1/audio-bea/"));
 
-	@Autowired
-	private IJWTService jwtService;
-
-	@Autowired
-	private UserDetailsService userDetailsService;
-
 	@Bean // WebSecurityConfigurerAdapter
-	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+	public SecurityFilterChain securityFilterChain(HttpSecurity http, UserDetailsService userDetailsService, IJWTService jwtService) throws Exception {
 		http.sessionManagement()
 			.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 			.and()
@@ -61,9 +54,9 @@ public class SecurityConfig {
 
 	@Bean // WebSecurityConfigurerAdapter
 	public WebSecurityCustomizer webSecurityCustomizer() {
-		return (web) -> web.ignoring().requestMatchers(PUBLIC_URLS);
+		return web -> web.ignoring().requestMatchers(PUBLIC_URLS);
 	}
-
+	
 	@Bean
 	AuthenticationEntryPoint forbiddenEntryPoint() {
 		return new HttpStatusEntryPoint(HttpStatus.FORBIDDEN);

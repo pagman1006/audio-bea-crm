@@ -69,7 +69,7 @@ public class JWTServiceImpl implements IJWTService {
 	}
 
 	@Override
-	public Collection<? extends GrantedAuthority> getRoles(String token) throws IOException {
+	public Collection<GrantedAuthority> getRoles(String token) throws IOException {
 		log.debug("getRoles authenticacion");
 		Object roles = getClaims(token).get("authorities");
 		return Arrays

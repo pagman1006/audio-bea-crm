@@ -14,7 +14,7 @@ public interface IJWTService {
 	public boolean validate(String token);
 	public Claims getClaims(String token);
 	public String getUsername(String token);
-	public Collection<? extends GrantedAuthority> getRoles(String token) throws IOException;
+	public Collection<GrantedAuthority> getRoles(String token) throws IOException;
 	public String resolve(String token);
 	
 }
