@@ -13,6 +13,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.validation.constraints.Size;
 
 import lombok.Data;
 
@@ -29,6 +30,8 @@ public class Phone implements Serializable {
 	@Column(name = "phone_id")
 	private Long id;
 	
+	@Size(min = 3, max = 15)
+	@Column(length = 15)
 	private String phoneNumber;
 	
 	@OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)

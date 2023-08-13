@@ -9,6 +9,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.validation.constraints.Size;
 
 import lombok.Data;
 
@@ -25,6 +26,8 @@ public class EmailType implements Serializable {
 	@Column(name = "email_type_id")
 	private Long id;
 	
+	@Size(min = 3, max = 15)
+	@Column(length = 15)
 	private String type;
 
 }

@@ -14,6 +14,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.validation.constraints.Size;
 
 import lombok.Data;
 
@@ -30,6 +31,8 @@ public class City implements Serializable, Comparable<City> {
 	@Column(name = "city_id")
 	private Long id;
 	
+	@Size(min = 3, max = 60)
+	@Column(length = 60)
 	private String name;
 	
 	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)

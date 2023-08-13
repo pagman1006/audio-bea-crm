@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.List;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -15,6 +16,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.validation.constraints.Size;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -35,9 +37,21 @@ public class Customer implements Serializable {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
+	
+	@Size(min = 2, max = 60)
+	@Column(length = 60)
 	private String firstName;
+	
+	@Size(max = 60)
+	@Column(length = 60)
 	private String secondName;
+	
+	@Size(min = 3, max = 60)
+	@Column(length = 60)
 	private String firstLastName;
+	
+	@Size(max = 60)
+	@Column(length = 60)
 	private String secondLastName;
 	
 	@JsonFormat(pattern = "yyyy-MM-dd")
