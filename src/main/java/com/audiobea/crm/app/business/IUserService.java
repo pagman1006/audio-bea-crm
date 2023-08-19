@@ -2,7 +2,7 @@ package com.audiobea.crm.app.business;
 
 import org.springframework.data.domain.Page;
 
-import com.audiobea.crm.app.dao.user.model.User;
+import com.audiobea.crm.app.business.dao.user.model.User;
 
 public interface IUserService {
 	

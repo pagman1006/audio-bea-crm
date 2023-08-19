@@ -22,11 +22,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.audiobea.crm.app.business.ICustomerService;
+import com.audiobea.crm.app.business.dao.customer.model.Customer;
 import com.audiobea.crm.app.commons.ResponseData;
 import com.audiobea.crm.app.commons.dto.DtoInCustomer;
 import com.audiobea.crm.app.controller.mapper.CustomerMapper;
 import com.audiobea.crm.app.controller.mapper.ListCustomerMapper;
-import com.audiobea.crm.app.dao.customer.model.Customer;
 import com.audiobea.crm.app.utils.Validator;
 
 import lombok.AllArgsConstructor;

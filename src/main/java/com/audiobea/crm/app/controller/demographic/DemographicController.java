@@ -18,6 +18,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.audiobea.crm.app.business.IDemographicService;
+import com.audiobea.crm.app.business.dao.customer.model.City;
+import com.audiobea.crm.app.business.dao.customer.model.Colony;
+import com.audiobea.crm.app.business.dao.customer.model.State;
 import com.audiobea.crm.app.commons.ResponseData;
 import com.audiobea.crm.app.commons.dto.DtoInCity;
 import com.audiobea.crm.app.commons.dto.DtoInColony;
@@ -25,9 +28,6 @@ import com.audiobea.crm.app.commons.dto.DtoInState;
 import com.audiobea.crm.app.controller.mapper.ListCityMapper;
 import com.audiobea.crm.app.controller.mapper.ListColonyMapper;
 import com.audiobea.crm.app.controller.mapper.ListStateMapper;
-import com.audiobea.crm.app.dao.customer.model.City;
-import com.audiobea.crm.app.dao.customer.model.Colony;
-import com.audiobea.crm.app.dao.customer.model.State;
 import com.audiobea.crm.app.utils.Validator;
 
 import lombok.AllArgsConstructor;

@@ -6,7 +6,7 @@ import org.springframework.context.MessageSource;
 import org.springframework.data.domain.Page;
 
 import com.audiobea.crm.app.commons.I18Constants;
-import com.audiobea.crm.app.exception.NoSuchElementsFoundException;
+import com.audiobea.crm.app.core.exception.NoSuchElementsFoundException;
 
 public class Validator {
 	

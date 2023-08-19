@@ -7,7 +7,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.audiobea.crm.app.commons.dto.DtoInFileResponse;
-import com.audiobea.crm.app.exception.NoSuchFileException;
+import com.audiobea.crm.app.core.exception.NoSuchFileException;
 
 public interface IUploadService {
 	

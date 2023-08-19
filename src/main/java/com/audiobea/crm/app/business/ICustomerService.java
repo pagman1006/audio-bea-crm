@@ -1,7 +1,8 @@
 package com.audiobea.crm.app.business;
 
-import com.audiobea.crm.app.dao.customer.model.Customer;
 import org.springframework.data.domain.Page;
+
+import com.audiobea.crm.app.business.dao.customer.model.Customer;
 
 public interface ICustomerService {
 

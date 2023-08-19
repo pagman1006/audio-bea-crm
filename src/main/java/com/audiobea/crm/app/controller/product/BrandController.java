@@ -24,6 +24,8 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.audiobea.crm.app.business.IProductService;
+import com.audiobea.crm.app.business.dao.product.model.Brand;
+import com.audiobea.crm.app.business.dao.product.model.SubBrand;
 import com.audiobea.crm.app.commons.I18Constants;
 import com.audiobea.crm.app.commons.ResponseData;
 import com.audiobea.crm.app.commons.dto.DtoInBrand;
@@ -32,9 +34,7 @@ import com.audiobea.crm.app.controller.mapper.BrandMapper;
 import com.audiobea.crm.app.controller.mapper.ListBrandsMapper;
 import com.audiobea.crm.app.controller.mapper.ListSubBrandsMapper;
 import com.audiobea.crm.app.controller.mapper.SubBrandMapper;
-import com.audiobea.crm.app.dao.product.model.Brand;
-import com.audiobea.crm.app.dao.product.model.SubBrand;
-import com.audiobea.crm.app.exception.NoSuchElementFoundException;
+import com.audiobea.crm.app.core.exception.NoSuchElementFoundException;
 import com.audiobea.crm.app.utils.Utils;
 import com.audiobea.crm.app.utils.Validator;
 

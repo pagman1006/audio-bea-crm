@@ -30,12 +30,12 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.audiobea.crm.app.business.IProductService;
 import com.audiobea.crm.app.business.IUploadService;
+import com.audiobea.crm.app.business.dao.product.model.Product;
+import com.audiobea.crm.app.business.dao.product.model.ProductImage;
 import com.audiobea.crm.app.commons.ResponseData;
 import com.audiobea.crm.app.commons.dto.DtoInProduct;
 import com.audiobea.crm.app.controller.mapper.ListProductsMapper;
 import com.audiobea.crm.app.controller.mapper.ProductMapper;
-import com.audiobea.crm.app.dao.product.model.Product;
-import com.audiobea.crm.app.dao.product.model.ProductImage;
 import com.audiobea.crm.app.utils.Validator;
 
 import lombok.AllArgsConstructor;
