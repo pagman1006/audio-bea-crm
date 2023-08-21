@@ -51,6 +51,8 @@ public class Product implements Serializable {
 	@JoinColumn(name = "sub_brand_id")
 	private SubBrand subBrand;
 	
+	private boolean newProduct;
+	
 	private boolean enabled;
 
 }

@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
@@ -64,11 +65,12 @@ public class ProductController {
 	@GetMapping
 	@Produces({ MediaType.APPLICATION_JSON })
 	public ResponseEntity<ResponseData<DtoInProduct>> getProducts(
+			@RequestParam(name = "newProduct", required = false) boolean newProduct,
 			@RequestParam(name = "brand", required = false, defaultValue = "") String brand,
 			@RequestParam(value = "subBrand", required = false, defaultValue = "") String subBrand,
 			@RequestParam(name = "page", defaultValue = "0", required = false) Integer page,
 			@RequestParam(name = "pageSize", defaultValue = "10", required = false) Integer pageSize) {
-		Page<Product> pageable = productService.getProducts(brand, subBrand, page, pageSize);
+		Page<Product> pageable = productService.getProducts(newProduct, brand, subBrand, page, pageSize);
 		Validator.validatePage(pageable, messageSource);
 		ResponseData<DtoInProduct> response = new ResponseData<>(
 				listProductsMapper.productsToDtoInProducts(pageable.getContent()), pageable.getNumber(),
@@ -76,7 +78,7 @@ public class ProductController {
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 
-	@PreAuthorize("hasAuthority('ADMIN')")
+//	@PreAuthorize("hasAuthority('ADMIN')")
 	@PostMapping
 	@Produces({ MediaType.APPLICATION_JSON })
 	@Consumes({ MediaType.APPLICATION_JSON })
@@ -124,7 +126,7 @@ public class ProductController {
 	public ResponseEntity<List<String>> uploadImages(@PathVariable("id") Long id,
 			@RequestPart(name = "file", required = false) MultipartFile[] images) {
 		List<String> list = new ArrayList<>();
-		for (ResponseEntity<String> r : Arrays.asList(images).stream().map(image -> uploadImage(id, image)).toList()) {
+		for (ResponseEntity<String> r : Arrays.asList(images).stream().map(image -> uploadImage(id, image)).collect(Collectors.toList())) {
 			list.add(r.getBody());
 		}
 		return new ResponseEntity<>(list, HttpStatus.CREATED);

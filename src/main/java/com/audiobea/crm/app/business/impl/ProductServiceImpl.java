@@ -41,18 +41,17 @@ public class ProductServiceImpl implements IProductService {
 	private final MessageSource messageSource;
 
 	@Override
-	public Page<Product> getProducts(String brand, String subBrand, Integer page, Integer pageSize) {
+	public Page<Product> getProducts(boolean isNewProduct, String brand, String subBrand, Integer page, Integer pageSize) {
 		Pageable pageable = PageRequest.of(page, pageSize);
-		log.debug("Marca: {}, SubMarca: {}, Page: {}, PageSize: {}", brand, subBrand, page, pageSize);
-		if (StringUtils.isNotBlank(brand) && StringUtils.isNotBlank(subBrand)) {
-			return productDao.findBySubBrandBrandBrandNameContainsAndSubBrandSubBrandNameContains(brand, subBrand,
-					pageable);
-		}
-		if (StringUtils.isNotBlank(brand)) {
-			return productDao.findBySubBrandBrandBrandNameContains(brand, pageable);
-		}
-		if (StringUtils.isNotBlank(subBrand)) {
-			return productDao.findBySubBrandSubBrandNameContains(subBrand, pageable);
+		log.debug("Nuevo: {}, Marca: {}, SubMarca: {}, Page: {}, PageSize: {}", isNewProduct, brand, subBrand, page, pageSize);
+		if (isNewProduct) {
+			if (StringUtils.isNotBlank(brand) || StringUtils.isNotBlank(subBrand)) {
+				return productDao.findByBrandBySubBrandIsNewProduct(brand, subBrand, isNewProduct, pageable);
+			} else {
+				return productDao.findByNewProductTrue(isNewProduct, pageable);
+			}
+		} else if (StringUtils.isNotBlank(brand) || StringUtils.isNotBlank(subBrand)) {
+			return productDao.findByBrandBySubBrand(brand, subBrand, pageable);
 		}
 		return productDao.findAll(pageable);
 	}

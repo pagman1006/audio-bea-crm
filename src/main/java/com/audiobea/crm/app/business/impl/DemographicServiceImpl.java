@@ -1,6 +1,7 @@
 package com.audiobea.crm.app.business.impl;
 
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 import org.apache.commons.lang.StringUtils;
@@ -37,7 +38,7 @@ public class DemographicServiceImpl implements IDemographicService {
 
     @Override
     public List<State> getStates() {
-        return StreamSupport.stream(stateDao.findAll(Sort.by("name")).spliterator(), false).toList();
+        return StreamSupport.stream(stateDao.findAll(Sort.by("name")).spliterator(), false).collect(Collectors.toList());
     }
 
     @Override

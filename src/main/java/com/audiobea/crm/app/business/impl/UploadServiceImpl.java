@@ -15,6 +15,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
@@ -215,8 +216,8 @@ public class UploadServiceImpl implements IUploadService {
 
 	private State setStateFromSetStates(Set<State> listSetStates, String nameState, String nameCity, String nameColony,
 			String codePostal) {
-		State state = listSetStates.stream().filter(s -> s.getName().equals(nameState)).toList().stream().findFirst()
-				.orElse(null);
+		State state = listSetStates.stream().filter(s -> s.getName().equals(nameState)).collect(Collectors.toList())
+				.stream().findFirst().orElse(null);
 
 		if (state == null) {
 			state = new State();
@@ -258,8 +259,8 @@ public class UploadServiceImpl implements IUploadService {
 	private City setCity(State state, String nameCity) {
 		City city = null;
 		if (state.getCities() != null && !state.getCities().isEmpty()) {
-			city = state.getCities().stream().filter(c -> c.getName().equals(nameCity)).toList().stream().findFirst()
-					.orElse(null);
+			city = state.getCities().stream().filter(c -> c.getName().equals(nameCity)).collect(Collectors.toList())
+					.stream().findFirst().orElse(null);
 		}
 		if (city == null) {
 			city = new City();

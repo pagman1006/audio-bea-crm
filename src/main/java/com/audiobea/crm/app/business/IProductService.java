@@ -8,7 +8,7 @@ import com.audiobea.crm.app.business.dao.product.model.SubBrand;
 
 public interface IProductService {
 	
-	public Page<Product> getProducts(String marca, String subMarca, Integer page, Integer pageSize);
+	public Page<Product> getProducts(boolean newProduct, String marca, String subMarca, Integer page, Integer pageSize);
 	public Product getProductById(Long id);
 	public Product saveProduct(Product product);
 	public Product updateProduct(Long id, Product product); 
