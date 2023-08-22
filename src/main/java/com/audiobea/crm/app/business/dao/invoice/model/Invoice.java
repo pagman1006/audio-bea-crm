@@ -1,4 +1,4 @@
-package com.audiobea.crm.app.business.dao.product.model;
+package com.audiobea.crm.app.business.dao.invoice.model;
 
 import java.io.Serializable;
 import java.util.Date;

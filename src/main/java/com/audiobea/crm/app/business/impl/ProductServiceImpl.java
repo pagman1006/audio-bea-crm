@@ -17,6 +17,7 @@ import com.audiobea.crm.app.business.dao.product.model.Brand;
 import com.audiobea.crm.app.business.dao.product.model.Product;
 import com.audiobea.crm.app.business.dao.product.model.SubBrand;
 import com.audiobea.crm.app.commons.I18Constants;
+import com.audiobea.crm.app.commons.dto.EnumProductType;
 import com.audiobea.crm.app.core.exception.NoSuchElementFoundException;
 import com.audiobea.crm.app.utils.Utils;
 
@@ -41,19 +42,17 @@ public class ProductServiceImpl implements IProductService {
 	private final MessageSource messageSource;
 
 	@Override
-	public Page<Product> getProducts(boolean isNewProduct, String brand, String subBrand, Integer page, Integer pageSize) {
+	public Page<Product> getProducts(EnumProductType enumProductType, boolean isNewProduct, String brand, String subBrand,
+			Integer page, Integer pageSize) {
 		Pageable pageable = PageRequest.of(page, pageSize);
-		log.debug("Nuevo: {}, Marca: {}, SubMarca: {}, Page: {}, PageSize: {}", isNewProduct, brand, subBrand, page, pageSize);
+		log.debug("Marca: {}, SubMarca: {}, ProductType: {}, Nuevo: {}, Page: {}, PageSize: {}", brand, subBrand,
+				enumProductType, isNewProduct, page, pageSize);
+		String productType = enumProductType != null ? enumProductType.name() : "";
 		if (isNewProduct) {
-			if (StringUtils.isNotBlank(brand) || StringUtils.isNotBlank(subBrand)) {
-				return productDao.findByBrandBySubBrandIsNewProduct(brand, subBrand, isNewProduct, pageable);
-			} else {
-				return productDao.findByNewProductTrue(isNewProduct, pageable);
-			}
-		} else if (StringUtils.isNotBlank(brand) || StringUtils.isNotBlank(subBrand)) {
-			return productDao.findByBrandBySubBrand(brand, subBrand, pageable);
+			return productDao.findByNewProductBrandSubBrandProductType(brand, subBrand, productType, pageable);
+		} else {
+			return productDao.findByBrandSubBrandProductType(brand, subBrand, productType, pageable);
 		}
-		return productDao.findAll(pageable);
 	}
 
 	@Override

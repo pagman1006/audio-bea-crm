@@ -31,10 +31,10 @@ import org.springframework.util.FileSystemUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.audiobea.crm.app.business.IUploadService;
-import com.audiobea.crm.app.business.dao.customer.IStateDao;
-import com.audiobea.crm.app.business.dao.customer.model.City;
-import com.audiobea.crm.app.business.dao.customer.model.Colony;
-import com.audiobea.crm.app.business.dao.customer.model.State;
+import com.audiobea.crm.app.business.dao.demographic.IStateDao;
+import com.audiobea.crm.app.business.dao.demographic.model.City;
+import com.audiobea.crm.app.business.dao.demographic.model.Colony;
+import com.audiobea.crm.app.business.dao.demographic.model.State;
 import com.audiobea.crm.app.commons.I18Constants;
 import com.audiobea.crm.app.commons.dto.DtoInFileExcel;
 import com.audiobea.crm.app.commons.dto.DtoInFileResponse;

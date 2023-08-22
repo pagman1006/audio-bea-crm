@@ -1,4 +1,4 @@
-package com.audiobea.crm.app.business.dao.customer.model;
+package com.audiobea.crm.app.business.dao.demographic.model;
 
 import java.io.Serializable;
 

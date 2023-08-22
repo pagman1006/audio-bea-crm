@@ -19,7 +19,8 @@ import javax.validation.constraints.Size;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
-import com.audiobea.crm.app.business.dao.product.model.Invoice;
+import com.audiobea.crm.app.business.dao.demographic.model.Address;
+import com.audiobea.crm.app.business.dao.invoice.model.Invoice;
 import com.audiobea.crm.app.business.dao.user.model.User;
 import com.fasterxml.jackson.annotation.JsonFormat;
 

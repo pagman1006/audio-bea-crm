@@ -14,20 +14,18 @@ import lombok.Data;
 
 @Data
 @Entity
-@Table(name = "products_images")
-public class ProductImage implements Serializable {
+@Table(name = "products_type")
+public class ProductType implements Serializable {
 	
 	private static final long serialVersionUID = 1L;
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "image_id")
+	@Column(name = "product_type_id")
 	private Long id;
 	
-	@Size(min = 3, max = 60)
-	@Column(length = 60)
-	private String imageName;
-	
-	private boolean selected;
+	@Size(min = 3, max = 15)
+	@Column(length = 15)
+	private String type;
 
 }

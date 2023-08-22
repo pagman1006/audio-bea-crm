@@ -35,6 +35,7 @@ import com.audiobea.crm.app.business.dao.product.model.Product;
 import com.audiobea.crm.app.business.dao.product.model.ProductImage;
 import com.audiobea.crm.app.commons.ResponseData;
 import com.audiobea.crm.app.commons.dto.DtoInProduct;
+import com.audiobea.crm.app.commons.dto.EnumProductType;
 import com.audiobea.crm.app.controller.mapper.ListProductsMapper;
 import com.audiobea.crm.app.controller.mapper.ProductMapper;
 import com.audiobea.crm.app.utils.Validator;
@@ -65,12 +66,13 @@ public class ProductController {
 	@GetMapping
 	@Produces({ MediaType.APPLICATION_JSON })
 	public ResponseEntity<ResponseData<DtoInProduct>> getProducts(
+			@RequestParam(name = "productType", required = false) EnumProductType productType,
 			@RequestParam(name = "newProduct", required = false) boolean newProduct,
 			@RequestParam(name = "brand", required = false, defaultValue = "") String brand,
 			@RequestParam(value = "subBrand", required = false, defaultValue = "") String subBrand,
 			@RequestParam(name = "page", defaultValue = "0", required = false) Integer page,
 			@RequestParam(name = "pageSize", defaultValue = "10", required = false) Integer pageSize) {
-		Page<Product> pageable = productService.getProducts(newProduct, brand, subBrand, page, pageSize);
+		Page<Product> pageable = productService.getProducts(productType, newProduct, brand, subBrand, page, pageSize);
 		Validator.validatePage(pageable, messageSource);
 		ResponseData<DtoInProduct> response = new ResponseData<>(
 				listProductsMapper.productsToDtoInProducts(pageable.getContent()), pageable.getNumber(),
@@ -78,7 +80,7 @@ public class ProductController {
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 
-//	@PreAuthorize("hasAuthority('ADMIN')")
+	@PreAuthorize("hasAuthority('ADMIN')")
 	@PostMapping
 	@Produces({ MediaType.APPLICATION_JSON })
 	@Consumes({ MediaType.APPLICATION_JSON })

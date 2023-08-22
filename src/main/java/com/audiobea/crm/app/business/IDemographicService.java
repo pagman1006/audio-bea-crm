@@ -4,9 +4,9 @@ import java.util.List;
 
 import org.springframework.data.domain.Page;
 
-import com.audiobea.crm.app.business.dao.customer.model.City;
-import com.audiobea.crm.app.business.dao.customer.model.Colony;
-import com.audiobea.crm.app.business.dao.customer.model.State;
+import com.audiobea.crm.app.business.dao.demographic.model.City;
+import com.audiobea.crm.app.business.dao.demographic.model.Colony;
+import com.audiobea.crm.app.business.dao.demographic.model.State;
 
 public interface IDemographicService {
 

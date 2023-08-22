@@ -1,8 +1,8 @@
-package com.audiobea.crm.app.business.dao.product;
+package com.audiobea.crm.app.business.dao.invoice;
 
 import org.springframework.data.repository.PagingAndSortingRepository;
 
-import com.audiobea.crm.app.business.dao.product.model.Invoice;
+import com.audiobea.crm.app.business.dao.invoice.model.Invoice;
 
 public interface IInvoiceDao extends PagingAndSortingRepository<Invoice, Long> {
 }

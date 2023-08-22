@@ -1,4 +1,4 @@
-package com.audiobea.crm.app.business.dao.product.model;
+package com.audiobea.crm.app.business.dao.invoice.model;
 
 import java.io.Serializable;
 
@@ -10,6 +10,8 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+
+import com.audiobea.crm.app.business.dao.product.model.Product;
 
 import lombok.Data;
 

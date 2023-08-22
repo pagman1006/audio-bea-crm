@@ -18,9 +18,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.audiobea.crm.app.business.IDemographicService;
-import com.audiobea.crm.app.business.dao.customer.model.City;
-import com.audiobea.crm.app.business.dao.customer.model.Colony;
-import com.audiobea.crm.app.business.dao.customer.model.State;
+import com.audiobea.crm.app.business.dao.demographic.model.City;
+import com.audiobea.crm.app.business.dao.demographic.model.Colony;
+import com.audiobea.crm.app.business.dao.demographic.model.State;
 import com.audiobea.crm.app.commons.ResponseData;
 import com.audiobea.crm.app.commons.dto.DtoInCity;
 import com.audiobea.crm.app.commons.dto.DtoInColony;

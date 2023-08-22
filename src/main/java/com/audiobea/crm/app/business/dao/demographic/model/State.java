@@ -1,4 +1,4 @@
-package com.audiobea.crm.app.business.dao.customer.model;
+package com.audiobea.crm.app.business.dao.demographic.model;
 
 import java.io.Serializable;
 import java.util.List;
@@ -16,17 +16,17 @@ import javax.persistence.Table;
 import javax.validation.constraints.Size;
 
 import lombok.Data;
+import org.apache.commons.lang.StringUtils;
 
 @Data
 @Entity
-@Table(name = "cities")
-public class City implements Serializable, Comparable<City> {
+@Table(name = "states")
+public class State implements Serializable, Comparable<State> {
 	
 	private static final long serialVersionUID = 1L;
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "city_id")
 	private Long id;
 	
 	@Size(min = 3, max = 60)
@@ -34,12 +34,14 @@ public class City implements Serializable, Comparable<City> {
 	private String name;
 	
 	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-	@JoinColumn(name = "city_id")
-	private List<Colony> colonies;
-	
-	@Override
-	public int compareTo(City c) {
-		return name.compareTo(c.getName());
-	}
+	@JoinColumn(name = "state_id")
+	private List<City> cities;
 
+	@Override
+	public int compareTo(State s) {
+		if (StringUtils.isBlank(name) || StringUtils.isBlank(s.getName())) {
+			return 0;
+		}
+		return name.compareTo(s.getName());
+	}
 }
