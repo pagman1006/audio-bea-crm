@@ -14,13 +14,13 @@ import com.audiobea.crm.app.utils.Constants;
 @Mapper(componentModel = Constants.SPRING)
 public interface PhoneMapper {
 
-	@Mapping(target = "phoneType", source="phoneType", qualifiedByName = "enumTypePhone")
+	@Mapping(target = "phoneType", source="phoneType", qualifiedByName = "enumPhoneType")
 	DtoInPhone phoneToDtoInPhone(Phone phone);
 	
 	@Mapping(target = "phoneType", source="phoneType", qualifiedByName = "typePhone")
 	Phone phoneDtoToPhone(DtoInPhone dtoPhone);
 	
-	@Named("enumTypePhone")
+	@Named("enumPhoneType")
 	default EnumPhoneType mapEnumType(PhoneType phoneType) {
 		if (phoneType == null || StringUtils.isBlank(phoneType.getType())) {
 			return null;

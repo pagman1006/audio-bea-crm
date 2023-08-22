@@ -1,11 +1,5 @@
 package com.audiobea.crm.app.controller.product;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
-
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
@@ -30,9 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.audiobea.crm.app.business.IProductService;
-import com.audiobea.crm.app.business.IUploadService;
 import com.audiobea.crm.app.business.dao.product.model.Product;
-import com.audiobea.crm.app.business.dao.product.model.ProductImage;
 import com.audiobea.crm.app.commons.ResponseData;
 import com.audiobea.crm.app.commons.dto.DtoInProduct;
 import com.audiobea.crm.app.commons.dto.EnumProductType;
@@ -51,9 +43,6 @@ public class ProductController {
 
 	@Autowired
 	private IProductService productService;
-
-	@Autowired
-	private IUploadService uploadService;
 
 	@Autowired
 	private ListProductsMapper listProductsMapper;
@@ -80,8 +69,8 @@ public class ProductController {
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 
-	@PreAuthorize("hasAuthority('ADMIN')")
-	@PostMapping
+//	@PreAuthorize("hasAuthority('ADMIN')")
+	@PostMapping()
 	@Produces({ MediaType.APPLICATION_JSON })
 	@Consumes({ MediaType.APPLICATION_JSON })
 	public ResponseEntity<DtoInProduct> addProduct(@RequestBody DtoInProduct product) {
@@ -91,47 +80,15 @@ public class ProductController {
 	}
 
 	@PreAuthorize("hasAuthority('ADMIN')")
-	@PostMapping(path = "/{id}/image", consumes = { MediaType.MULTIPART_FORM_DATA })
-	@Produces({ MediaType.APPLICATION_JSON })
-	@Consumes({ MediaType.APPLICATION_JSON })
-	public ResponseEntity<String> uploadImage(@PathVariable("id") Long id,
-			@RequestPart(name = "file", required = false) MultipartFile image) {
-		String uniqueFileName = null;
-		if (!image.isEmpty()) {
-			try {
-				uniqueFileName = uploadService.copy(image);
-				Product product = productService.getProductById(id);
-				if (product.getImages() == null || product.getImages().isEmpty()) {
-					List<ProductImage> listImages = new ArrayList<>();
-					ProductImage pImage = new ProductImage();
-					pImage.setImageName(uniqueFileName);
-					listImages.add(pImage);
-					product.setImages(listImages);
-				} else {
-					ProductImage pImage = new ProductImage();
-					pImage.setImageName(uniqueFileName);
-					product.getImages().add(pImage);
-				}
-				productService.saveProduct(product);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-		return new ResponseEntity<>(uniqueFileName, HttpStatus.CREATED);
-	}
-
-	@PreAuthorize("hasAuthority('ADMIN')")
 	@PostMapping(path = "/{id}/images", consumes = { MediaType.MULTIPART_FORM_DATA })
 	@Produces({ MediaType.APPLICATION_JSON })
 	@Consumes({ MediaType.APPLICATION_JSON })
 	@ResponseStatus(value = HttpStatus.OK)
-	public ResponseEntity<List<String>> uploadImages(@PathVariable("id") Long id,
-			@RequestPart(name = "file", required = false) MultipartFile[] images) {
-		List<String> list = new ArrayList<>();
-		for (ResponseEntity<String> r : Arrays.asList(images).stream().map(image -> uploadImage(id, image)).collect(Collectors.toList())) {
-			list.add(r.getBody());
-		}
-		return new ResponseEntity<>(list, HttpStatus.CREATED);
+	public ResponseEntity<DtoInProduct> uploadImages(@PathVariable("id") Long id,
+			@RequestPart(name = "files", required = false) MultipartFile[] images) {
+		log.debug("Id: {}, Images: {}", id, images.length);
+		return new ResponseEntity<>(productMapper.productToDtoInProduct(productService.uploadImages(id, images)),
+				HttpStatus.CREATED);
 	}
 
 	@PreAuthorize("hasAuthority('ADMIN')")

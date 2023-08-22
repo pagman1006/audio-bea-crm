@@ -11,5 +11,15 @@ public class DtoInProductImage implements Serializable {
 	
 	private Long id;
 	private String imageName;
+	private boolean selected;
+	
+	public DtoInProductImage() {
+		super();
+	}
+	
+	public DtoInProductImage(String imageName) {
+		super();
+		this.imageName = imageName;
+	}
 
 }

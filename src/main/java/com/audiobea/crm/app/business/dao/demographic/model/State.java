@@ -15,8 +15,9 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.Size;
 
-import lombok.Data;
 import org.apache.commons.lang.StringUtils;
+
+import lombok.Data;
 
 @Data
 @Entity

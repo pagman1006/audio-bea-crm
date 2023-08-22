@@ -30,4 +30,13 @@ public class ProductImage implements Serializable {
 	
 	private boolean selected;
 
+	public ProductImage() {
+		super();
+	}
+	
+	public ProductImage(@Size(min = 3, max = 60) String imageName) {
+		super();
+		this.imageName = imageName;
+	}
+	
 }

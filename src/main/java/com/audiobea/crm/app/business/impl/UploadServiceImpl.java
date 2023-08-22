@@ -8,6 +8,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
@@ -77,7 +78,9 @@ public class UploadServiceImpl implements IUploadService {
 	@Override
 	public String copy(MultipartFile file) throws IOException {
 		String uniqueFileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
+		log.debug("uniqueFileName: {}", uniqueFileName);
 		Path rootPath = getPath(uniqueFileName);
+		log.debug("rootPath: {}", rootPath.getFileName());
 		Files.copy(file.getInputStream(), rootPath);
 		return uniqueFileName;
 	}
@@ -280,6 +283,19 @@ public class UploadServiceImpl implements IUploadService {
 
 	public Path getPath(String filename) {
 		return Paths.get(Constants.UPLOADS_FOLDER).resolve(filename).toAbsolutePath();
+	}
+
+	@Override
+	public List<String> uploadFiles(MultipartFile[] files) throws IOException {
+		return Arrays.asList(files).stream().map(file -> {
+			try {
+				log.debug("file: {}", file.getName());
+				return copy(file);
+			} catch (IOException e) {
+				e.printStackTrace();
+				return null;
+			}
+		}).collect(Collectors.toList());
 	}
 
 }

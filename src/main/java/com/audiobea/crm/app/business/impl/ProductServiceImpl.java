@@ -1,5 +1,9 @@
 package com.audiobea.crm.app.business.impl;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
@@ -8,13 +12,16 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.audiobea.crm.app.business.IProductService;
+import com.audiobea.crm.app.business.IUploadService;
 import com.audiobea.crm.app.business.dao.product.IBrandDao;
 import com.audiobea.crm.app.business.dao.product.IProductDao;
 import com.audiobea.crm.app.business.dao.product.ISubBrandDao;
 import com.audiobea.crm.app.business.dao.product.model.Brand;
 import com.audiobea.crm.app.business.dao.product.model.Product;
+import com.audiobea.crm.app.business.dao.product.model.ProductImage;
 import com.audiobea.crm.app.business.dao.product.model.SubBrand;
 import com.audiobea.crm.app.commons.I18Constants;
 import com.audiobea.crm.app.commons.dto.EnumProductType;
@@ -31,6 +38,9 @@ import lombok.extern.slf4j.Slf4j;
 public class ProductServiceImpl implements IProductService {
 
 	@Autowired
+	private IUploadService uploadService;
+	
+	@Autowired
 	private IProductDao productDao;
 
 	@Autowired
@@ -38,7 +48,7 @@ public class ProductServiceImpl implements IProductService {
 
 	@Autowired
 	private ISubBrandDao subBrandDao;
-
+	
 	private final MessageSource messageSource;
 
 	@Override
@@ -180,6 +190,35 @@ public class ProductServiceImpl implements IProductService {
 	public boolean deleteSubBrandById(Long subBrandId) {
 		subBrandDao.deleteById(subBrandId);
 		return true;
+	}
+
+	@Transactional
+	@Override
+	public Product uploadImages(Long id, MultipartFile[] files) {
+		if (id == null) {
+			return null;
+		}
+		Product product = getProductById(id);
+		log.debug("id: {}, files: {}", id, files.length);
+		if (files != null && files.length > 0) {
+			log.debug("files: {}", files.length);
+			try {
+				List<String> imageNames = uploadService.uploadFiles(files);
+				if (imageNames != null && !imageNames.isEmpty()) {
+					log.debug("imageNames: {}", imageNames.size());
+					List<ProductImage> images = new ArrayList<>();
+					for (String imageName : imageNames) {
+						log.debug("Name: {}", imageName);
+						images.add(new ProductImage(imageName));
+					}
+					product.setImages(images);
+					saveProduct(product);
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		return product;
 	}
 
 }

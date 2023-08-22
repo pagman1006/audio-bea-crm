@@ -19,6 +19,8 @@ public class DtoInProduct implements Serializable {
 	private Integer stock;
 	private List<DtoInProductImage> images;
 	private DtoInSubBrand subBrand;
+	private EnumProductType productType;
+	
 	private boolean enabled;
 
 }

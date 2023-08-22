@@ -13,7 +13,7 @@ public interface IProductDao extends PagingAndSortingRepository<Product, Long> {
 	@Query(value = Constants.FIND_PRODUCTS_BY_NEW_PRODUCT_BRAND_SUB_BRAND, nativeQuery = true)
 	Page<Product> findByNewProductBrandSubBrandProductType(String brandName, String subBrandName, String productType, Pageable pageable);
 	
-	@Query(value = Constants.FIND_PRODUCTS_BY_NEW_PRODUCT_BRAND_SUB_BRAND, nativeQuery = true)
+	@Query(value = Constants.FIND_PRODUCTS_BY_BRAND_SUB_BRAND, nativeQuery = true)
 	Page<Product> findByBrandSubBrandProductType(String brandName, String subBrandName, String productType, Pageable pageable);
 		
 }
