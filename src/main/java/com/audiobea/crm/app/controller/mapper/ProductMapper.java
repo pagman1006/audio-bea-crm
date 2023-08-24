@@ -17,7 +17,6 @@ public interface ProductMapper {
 	@Mapping(target = "productType", source = "productType", qualifiedByName = "enumProductType")
 	DtoInProduct productToDtoInProduct(Product product);
 
-	@Mapping(target = "newProduct", ignore = true)
 	@Mapping(target = "productType", source = "productType", qualifiedByName = "productType")
 	Product productDtoInToProduct(DtoInProduct dtoProduct);
 	

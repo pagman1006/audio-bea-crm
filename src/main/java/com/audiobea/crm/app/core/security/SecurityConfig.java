@@ -32,31 +32,27 @@ import com.audiobea.crm.app.core.security.jwt.filter.JWTAuthorizationFilter;
 @EnableGlobalMethodSecurity(securedEnabled = true, prePostEnabled = true, jsr250Enabled = true)
 public class SecurityConfig {
 
-	private static final RequestMatcher PUBLIC_URLS = new OrRequestMatcher(
-			new AntPathRequestMatcher("/v1/audio-bea/users"),
-			new AntPathRequestMatcher("/v1/audio-bea/"));
+	private static final RequestMatcher PUBLIC_URLS = new OrRequestMatcher(new AntPathRequestMatcher("/v1/audio-bea/"));
 
-	@Bean // WebSecurityConfigurerAdapter
-	public SecurityFilterChain securityFilterChain(HttpSecurity http, UserDetailsService userDetailsService, IJWTService jwtService) throws Exception {
-		http.sessionManagement()
-			.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-			.and()
-			.authorizeRequests()
-			.antMatchers("/", "/v1/audio-bea/**").permitAll().anyRequest().authenticated().and()
+	@Bean
+	SecurityFilterChain securityFilterChain(HttpSecurity http, UserDetailsService userDetailsService,
+			IJWTService jwtService) throws Exception {
+		
+		return http.sessionManagement(management -> management.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+				.authorizeHttpRequests(requests -> requests.antMatchers("/", "/v1/audio-bea/**").permitAll()
+						.anyRequest().authenticated())
 				.addFilter(new JWTAuthenticationFilter(authenticationManager(userDetailsService, passwordEncoder()),
 						jwtService))
 				.addFilter(new JWTAuthorizationFilter(authenticationManager(userDetailsService, passwordEncoder()),
 						jwtService))
-				.csrf().disable();
-
-		return http.build();
+				.csrf(csrf -> csrf.disable()).build();
 	}
 
-	@Bean // WebSecurityConfigurerAdapter
-	public WebSecurityCustomizer webSecurityCustomizer() {
+	@Bean
+	WebSecurityCustomizer webSecurityCustomizer() {
 		return web -> web.ignoring().requestMatchers(PUBLIC_URLS);
 	}
-	
+
 	@Bean
 	AuthenticationEntryPoint forbiddenEntryPoint() {
 		return new HttpStatusEntryPoint(HttpStatus.FORBIDDEN);
@@ -79,7 +75,7 @@ public class SecurityConfig {
 	}
 
 	@Bean
-	public PasswordEncoder passwordEncoder() {
+	PasswordEncoder passwordEncoder() {
 		return new BCryptPasswordEncoder();
 	}
 
