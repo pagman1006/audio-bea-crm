@@ -56,9 +56,9 @@ public class ProductController {
 	@Produces({ MediaType.APPLICATION_JSON })
 	public ResponseEntity<ResponseData<DtoInProduct>> getProducts(
 			@RequestParam(name = "productType", required = false) EnumProductType productType,
-			@RequestParam(name = "newProduct", required = false) boolean newProduct,
 			@RequestParam(name = "brand", required = false, defaultValue = "") String brand,
 			@RequestParam(value = "subBrand", required = false, defaultValue = "") String subBrand,
+			@RequestParam(name = "newProduct", required = false) boolean newProduct,
 			@RequestParam(name = "page", defaultValue = "0", required = false) Integer page,
 			@RequestParam(name = "pageSize", defaultValue = "10", required = false) Integer pageSize) {
 		Page<Product> pageable = productService.getProducts(productType, newProduct, brand, subBrand, page, pageSize);
@@ -69,7 +69,7 @@ public class ProductController {
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 
-//	@PreAuthorize("hasAuthority('ADMIN')")
+	@PreAuthorize("hasAuthority('ADMIN')")
 	@PostMapping()
 	@Produces({ MediaType.APPLICATION_JSON })
 	@Consumes({ MediaType.APPLICATION_JSON })
