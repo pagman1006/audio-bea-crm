@@ -52,6 +52,10 @@ public class Product implements Serializable {
 	@JoinColumn(name = "product_id")
 	private List<ProductImage> images;
 	
+	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	@JoinColumn(name = "product_id")
+	private List<ProductRanking> rankings;
+	
 	@ManyToOne
 	@JoinColumn(name = "sub_brand_id")
 	private SubBrand subBrand;
