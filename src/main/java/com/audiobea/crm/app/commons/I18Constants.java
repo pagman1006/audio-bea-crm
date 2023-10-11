@@ -10,7 +10,8 @@ public enum I18Constants {
 	NOT_VALID_EXCEL("file.excel.not.valid"),
 	UPLOAD_FILE_EXCEPTION("upload.file.exception"),
 	FAIL_PARSE_EXCEL_FILE("fail.parse.excel.file"),
-	NO_FILE_FOUND("file.not.found");
+	NO_FILE_FOUND("file.not.found"),
+	NO_PRIVILEGES("not.privileges");
 	
 	String key;
 	

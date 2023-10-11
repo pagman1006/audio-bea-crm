@@ -96,13 +96,6 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 		return buildErrorResponse(noSuchFileException, HttpStatus.INTERNAL_SERVER_ERROR, request);
 	}
 
-	@ExceptionHandler(Exception.class)
-	@ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-	public ResponseEntity<Object> handleAllUncaughtException(Exception exception, WebRequest request) {
-		log.error(UNKNOWN_MESSAGE_ERROR, exception);
-		return buildErrorResponse(exception, UNKNOWN_MESSAGE_ERROR, HttpStatus.INTERNAL_SERVER_ERROR, request);
-	}
-	
 	@ExceptionHandler(AuthenticationException.class)
 	@ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
 	public ResponseEntity<Object> handleAuthenticationFailedException(AuthenticationException authenticationException, WebRequest request) {
@@ -115,6 +108,21 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 	public ResponseEntity<Object> handleAccessDeniedException(AccessDeniedException accessDeniedException, WebRequest request) {
 		log.error("AccessDenied getMessage() ", accessDeniedException.getMessage());
 		return buildErrorResponse(accessDeniedException, "AccessDenied ", HttpStatus.FORBIDDEN, request);
+	}
+	
+	@ExceptionHandler(ForbiddenException.class)
+	@ResponseStatus(HttpStatus.NOT_FOUND)
+	public ResponseEntity<Object> handleForbiddenException(ForbiddenException forbiddenException,
+			WebRequest request) {
+		log.error("You do not have privileges to consult this information: ", forbiddenException.getMessage());
+		return buildErrorResponse(forbiddenException, HttpStatus.FORBIDDEN, request);
+	}
+	
+	@ExceptionHandler(Exception.class)
+	@ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+	public ResponseEntity<Object> handleAllUncaughtException(Exception exception, WebRequest request) {
+		log.error(UNKNOWN_MESSAGE_ERROR, exception);
+		return buildErrorResponse(exception, UNKNOWN_MESSAGE_ERROR, HttpStatus.INTERNAL_SERVER_ERROR, request);
 	}
 
 	private ResponseEntity<Object> buildErrorResponse(Exception exception, HttpStatus httpStatus, WebRequest request) {

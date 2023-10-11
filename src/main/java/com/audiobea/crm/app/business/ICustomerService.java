@@ -1,6 +1,7 @@
 package com.audiobea.crm.app.business;
 
 import org.springframework.data.domain.Page;
+import org.springframework.security.core.Authentication;
 
 import com.audiobea.crm.app.business.dao.customer.model.Customer;
 
@@ -14,5 +15,5 @@ public interface ICustomerService {
 
     boolean deleteCustomer(Long customerId);
 
-    Customer getCustomerById(Long customerId);
+    Customer getCustomerById(Long customerId, Authentication auth);
 }

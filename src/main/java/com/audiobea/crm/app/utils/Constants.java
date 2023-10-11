@@ -5,6 +5,7 @@ public class Constants {
 
     public static final String SPRING = "spring";
     
+    public static final String URL_BASE = "/audio-bea/v1/api";
     public static final String XS_NAMESPACE = "http://www.w3.org/2001/XMLSchema";
     public static final String TITLE_WADL = "Spring REST Service WADL";
     
@@ -17,10 +18,13 @@ public class Constants {
     public static final String FIRST_LAST_NAME = "firstLastName";
     public static final String SECOND_LAST_NAME = "secondLastName";
     
-    public static final String BRAND = "brand";
-    public static final String SUB_BRAND = "sub_brand";
+    public static final String BRAND = "brandName";
+    public static final String SUB_BRAND = "subBrandName";
+    public static final String SUB_BRAND_BRAND_NAME = "brandBrandName";
     
     public static final String CITY_NAME = "name";
+    
+    public static final String ALL = "All";
     
     // Queries
     public static final String FIND_CITIES_BY_STATE_ID = "SELECT * FROM cities WHERE state_id = :stateId";

@@ -1,5 +1,6 @@
 package com.audiobea.crm.app.controller.customer;
 
+import java.security.Principal;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
@@ -12,6 +13,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -27,13 +29,14 @@ import com.audiobea.crm.app.commons.ResponseData;
 import com.audiobea.crm.app.commons.dto.DtoInCustomer;
 import com.audiobea.crm.app.controller.mapper.CustomerMapper;
 import com.audiobea.crm.app.controller.mapper.ListCustomerMapper;
+import com.audiobea.crm.app.utils.Constants;
 import com.audiobea.crm.app.utils.Validator;
 
 import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
 @RestController
-@RequestMapping("/v1/audio-bea/admin/customers")
+@RequestMapping(Constants.URL_BASE + "/admin/customers")
 public class CustomerController {
 
 	private final MessageSource messageSource;
@@ -44,8 +47,8 @@ public class CustomerController {
 	@Autowired
 	private CustomerMapper customerMapper;
 
-	@PreAuthorize("hasAuthority('ADMIN')")
 	@GetMapping
+	@PreAuthorize("hasAuthority('ADMIN')")
 	@Produces({ MediaType.APPLICATION_JSON })
 	public ResponseEntity<ResponseData<DtoInCustomer>> getCustomers(
 			@RequestParam(name = "firstName", defaultValue = "", required = false) String firstName,
@@ -56,39 +59,37 @@ public class CustomerController {
 		Page<Customer> pageable = customerService.getCustomers(firstName, firstLastName, page, pageSize);
 		Validator.validatePage(pageable, messageSource);
 		List<DtoInCustomer> listCustomers = listCustomerMapper.listCustomersToListDtoInCustomers(pageable.getContent());
-		ResponseData<DtoInCustomer> response = new ResponseData<>(listCustomers, pageable.getNumber(),
-				pageable.getSize(), pageable.getTotalElements(), pageable.getTotalPages());
+		ResponseData<DtoInCustomer> response = new ResponseData<>(listCustomers, pageable.getNumber(), pageable.getSize(),
+				pageable.getTotalElements(), pageable.getTotalPages());
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 
-	@PreAuthorize("hasAuthority('USER') or hasAuthority('ADMIN')")
 	@PostMapping
+	@PreAuthorize("hasAuthority('USER') or hasAuthority('ADMIN')")
 	@Produces({ MediaType.APPLICATION_JSON })
 	@Consumes({ MediaType.APPLICATION_JSON })
-	public ResponseEntity<DtoInCustomer> saveCustomer(@RequestBody DtoInCustomer customer) {
-		return new ResponseEntity<>(
-				customerMapper.customerToDtoInCustomer(
-						customerService.saveCustomer(customerMapper.customerDtoInToCustomer(customer))),
-				HttpStatus.CREATED);
+	public ResponseEntity<DtoInCustomer> addCustomer(@RequestBody DtoInCustomer customer) {
+		return new ResponseEntity<>(customerMapper.customerToDtoInCustomer(
+				customerService.saveCustomer(customerMapper.customerDtoInToCustomer(customer))), HttpStatus.CREATED);
 	}
 
-	@PreAuthorize("hasAuthority('USER') or hasAuthority('ADMIN')")
 	@PutMapping("/{id}")
+	@PreAuthorize("hasAuthority('USER') or hasAuthority('ADMIN')")
 	@Produces({ MediaType.APPLICATION_JSON })
 	@Consumes({ MediaType.APPLICATION_JSON })
-	public ResponseEntity<DtoInCustomer> updateCustomer(@PathVariable(name = "id") Long id,
-			@RequestBody DtoInCustomer customer) {
+	public ResponseEntity<DtoInCustomer> updateCustomer(@PathVariable(name = "id") Long id, @RequestBody DtoInCustomer customer) {
 		return new ResponseEntity<>(
 				customerMapper.customerToDtoInCustomer(
 						customerService.updateCustomer(id, customerMapper.customerDtoInToCustomer(customer))),
 				HttpStatus.CREATED);
 	}
 
-	@PreAuthorize("hasAuthority('USER') or hasAuthority('ADMIN')")
 	@GetMapping("/{id}")
+	@PreAuthorize("hasAuthority('USER') or hasAuthority('ADMIN')")
 	@Produces({ MediaType.APPLICATION_JSON })
-	public ResponseEntity<DtoInCustomer> getCustomer(@PathVariable(name = "id") Long id) {
-		return new ResponseEntity<>(customerMapper.customerToDtoInCustomer(customerService.getCustomerById(id)),
+	public ResponseEntity<DtoInCustomer> getCustomerById(@PathVariable(name = "id") Long id, Principal principal,
+			Authentication authentication) {
+		return new ResponseEntity<>(customerMapper.customerToDtoInCustomer(customerService.getCustomerById(id, authentication)),
 				HttpStatus.CREATED);
 	}
 }

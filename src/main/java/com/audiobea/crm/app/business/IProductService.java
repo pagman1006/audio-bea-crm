@@ -29,7 +29,7 @@ public interface IProductService {
 
 	public boolean deleteBrandById(Long id);
 
-	public Page<SubBrand> getSubBrandsByBrandId(Long brandId, String subBrand, Integer page, Integer pageSize);
+	public Page<SubBrand> getSubBrandsByBrandId(String brandId, String subBrand, Integer page, Integer pageSize);
 
 	public SubBrand saveSubBrand(Long brandId, SubBrand subBrand);
 

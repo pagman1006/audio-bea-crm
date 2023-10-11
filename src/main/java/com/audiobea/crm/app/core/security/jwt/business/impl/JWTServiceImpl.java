@@ -30,7 +30,7 @@ public class JWTServiceImpl implements IJWTService {
 
 	public static final String SECRET = Base64Utils.encodeToString("Alguna.Clave.Secreta.123456".getBytes());
 
-	public static final long EXPIRATION_DATE = 14000000L;
+	public static final long EXPIRATION_DATE = 30000L;
 	public static final String TOKEN_PREFIX = "Bearer ";
 	public static final String HEADER_STRING = "Authorization";
 

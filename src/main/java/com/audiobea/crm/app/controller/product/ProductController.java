@@ -30,6 +30,7 @@ import com.audiobea.crm.app.commons.dto.DtoInProduct;
 import com.audiobea.crm.app.commons.dto.EnumProductType;
 import com.audiobea.crm.app.controller.mapper.ListProductsMapper;
 import com.audiobea.crm.app.controller.mapper.ProductMapper;
+import com.audiobea.crm.app.utils.Constants;
 import com.audiobea.crm.app.utils.Validator;
 
 import lombok.AllArgsConstructor;
@@ -38,7 +39,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @AllArgsConstructor
 @RestController
-@RequestMapping("/v1/audio-bea/products")
+@RequestMapping(Constants.URL_BASE + "/products")
 public class ProductController {
 
 	@Autowired
@@ -69,8 +70,8 @@ public class ProductController {
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 
-	@PreAuthorize("hasAuthority('ADMIN')")
 	@PostMapping()
+	@PreAuthorize("hasAuthority('ADMIN')")
 	@Produces({ MediaType.APPLICATION_JSON })
 	@Consumes({ MediaType.APPLICATION_JSON })
 	public ResponseEntity<DtoInProduct> addProduct(@RequestBody DtoInProduct product) {
@@ -79,8 +80,8 @@ public class ProductController {
 				productService.saveProduct(productMapper.productDtoInToProduct(product))), HttpStatus.CREATED);
 	}
 
-	@PreAuthorize("hasAuthority('ADMIN')")
 	@PostMapping(path = "/{id}/images", consumes = { MediaType.MULTIPART_FORM_DATA })
+	@PreAuthorize("hasAuthority('ADMIN')")
 	@Produces({ MediaType.APPLICATION_JSON })
 	@Consumes({ MediaType.APPLICATION_JSON })
 	@ResponseStatus(value = HttpStatus.OK)
@@ -91,8 +92,8 @@ public class ProductController {
 				HttpStatus.CREATED);
 	}
 
-	@PreAuthorize("hasAuthority('ADMIN')")
 	@PutMapping("/{id}")
+	@PreAuthorize("hasAuthority('ADMIN')")
 	@Produces({ MediaType.APPLICATION_JSON })
 	@Consumes({ MediaType.APPLICATION_JSON })
 	public ResponseEntity<DtoInProduct> updateProduct(@PathVariable("id") Long id, @RequestBody DtoInProduct product) {
@@ -102,8 +103,8 @@ public class ProductController {
 				HttpStatus.CREATED);
 	}
 
-	@PreAuthorize("hasAuthority('ADMIN')")
 	@DeleteMapping("/{id}")
+	@PreAuthorize("hasAuthority('ADMIN')")
 	@Produces({ MediaType.APPLICATION_JSON })
 	public ResponseEntity<String> deleteProductById(@PathVariable("id") Long id) {
 		productService.deleteProductById(id);

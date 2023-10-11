@@ -5,6 +5,7 @@ target/
 !**/src/main/**/target/
 !**/src/test/**/target/
 uploads/
+serviceAccountKey.json
 
 ### STS ###
 .apt_generated

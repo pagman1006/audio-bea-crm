@@ -29,7 +29,7 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
 	public JWTAuthenticationFilter(AuthenticationManager authenticationManager, IJWTService jwtService) {
 		this.authenticationManager = authenticationManager;
-		setRequiresAuthenticationRequestMatcher(new AntPathRequestMatcher("/v1/audio-bea/login", "POST"));
+		setRequiresAuthenticationRequestMatcher(new AntPathRequestMatcher("/audio-bea/v1/api/login", "POST"));
 		this.jwtService = jwtService;
 	}
 
