@@ -25,7 +25,6 @@ import com.audiobea.crm.app.business.dao.product.model.Product;
 import com.audiobea.crm.app.business.dao.product.model.ProductImage;
 import com.audiobea.crm.app.business.dao.product.model.SubBrand;
 import com.audiobea.crm.app.commons.I18Constants;
-import com.audiobea.crm.app.commons.dto.EnumProductType;
 import com.audiobea.crm.app.core.exception.NoSuchElementFoundException;
 import com.audiobea.crm.app.utils.Constants;
 import com.audiobea.crm.app.utils.Utils;
@@ -54,16 +53,17 @@ public class ProductServiceImpl implements IProductService {
 	private final MessageSource messageSource;
 
 	@Override
-	public Page<Product> getProducts(EnumProductType enumProductType, boolean isNewProduct, String brand, String subBrand,
-			Integer page, Integer pageSize) {
+	public Page<Product> getProducts(String productName, String productType, boolean isNewProduct, String brand, String subBrand, Integer page,
+			Integer pageSize) {
 		Pageable pageable = PageRequest.of(page, pageSize);
-		log.debug("Marca: {}, SubMarca: {}, ProductType: {}, Nuevo: {}, Page: {}, PageSize: {}", brand, subBrand, enumProductType,
+		log.debug("Marca: {}, SubMarca: {}, ProductType: {}, Nuevo: {}, Page: {}, PageSize: {}", brand, subBrand, productType,
 				isNewProduct, page, pageSize);
-		String productType = enumProductType != null ? enumProductType.name() : "";
+		productType =  StringUtils.isNotBlank(productType)? productType : "";
+		productName = StringUtils.isNotBlank(productName)? productName : "";
 		if (isNewProduct) {
-			return productDao.findByNewProductBrandSubBrandProductType(brand, subBrand, productType, pageable);
+			return productDao.findByNewProductBrandSubBrandProductType(productName, brand, subBrand, productType, pageable);
 		} else {
-			return productDao.findByBrandSubBrandProductType(brand, subBrand, productType, pageable);
+			return productDao.findByBrandSubBrandProductType(productName, brand, subBrand, productType, pageable);
 		}
 	}
 
@@ -150,8 +150,7 @@ public class ProductServiceImpl implements IProductService {
 
 	@Override
 	public Page<SubBrand> getSubBrandsByBrandId(String brandId, String subBrand, Integer page, Integer pageSize) {
-		Pageable pageable = PageRequest.of(page, pageSize,
-				Sort.by(Constants.SUB_BRAND_BRAND_NAME).and(Sort.by(Constants.SUB_BRAND)));
+		Pageable pageable = PageRequest.of(page, pageSize, Sort.by(Constants.SUB_BRAND_BRAND_NAME).and(Sort.by(Constants.SUB_BRAND)));
 		log.debug("MarcaId: {}, SubBrand: {}, Page: {}, PageSize: {}", brandId, subBrand, page, pageSize);
 		if (StringUtils.isNotBlank(brandId)) {
 			if (brandId.equalsIgnoreCase(Constants.ALL)) {

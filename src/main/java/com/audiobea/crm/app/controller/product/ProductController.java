@@ -27,7 +27,6 @@ import com.audiobea.crm.app.business.IProductService;
 import com.audiobea.crm.app.business.dao.product.model.Product;
 import com.audiobea.crm.app.commons.ResponseData;
 import com.audiobea.crm.app.commons.dto.DtoInProduct;
-import com.audiobea.crm.app.commons.dto.EnumProductType;
 import com.audiobea.crm.app.controller.mapper.ListProductsMapper;
 import com.audiobea.crm.app.controller.mapper.ProductMapper;
 import com.audiobea.crm.app.utils.Constants;
@@ -56,17 +55,17 @@ public class ProductController {
 	@GetMapping
 	@Produces({ MediaType.APPLICATION_JSON })
 	public ResponseEntity<ResponseData<DtoInProduct>> getProducts(
-			@RequestParam(name = "productType", required = false) EnumProductType productType,
+			@RequestParam(name = "productType", required = false) String productType,
+			@RequestParam(name = "productName", required = false) String productName,
 			@RequestParam(name = "brand", required = false, defaultValue = "") String brand,
 			@RequestParam(value = "subBrand", required = false, defaultValue = "") String subBrand,
 			@RequestParam(name = "newProduct", required = false) boolean newProduct,
 			@RequestParam(name = "page", defaultValue = "0", required = false) Integer page,
 			@RequestParam(name = "pageSize", defaultValue = "10", required = false) Integer pageSize) {
-		Page<Product> pageable = productService.getProducts(productType, newProduct, brand, subBrand, page, pageSize);
+		Page<Product> pageable = productService.getProducts(productName, productType, newProduct, brand, subBrand, page, pageSize);
 		Validator.validatePage(pageable, messageSource);
-		ResponseData<DtoInProduct> response = new ResponseData<>(
-				listProductsMapper.productsToDtoInProducts(pageable.getContent()), pageable.getNumber(),
-				pageable.getSize(), pageable.getTotalElements(), pageable.getTotalPages());
+		ResponseData<DtoInProduct> response = new ResponseData<>(listProductsMapper.productsToDtoInProducts(pageable.getContent()),
+				pageable.getNumber(), pageable.getSize(), pageable.getTotalElements(), pageable.getTotalPages());
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 
@@ -76,8 +75,9 @@ public class ProductController {
 	@Consumes({ MediaType.APPLICATION_JSON })
 	public ResponseEntity<DtoInProduct> addProduct(@RequestBody DtoInProduct product) {
 		log.debug("DtoInProduct: {}", product);
-		return new ResponseEntity<>(productMapper.productToDtoInProduct(
-				productService.saveProduct(productMapper.productDtoInToProduct(product))), HttpStatus.CREATED);
+		return new ResponseEntity<>(
+				productMapper.productToDtoInProduct(productService.saveProduct(productMapper.productDtoInToProduct(product))),
+				HttpStatus.CREATED);
 	}
 
 	@PostMapping(path = "/{id}/images", consumes = { MediaType.MULTIPART_FORM_DATA })
@@ -88,8 +88,7 @@ public class ProductController {
 	public ResponseEntity<DtoInProduct> uploadImages(@PathVariable("id") Long id,
 			@RequestPart(name = "files", required = false) MultipartFile[] images) {
 		log.debug("Id: {}, Images: {}", id, images.length);
-		return new ResponseEntity<>(productMapper.productToDtoInProduct(productService.uploadImages(id, images)),
-				HttpStatus.CREATED);
+		return new ResponseEntity<>(productMapper.productToDtoInProduct(productService.uploadImages(id, images)), HttpStatus.CREATED);
 	}
 
 	@PutMapping("/{id}")
@@ -98,8 +97,7 @@ public class ProductController {
 	@Consumes({ MediaType.APPLICATION_JSON })
 	public ResponseEntity<DtoInProduct> updateProduct(@PathVariable("id") Long id, @RequestBody DtoInProduct product) {
 		return new ResponseEntity<>(
-				productMapper.productToDtoInProduct(
-						productService.updateProduct(id, productMapper.productDtoInToProduct(product))),
+				productMapper.productToDtoInProduct(productService.updateProduct(id, productMapper.productDtoInToProduct(product))),
 				HttpStatus.CREATED);
 	}
 

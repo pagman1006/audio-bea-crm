@@ -13,8 +13,8 @@ import com.audiobea.crm.app.utils.Constants;
 @Mapper(componentModel = Constants.SPRING, unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface ListCityMapper {
 
-    List<DtoInCity> citiesToDtoInCities(List<City> cities);
+	List<DtoInCity> citiesToDtoInCities(List<City> cities);
 
-    @Mapping(target = "colonies", ignore = true)
-    List<City> citiesDtoInToCities(List<DtoInCity> dtoInCities);
+	@Mapping(target = "colonies", ignore = true)
+	List<City> citiesDtoInToCities(List<DtoInCity> dtoInCities);
 }

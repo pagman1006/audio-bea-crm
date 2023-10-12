@@ -6,11 +6,10 @@ import org.springframework.web.multipart.MultipartFile;
 import com.audiobea.crm.app.business.dao.product.model.Brand;
 import com.audiobea.crm.app.business.dao.product.model.Product;
 import com.audiobea.crm.app.business.dao.product.model.SubBrand;
-import com.audiobea.crm.app.commons.dto.EnumProductType;
 
 public interface IProductService {
 
-	public Page<Product> getProducts(EnumProductType productType, boolean newProduct, String marca, String subMarca,
+	public Page<Product> getProducts(String productName, String productType, boolean newProduct, String marca, String subMarca,
 			Integer page, Integer pageSize);
 
 	public Product getProductById(Long id);
@@ -36,7 +35,7 @@ public interface IProductService {
 	public SubBrand updateSubBrand(Long subBrandId, SubBrand subBrand);
 
 	public boolean deleteSubBrandById(Long subBrandId);
-	
+
 	public Product uploadImages(Long id, MultipartFile[] files);
 
 }

@@ -55,7 +55,8 @@ public class UserController {
 	@GetMapping
 	@PreAuthorize("hasAuthority('ADMIN')")
 	@Produces({ MediaType.APPLICATION_JSON })
-	public ResponseEntity<ResponseData<DtoInUser>> getUsers(@RequestParam(name = "username", defaultValue = "", required = false) String username,
+	public ResponseEntity<ResponseData<DtoInUser>> getUsers(
+			@RequestParam(name = "username", defaultValue = "", required = false) String username,
 			@RequestParam(name = "role", defaultValue = "", required = false) String role,
 			@RequestParam(name = "page", defaultValue = "0", required = false) Integer page,
 			@RequestParam(name = "pageSize", defaultValue = "10", required = false) Integer pageSize) {
@@ -90,7 +91,8 @@ public class UserController {
 	@Consumes({ MediaType.APPLICATION_JSON })
 	@ResponseStatus(code = HttpStatus.OK)
 	public ResponseEntity<DtoInUser> updateUser(@PathVariable(value = "id") Long id, @RequestBody DtoInUser user) {
-		return new ResponseEntity<>(userMapper.userToDtoInUser(userService.updateUser(id, userMapper.userDtoInToUser(user))), HttpStatus.CREATED);
+		return new ResponseEntity<>(userMapper.userToDtoInUser(userService.updateUser(id, userMapper.userDtoInToUser(user))),
+				HttpStatus.CREATED);
 	}
 
 	@DeleteMapping("/{id}")

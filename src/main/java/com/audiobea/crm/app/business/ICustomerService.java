@@ -7,13 +7,13 @@ import com.audiobea.crm.app.business.dao.customer.model.Customer;
 
 public interface ICustomerService {
 
-    Page<Customer> getCustomers(String firstName, String firstLastName, Integer page, Integer pageSize);
+	Page<Customer> getCustomers(String firstName, String firstLastName, Integer page, Integer pageSize);
 
-    Customer saveCustomer(Customer customer);
+	Customer saveCustomer(Customer customer);
 
-    Customer updateCustomer(Long customerId, Customer customer);
+	Customer updateCustomer(Long customerId, Customer customer);
 
-    boolean deleteCustomer(Long customerId);
+	boolean deleteCustomer(Long customerId);
 
-    Customer getCustomerById(Long customerId, Authentication auth);
+	Customer getCustomerById(Long customerId, Authentication auth);
 }

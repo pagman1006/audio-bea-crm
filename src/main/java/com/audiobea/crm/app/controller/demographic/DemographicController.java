@@ -73,49 +73,34 @@ public class DemographicController {
 		Page<City> pageable = demographicService.getCitiesByStateId(stateId, page, pageSize);
 		Validator.validatePage(pageable, messageSource);
 		List<DtoInCity> listCities = new ArrayList<>(listCityMapper.citiesToDtoInCities(pageable.getContent()));
-		ResponseData<DtoInCity> response = new ResponseData<>(listCities, pageable.getNumber(), pageable.getSize(), pageable.getTotalElements(),
-				pageable.getTotalPages());
-		return new ResponseEntity<>(response, HttpStatus.OK);
-	}
-
-	@GetMapping("/cities")
-	@Produces({ MediaType.APPLICATION_JSON })
-	public ResponseEntity<ResponseData<DtoInCity>> getAllCities(@RequestParam(name = "state", defaultValue = "", required = false) String state,
-			@RequestParam(name = "city", defaultValue = "", required = false) String city,
-			@RequestParam(name = "page", defaultValue = "0", required = false) Integer page,
-			@RequestParam(name = "pageSize", defaultValue = "10", required = false) Integer pageSize) {
-		log.debug("Entramos al controller");
-		Page<City> pageable = demographicService.getAllCities(state, city, page, pageSize);
-		log.debug("Se encontraron: {} registros", pageable.getContent().size());
-
-		Validator.validatePage(pageable, messageSource);
-		List<DtoInCity> listCities = new ArrayList<>(listCityMapper.citiesToDtoInCities(pageable.getContent()));
-		ResponseData<DtoInCity> response = new ResponseData<>(listCities, pageable.getNumber(), pageable.getSize(), pageable.getTotalElements(),
-				pageable.getTotalPages());
+		ResponseData<DtoInCity> response = new ResponseData<>(listCities, pageable.getNumber(), pageable.getSize(),
+				pageable.getTotalElements(), pageable.getTotalPages());
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 
 	@GetMapping("/states/{stateId}/cities/{cityId}/colonies")
 	@Produces({ MediaType.APPLICATION_JSON })
-	public ResponseEntity<ResponseData<DtoInColony>> getColonies(@PathVariable(name = "stateId") Long stateId,
-			@PathVariable(name = "cityId") Long cityId, @RequestParam(name = "postalCode", required = false) String postalCode,
+	public ResponseEntity<ResponseData<DtoInColony>> getColonies(@PathVariable(name = "stateId") String stateId,
+			@PathVariable(name = "cityId") String cityId, @RequestParam(name = "postalCode", required = false) String postalCode,
+			@RequestParam(name = "name", required = false) String colonyName,
 			@RequestParam(name = "page", defaultValue = "0", required = false) Integer page,
 			@RequestParam(name = "pageSize", defaultValue = "10", required = false) Integer pageSize) {
 
 		log.debug("StateId: {}, cityId: {}", stateId, cityId);
-		Page<Colony> pageable = demographicService.findColoniesByStateIdAndCityId(stateId, cityId, postalCode, page, pageSize);
+		Page<Colony> pageable = demographicService.findColoniesByStateIdAndCityId(stateId, cityId, colonyName, postalCode, page, pageSize);
 		log.debug("Colonias: {}", pageable.getContent().size());
 
 		Validator.validatePage(pageable, messageSource);
 		List<DtoInColony> listColonies = listColonyMapper.colonyToDtoInColony(pageable.getContent());
-		ResponseData<DtoInColony> response = new ResponseData<>(listColonies, pageable.getNumber(), pageable.getSize(), pageable.getTotalElements(),
-				pageable.getTotalPages());
+		ResponseData<DtoInColony> response = new ResponseData<>(listColonies, pageable.getNumber(), pageable.getSize(),
+				pageable.getTotalElements(), pageable.getTotalPages());
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 
 	@GetMapping("/colonies")
 	@Produces({ MediaType.APPLICATION_JSON })
-	public ResponseEntity<ResponseData<DtoInColony>> getAllColonies(@RequestParam(name = "state", defaultValue = "", required = false) String state,
+	public ResponseEntity<ResponseData<DtoInColony>> getAllColonies(
+			@RequestParam(name = "state", defaultValue = "", required = false) String state,
 			@RequestParam(name = "city", defaultValue = "", required = false) String city,
 			@RequestParam(name = "colony", defaultValue = "", required = false) String colony,
 			@RequestParam(name = "postalCode", defaultValue = "", required = false) String postalCode,
@@ -128,8 +113,8 @@ public class DemographicController {
 
 		Validator.validatePage(pageable, messageSource);
 		List<DtoInColony> listColonies = listColonyMapper.colonyToDtoInColony(pageable.getContent());
-		ResponseData<DtoInColony> response = new ResponseData<>(listColonies, pageable.getNumber(), pageable.getSize(), pageable.getTotalElements(),
-				pageable.getTotalPages());
+		ResponseData<DtoInColony> response = new ResponseData<>(listColonies, pageable.getNumber(), pageable.getSize(),
+				pageable.getTotalElements(), pageable.getTotalPages());
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 

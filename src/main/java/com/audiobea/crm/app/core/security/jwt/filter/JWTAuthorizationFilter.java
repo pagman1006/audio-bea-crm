@@ -22,7 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
 
 	private IJWTService jwtService;
-	
+
 	public JWTAuthorizationFilter(AuthenticationManager authenticationManager, IJWTService jwtService) {
 		super(authenticationManager);
 		this.jwtService = jwtService;
@@ -31,7 +31,7 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
 			throws IOException, ServletException {
-		
+
 		log.debug("doFilterInternal");
 		String header = request.getHeader(JWTServiceImpl.HEADER_STRING);
 		log.debug("Header: {}", header);
@@ -41,12 +41,12 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
 		}
 
 		UsernamePasswordAuthenticationToken authentication = null;
-		
-		if(jwtService.validate(header)) {
+
+		if (jwtService.validate(header)) {
 			authentication = new UsernamePasswordAuthenticationToken(jwtService.getUsername(header), null, jwtService.getRoles(header));
 			authentication.getAuthorities().forEach(authority -> log.debug(authority.toString()));
 		}
-		
+
 		if (authentication != null && StringUtils.isNotBlank(authentication.getName())) {
 			log.debug("Authentication: {}", authentication.getName());
 		}

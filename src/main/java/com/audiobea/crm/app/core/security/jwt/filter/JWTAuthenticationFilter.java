@@ -34,8 +34,7 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 	}
 
 	@Override
-	public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
-			throws AuthenticationException {
+	public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
 
 		String username = obtainUsername(request);
 		String password = obtainPassword(request);
@@ -58,9 +57,9 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
 			} catch (IOException e) {
 				e.printStackTrace();
-			}  
+			}
 		}
-		username = StringUtils.isNotBlank(username)? username.trim(): null;
+		username = StringUtils.isNotBlank(username) ? username.trim() : null;
 		UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(username, password);
 
 		return authenticationManager.authenticate(authToken);
@@ -85,15 +84,15 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 	}
 
 	@Override
-	protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response,
-			AuthenticationException failed) throws IOException, ServletException {
+	protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed)
+			throws IOException, ServletException {
 		Map<String, Object> body = new HashMap<>();
 		body.put("mensaje", "Error de autenticación: username o password incorrecto!");
 		body.put("error", failed.getMessage());
-		
+
 		response.getWriter().write(new ObjectMapper().writeValueAsString(body));
 		response.setStatus(401);
 		response.setContentType("application/json");
 	}
-	
+
 }

@@ -69,8 +69,9 @@ public class CustomerController {
 	@Produces({ MediaType.APPLICATION_JSON })
 	@Consumes({ MediaType.APPLICATION_JSON })
 	public ResponseEntity<DtoInCustomer> addCustomer(@RequestBody DtoInCustomer customer) {
-		return new ResponseEntity<>(customerMapper.customerToDtoInCustomer(
-				customerService.saveCustomer(customerMapper.customerDtoInToCustomer(customer))), HttpStatus.CREATED);
+		return new ResponseEntity<>(
+				customerMapper.customerToDtoInCustomer(customerService.saveCustomer(customerMapper.customerDtoInToCustomer(customer))),
+				HttpStatus.CREATED);
 	}
 
 	@PutMapping("/{id}")
@@ -78,10 +79,8 @@ public class CustomerController {
 	@Produces({ MediaType.APPLICATION_JSON })
 	@Consumes({ MediaType.APPLICATION_JSON })
 	public ResponseEntity<DtoInCustomer> updateCustomer(@PathVariable(name = "id") Long id, @RequestBody DtoInCustomer customer) {
-		return new ResponseEntity<>(
-				customerMapper.customerToDtoInCustomer(
-						customerService.updateCustomer(id, customerMapper.customerDtoInToCustomer(customer))),
-				HttpStatus.CREATED);
+		return new ResponseEntity<>(customerMapper.customerToDtoInCustomer(
+				customerService.updateCustomer(id, customerMapper.customerDtoInToCustomer(customer))), HttpStatus.CREATED);
 	}
 
 	@GetMapping("/{id}")

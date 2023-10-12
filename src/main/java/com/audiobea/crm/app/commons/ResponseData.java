@@ -15,14 +15,14 @@ import lombok.Setter;
 public class ResponseData<T> implements Serializable {
 
 	private static final long serialVersionUID = 1L;
-	
+
 	private transient List<T> data;
-	
+
 	private Integer page;
 	private Integer pageSize;
 	private Long totalElements;
 	private Integer totalPages;
-	
+
 	public ResponseData(List<T> data, Integer page, Integer pageSize, Long totalElements, Integer totalPages) {
 		super();
 		this.data = data;

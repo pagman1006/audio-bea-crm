@@ -50,29 +50,30 @@ public class BrandController {
 	private IProductService productService;
 
 	@Autowired
-	private ListBrandsMapper listBrandsMapper;
-
-	@Autowired
-	private ListSubBrandsMapper listSubBrandsMapper;
-
-	@Autowired
 	private BrandMapper brandMapper;
 
 	@Autowired
 	private SubBrandMapper subBrandMapper;
 
+	@Autowired
+	private ListBrandsMapper listBrandsMapper;
+
+	@Autowired
+	private ListSubBrandsMapper listSubBrandsMapper;
+
 	private final MessageSource messageSource;
 
 	@GetMapping
 	@Produces({ MediaType.APPLICATION_JSON })
-	public ResponseEntity<ResponseData<DtoInBrand>> getBrands(@RequestParam(name = "brand", defaultValue = "", required = false) String brandName,
+	public ResponseEntity<ResponseData<DtoInBrand>> getBrands(
+			@RequestParam(name = "brand", defaultValue = "", required = false) String brandName,
 			@RequestParam(name = "page", defaultValue = "0", required = false) Integer page,
 			@RequestParam(name = "pageSize", defaultValue = "10", required = false) Integer pageSize) {
 		Page<Brand> pageable = productService.getBrands(brandName, page, pageSize);
 		Validator.validatePage(pageable, messageSource);
 		List<DtoInBrand> listBrands = listBrandsMapper.brandsToDtoInBrands(pageable.getContent());
-		ResponseData<DtoInBrand> response = new ResponseData<>(listBrands, pageable.getNumber(), pageable.getSize(), pageable.getTotalElements(),
-				pageable.getTotalPages());
+		ResponseData<DtoInBrand> response = new ResponseData<>(listBrands, pageable.getNumber(), pageable.getSize(),
+				pageable.getTotalElements(), pageable.getTotalPages());
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 
@@ -90,7 +91,8 @@ public class BrandController {
 	@Produces({ MediaType.APPLICATION_JSON })
 	@Consumes({ MediaType.APPLICATION_JSON })
 	public ResponseEntity<DtoInBrand> updateBrand(@PathVariable("brand-id") Long brandId, @RequestBody DtoInBrand brand) {
-		return new ResponseEntity<>(brandMapper.brandToDtoInBrand(productService.updateBrand(brandId, brandMapper.brandDtoInToBrand(brand))),
+		return new ResponseEntity<>(
+				brandMapper.brandToDtoInBrand(productService.updateBrand(brandId, brandMapper.brandDtoInToBrand(brand))),
 				HttpStatus.CREATED);
 	}
 
@@ -128,9 +130,8 @@ public class BrandController {
 	@Consumes({ MediaType.APPLICATION_JSON })
 	@ResponseStatus(code = HttpStatus.CREATED)
 	public ResponseEntity<DtoInSubBrand> addSubBrand(@PathVariable(value = "brand-id") Long brandId, @RequestBody DtoInSubBrand subBrand) {
-		return new ResponseEntity<>(
-				subBrandMapper.subBrandToDtoInSubBrand(productService.saveSubBrand(brandId, subBrandMapper.subBrandDtoInToSubBrand(subBrand))),
-				HttpStatus.CREATED);
+		return new ResponseEntity<>(subBrandMapper.subBrandToDtoInSubBrand(
+				productService.saveSubBrand(brandId, subBrandMapper.subBrandDtoInToSubBrand(subBrand))), HttpStatus.CREATED);
 	}
 
 	@PreAuthorize("hasAuthority('ADMIN')")
@@ -140,9 +141,8 @@ public class BrandController {
 	@ResponseStatus(code = HttpStatus.CREATED)
 	public ResponseEntity<DtoInSubBrand> updateSubBrand(@PathVariable(value = "brand-id") Long id,
 			@PathVariable(value = "sub-brand-id") Long subBrandId, @RequestBody DtoInSubBrand subBrand) {
-		return new ResponseEntity<>(
-				subBrandMapper.subBrandToDtoInSubBrand(productService.updateSubBrand(subBrandId, subBrandMapper.subBrandDtoInToSubBrand(subBrand))),
-				HttpStatus.CREATED);
+		return new ResponseEntity<>(subBrandMapper.subBrandToDtoInSubBrand(
+				productService.updateSubBrand(subBrandId, subBrandMapper.subBrandDtoInToSubBrand(subBrand))), HttpStatus.CREATED);
 	}
 
 	@PreAuthorize("hasAuthority('ADMIN')")

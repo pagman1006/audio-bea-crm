@@ -65,8 +65,7 @@ public class WADLController {
 		return result;
 	}
 
-	private Resources setupWadResourcesByHandleMethods(Resources wadResources,
-			Map<RequestMappingInfo, HandlerMethod> handledMethods) {
+	private Resources setupWadResourcesByHandleMethods(Resources wadResources, Map<RequestMappingInfo, HandlerMethod> handledMethods) {
 		Set<String> pattern = new HashSet<>();
 		for (Map.Entry<RequestMappingInfo, HandlerMethod> entry : handledMethods.entrySet()) {
 			HandlerMethod handlerMethod = entry.getValue();

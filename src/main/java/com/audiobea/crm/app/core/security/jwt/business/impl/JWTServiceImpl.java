@@ -41,8 +41,7 @@ public class JWTServiceImpl implements IJWTService {
 		Collection<? extends GrantedAuthority> roles = auth.getAuthorities();
 		Claims claims = Jwts.claims();
 		claims.put("authorities", new ObjectMapper().writeValueAsString(roles));
-		return Jwts.builder().setClaims(claims).setSubject(username)
-				.signWith(getSigningKey()).setIssuedAt(new Date())
+		return Jwts.builder().setClaims(claims).setSubject(username).signWith(getSigningKey()).setIssuedAt(new Date())
 				.setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_DATE)).compact();
 	}
 
@@ -72,9 +71,8 @@ public class JWTServiceImpl implements IJWTService {
 	public Collection<GrantedAuthority> getRoles(String token) throws IOException {
 		log.debug("getRoles authenticacion");
 		Object roles = getClaims(token).get("authorities");
-		return Arrays
-				.asList(new ObjectMapper().addMixIn(SimpleGrantedAuthority.class, SimpleGrantedAuthorityMixin.class)
-						.readValue(roles.toString().getBytes(), SimpleGrantedAuthority[].class));
+		return Arrays.asList(new ObjectMapper().addMixIn(SimpleGrantedAuthority.class, SimpleGrantedAuthorityMixin.class)
+				.readValue(roles.toString().getBytes(), SimpleGrantedAuthority[].class));
 	}
 
 	@Override
@@ -85,9 +83,9 @@ public class JWTServiceImpl implements IJWTService {
 		}
 		return null;
 	}
-	
+
 	private Key getSigningKey() {
-		  return Keys.hmacShaKeyFor(SECRET.getBytes(StandardCharsets.UTF_8));
-		}
+		return Keys.hmacShaKeyFor(SECRET.getBytes(StandardCharsets.UTF_8));
+	}
 
 }

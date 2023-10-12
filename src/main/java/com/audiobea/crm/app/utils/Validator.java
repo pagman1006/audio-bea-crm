@@ -12,8 +12,7 @@ import com.audiobea.crm.app.core.exception.NoSuchElementsFoundException;
 
 public class Validator {
 
-	private Validator() {
-	}
+	private Validator() { }
 
 	public static void validatePage(Page<?> pageable, MessageSource messageSource) {
 		if (pageable == null || pageable.getContent().isEmpty()) {

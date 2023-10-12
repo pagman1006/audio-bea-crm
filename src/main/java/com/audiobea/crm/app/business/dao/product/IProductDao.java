@@ -9,11 +9,11 @@ import com.audiobea.crm.app.business.dao.product.model.Product;
 import com.audiobea.crm.app.utils.Constants;
 
 public interface IProductDao extends PagingAndSortingRepository<Product, Long> {
-	
+
 	@Query(value = Constants.FIND_PRODUCTS_BY_NEW_PRODUCT_BRAND_SUB_BRAND, nativeQuery = true)
-	Page<Product> findByNewProductBrandSubBrandProductType(String brandName, String subBrandName, String productType, Pageable pageable);
-	
+	Page<Product> findByNewProductBrandSubBrandProductType(String productName, String brandName, String subBrandName, String productType, Pageable pageable);
+
 	@Query(value = Constants.FIND_PRODUCTS_BY_BRAND_SUB_BRAND, nativeQuery = true)
-	Page<Product> findByBrandSubBrandProductType(String brandName, String subBrandName, String productType, Pageable pageable);
-		
+	Page<Product> findByBrandSubBrandProductType(String productName, String brandName, String subBrandName, String productType, Pageable pageable);
+
 }

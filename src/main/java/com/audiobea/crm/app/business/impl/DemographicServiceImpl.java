@@ -65,19 +65,40 @@ public class DemographicServiceImpl implements IDemographicService {
 	}
 
 	@Override
-	public Page<Colony> findColoniesByStateIdAndCityId(Long stateId, Long cityId, String postalCode, Integer page,
+	public Page<Colony> findColoniesByStateIdAndCityId(String stateId, String cityId, String colonyName, String postalCode, Integer page,
 			Integer pageSize) {
-		log.debug("StateId: {}, cityId: {}, postalCode: {}", stateId, cityId, postalCode);
+		log.debug("StateId: {}, cityId: {}, colonyName: {}, postalCode: {}", stateId, cityId, colonyName, postalCode);
 		Pageable pageable = PageRequest.of(page, pageSize, Sort.by("name"));
-		if (StringUtils.isNotBlank(postalCode)) {
-			return colonyDao.findByStateIdAndCityAndCodePostalId(stateId, cityId, postalCode, pageable);
+		postalCode = StringUtils.isNotBlank(postalCode) ? postalCode : "";
+		colonyName = StringUtils.isNotBlank(colonyName) ? colonyName : "";
+
+		if (StringUtils.isNotBlank(stateId) && StringUtils.isNotBlank(cityId)) {
+			if (stateId.equalsIgnoreCase(Constants.ALL)) {
+				if (cityId.equalsIgnoreCase(Constants.ALL)) {
+					log.debug("State: All, City: All, Colony: " + colonyName + " Postal Code: " + postalCode);
+					return colonyDao.findAllByColonyOrPostalCode(colonyName, postalCode, pageable);
+
+				} else if (cityId.chars().allMatch(Character::isDigit)) {
+					log.debug("State: All, City: " + cityId + "Colony: " + colonyName + " Postal Code: " + postalCode);
+					return colonyDao.findByCityId(Long.valueOf(cityId), colonyName, postalCode, pageable);
+				}
+			} else if (stateId.chars().allMatch(Character::isDigit)) {
+				if (cityId.equalsIgnoreCase(Constants.ALL)) {
+					log.debug("State: " + stateId + " City: All, Colony: " + colonyName + " Postal Code: " + postalCode);
+					return colonyDao.findByStateId(Long.valueOf(stateId), colonyName, postalCode, pageable);
+				} else if (cityId.chars().allMatch(Character::isDigit)) {
+					log.debug("State: " + stateId + " City: " + cityId + "Colony: " + colonyName + " Postal Code: " + postalCode);
+					return colonyDao.findByStateIdAndCityAndCodePostalId(Long.valueOf(stateId), Long.valueOf(cityId), colonyName,
+							postalCode, pageable);
+				}
+			}
 		}
-		return colonyDao.findByStateIdAndCityId(stateId, cityId, pageable);
+		log.debug("return null");
+		return null;
 	}
 
 	@Override
-	public Page<Colony> getAllColonies(String state, String city, String colony, String codePostal, Integer page,
-			Integer pageSize) {
+	public Page<Colony> getAllColonies(String state, String city, String colony, String codePostal, Integer page, Integer pageSize) {
 		log.debug("State: {}, city: {}, postalCode: {}", state, city, codePostal);
 		Pageable pageable = PageRequest.of(page, pageSize, Sort.by("name"));
 		return colonyDao.findAllByStateNameAndCityNameAndColonyNameCodePostal(state, city, colony, codePostal, pageable);

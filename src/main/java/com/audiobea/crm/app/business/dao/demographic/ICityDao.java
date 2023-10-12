@@ -17,5 +17,5 @@ public interface ICityDao extends PagingAndSortingRepository<City, Long> {
 
 	@Query(value = Constants.FIND_CITIES_BY_STATE_NAME_CITY_NAME, nativeQuery = true)
 	Page<City> findByStateNameAndCityName(String state, String city, Pageable pageable);
-	
+
 }

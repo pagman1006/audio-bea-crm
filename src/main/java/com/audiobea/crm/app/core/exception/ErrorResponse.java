@@ -20,7 +20,7 @@ public class ErrorResponse {
 	private final String message;
 	private String stackTrace;
 	private List<ValidationError> errors;
-	
+
 	public void addValidationError(String field, String message) {
 		if (Objects.isNull(errors)) {
 			errors = new ArrayList<>();
