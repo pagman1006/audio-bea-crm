@@ -9,11 +9,11 @@ import lombok.Data;
 @JsonInclude(Include.NON_NULL)
 public class DtoInFileResponse {
 
-    private Long colonies;
-    private Long cities;
-	private Long states;
+    private String colonies;
+    private String cities;
+	private String states;
 	
-	public DtoInFileResponse(Long states, Long cities, Long colonies) {
+	public DtoInFileResponse(String states, String cities, String colonies) {
 		super();
 		this.colonies = colonies;
 		this.cities = cities;

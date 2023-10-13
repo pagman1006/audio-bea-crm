@@ -7,6 +7,7 @@ import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -59,6 +60,9 @@ public class UploadServiceImpl implements IUploadService {
 	private Integer statesCount = 0;
 	private Integer citiesCount = 0;
 	private Integer coloniesCount = 0;
+
+	private static final DecimalFormat decimalF = new DecimalFormat("00.00");
+	private static final DecimalFormat df = new DecimalFormat("#,###");
 
 	@Autowired
 	private IStateDao stateDao;
@@ -127,22 +131,26 @@ public class UploadServiceImpl implements IUploadService {
 			log.debug("Colonies loaded: {}", coloniesCount);
 			log.debug("Upload time: {}", strTimeUpload);
 
-			// Guardar en BDD de forma asíncrona
-			stateDao.saveAll(listStates);
-//			saveColoniesAsync(listStates);
-
-			return new DtoInFileResponse((long) statesCount, (long) citiesCount, (long) coloniesCount);
+			saveColoniesAsync(listStates, coloniesCount);
+			return new DtoInFileResponse(df.format(statesCount), df.format(citiesCount), df.format(coloniesCount));
 		} catch (IOException e) {
 			log.error(e.getMessage());
 		}
 		return null;
 	}
-	
-	public void saveColoniesAsync(List<State> listStates) {
-		for (State state : listStates) {
-			stateDao.save(state);
-		}
-		log.debug("Start load to DBB");
+
+	private void saveColoniesAsync(List<State> listStates, int totalElements) {
+		new Thread(() -> {
+			log.debug("Start load to DBB");
+			log.debug("0.00%");
+			double elements = 0;
+			for (State state : listStates) {
+				stateDao.save(state);
+				elements += state.getCities().stream().mapToInt(city -> city.getColonies().size()).sum();
+				double avance = (elements * 100) / Double.valueOf(totalElements);
+				log.debug("{}% -> {}, {}/{}", decimalF.format(avance), state.getName(), df.format(elements), df.format(totalElements));
+			}
+		}).start();
 	}
 
 	private List<State> setupListStates(Set<State> setState) {
