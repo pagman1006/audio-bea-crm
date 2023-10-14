@@ -17,15 +17,15 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.audiobea.crm.app.business.IProductService;
 import com.audiobea.crm.app.business.IUploadService;
-import com.audiobea.crm.app.business.dao.product.IBrandDao;
-import com.audiobea.crm.app.business.dao.product.IProductDao;
-import com.audiobea.crm.app.business.dao.product.ISubBrandDao;
-import com.audiobea.crm.app.business.dao.product.model.Brand;
-import com.audiobea.crm.app.business.dao.product.model.Product;
-import com.audiobea.crm.app.business.dao.product.model.ProductImage;
-import com.audiobea.crm.app.business.dao.product.model.SubBrand;
 import com.audiobea.crm.app.commons.I18Constants;
 import com.audiobea.crm.app.core.exception.NoSuchElementFoundException;
+import com.audiobea.crm.app.dao.product.IBrandDao;
+import com.audiobea.crm.app.dao.product.IProductDao;
+import com.audiobea.crm.app.dao.product.ISubBrandDao;
+import com.audiobea.crm.app.dao.product.model.Brand;
+import com.audiobea.crm.app.dao.product.model.Product;
+import com.audiobea.crm.app.dao.product.model.ProductImage;
+import com.audiobea.crm.app.dao.product.model.SubBrand;
 import com.audiobea.crm.app.utils.Constants;
 import com.audiobea.crm.app.utils.Utils;
 

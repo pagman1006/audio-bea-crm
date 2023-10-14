@@ -6,8 +6,8 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;
 
-import com.audiobea.crm.app.business.dao.demographic.model.City;
 import com.audiobea.crm.app.commons.dto.DtoInCity;
+import com.audiobea.crm.app.dao.demographic.model.City;
 import com.audiobea.crm.app.utils.Constants;
 
 @Mapper(componentModel = Constants.SPRING, unmappedTargetPolicy = ReportingPolicy.IGNORE)

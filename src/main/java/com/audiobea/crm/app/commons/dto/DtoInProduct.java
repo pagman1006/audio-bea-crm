@@ -3,7 +3,7 @@ package com.audiobea.crm.app.commons.dto;
 import java.io.Serializable;
 import java.util.List;
 
-import com.audiobea.crm.app.business.dao.product.model.ProductRanking;
+import com.audiobea.crm.app.dao.product.model.ProductRanking;
 
 import lombok.Data;
 

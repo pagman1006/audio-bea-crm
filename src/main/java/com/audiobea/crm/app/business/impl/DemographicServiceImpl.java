@@ -13,12 +13,12 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.audiobea.crm.app.business.IDemographicService;
-import com.audiobea.crm.app.business.dao.demographic.ICityDao;
-import com.audiobea.crm.app.business.dao.demographic.IColonyDao;
-import com.audiobea.crm.app.business.dao.demographic.IStateDao;
-import com.audiobea.crm.app.business.dao.demographic.model.City;
-import com.audiobea.crm.app.business.dao.demographic.model.Colony;
-import com.audiobea.crm.app.business.dao.demographic.model.State;
+import com.audiobea.crm.app.dao.demographic.ICityDao;
+import com.audiobea.crm.app.dao.demographic.IColonyDao;
+import com.audiobea.crm.app.dao.demographic.IStateDao;
+import com.audiobea.crm.app.dao.demographic.model.City;
+import com.audiobea.crm.app.dao.demographic.model.Colony;
+import com.audiobea.crm.app.dao.demographic.model.State;
 import com.audiobea.crm.app.utils.Constants;
 
 import lombok.extern.slf4j.Slf4j;

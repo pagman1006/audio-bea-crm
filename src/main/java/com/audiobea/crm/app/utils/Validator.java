@@ -5,10 +5,10 @@ import java.util.List;
 import org.springframework.context.MessageSource;
 import org.springframework.data.domain.Page;
 
-import com.audiobea.crm.app.business.dao.user.model.User;
 import com.audiobea.crm.app.commons.I18Constants;
 import com.audiobea.crm.app.core.exception.ForbiddenException;
 import com.audiobea.crm.app.core.exception.NoSuchElementsFoundException;
+import com.audiobea.crm.app.dao.user.model.User;
 
 public class Validator {
 

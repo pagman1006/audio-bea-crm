@@ -23,11 +23,11 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.audiobea.crm.app.business.IUserService;
-import com.audiobea.crm.app.business.dao.user.model.User;
 import com.audiobea.crm.app.commons.ResponseData;
 import com.audiobea.crm.app.commons.dto.DtoInUser;
 import com.audiobea.crm.app.controller.mapper.ListUserMapper;
 import com.audiobea.crm.app.controller.mapper.UserMapper;
+import com.audiobea.crm.app.dao.user.model.User;
 import com.audiobea.crm.app.utils.Constants;
 import com.audiobea.crm.app.utils.Validator;
 

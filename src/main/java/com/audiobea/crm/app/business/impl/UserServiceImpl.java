@@ -10,12 +10,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.audiobea.crm.app.business.IUserService;
-import com.audiobea.crm.app.business.dao.user.IRoleDao;
-import com.audiobea.crm.app.business.dao.user.IUserDao;
-import com.audiobea.crm.app.business.dao.user.model.Role;
-import com.audiobea.crm.app.business.dao.user.model.User;
 import com.audiobea.crm.app.commons.I18Constants;
 import com.audiobea.crm.app.core.exception.NoSuchElementFoundException;
+import com.audiobea.crm.app.dao.user.IRoleDao;
+import com.audiobea.crm.app.dao.user.IUserDao;
+import com.audiobea.crm.app.dao.user.model.Role;
+import com.audiobea.crm.app.dao.user.model.User;
 import com.audiobea.crm.app.utils.Utils;
 
 import lombok.AllArgsConstructor;

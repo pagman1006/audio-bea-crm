@@ -12,10 +12,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.audiobea.crm.app.business.ICustomerService;
-import com.audiobea.crm.app.business.dao.customer.ICustomerDao;
-import com.audiobea.crm.app.business.dao.customer.model.Customer;
 import com.audiobea.crm.app.commons.I18Constants;
 import com.audiobea.crm.app.core.exception.NoSuchElementFoundException;
+import com.audiobea.crm.app.dao.customer.ICustomerDao;
+import com.audiobea.crm.app.dao.customer.model.Customer;
 import com.audiobea.crm.app.utils.Constants;
 import com.audiobea.crm.app.utils.Utils;
 import com.audiobea.crm.app.utils.Validator;
