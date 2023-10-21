@@ -38,12 +38,7 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
 		String username = obtainUsername(request);
 		String password = obtainPassword(request);
-
-		if (username != null && password != null) {
-			logger.info("Username desde request parameter (form-data): " + username);
-			logger.info("Password desde request parameter (form-data): " + password);
-
-		} else {
+		if (username == null || password == null) {
 			DtoInUser user = null;
 			try {
 				logger.debug("Inicia deserializacion del request");
@@ -59,10 +54,12 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 				e.printStackTrace();
 			}
 		}
-		username = StringUtils.isNotBlank(username) ? username.trim() : null;
-		UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(username, password);
+		
+		if (username != null && StringUtils.isNotEmpty(username)) {
+			username = username.trim();
+		}
 
-		return authenticationManager.authenticate(authToken);
+		return authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
 	}
 
 	@Override

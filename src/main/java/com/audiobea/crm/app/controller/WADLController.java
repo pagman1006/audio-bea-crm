@@ -77,6 +77,8 @@ public class WADLController {
 				continue;
 			}
 			RequestMappingInfo mappingInfo = entry.getKey();
+
+			@SuppressWarnings("null")
 			String uri = mappingInfo.getPathPatternsCondition().getPatterns().toString();
 			pattern.add(uri);
 			Set<RequestMethod> httpMethods = mappingInfo.getMethodsCondition().getMethods();
