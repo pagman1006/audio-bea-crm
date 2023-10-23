@@ -61,7 +61,6 @@ public class DemographicController {
 		Validator.validateList(list, messageSource);
 		ResponseData<DtoInState> response = new ResponseData<>();
 		response.setData(listStateMapper.statesToDtoInStateList(list));
-		log.debug("Demographics OK");
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 

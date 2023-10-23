@@ -20,9 +20,11 @@ import com.audiobea.crm.app.business.IUploadService;
 import com.audiobea.crm.app.commons.I18Constants;
 import com.audiobea.crm.app.core.exception.NoSuchElementFoundException;
 import com.audiobea.crm.app.dao.product.IBrandDao;
+import com.audiobea.crm.app.dao.product.IHotdealDao;
 import com.audiobea.crm.app.dao.product.IProductDao;
 import com.audiobea.crm.app.dao.product.ISubBrandDao;
 import com.audiobea.crm.app.dao.product.model.Brand;
+import com.audiobea.crm.app.dao.product.model.Hotdeal;
 import com.audiobea.crm.app.dao.product.model.Product;
 import com.audiobea.crm.app.dao.product.model.ProductImage;
 import com.audiobea.crm.app.dao.product.model.SubBrand;
@@ -49,6 +51,9 @@ public class ProductServiceImpl implements IProductService {
 
 	@Autowired
 	private ISubBrandDao subBrandDao;
+	
+	@Autowired
+	private IHotdealDao hotdealDao;
 
 	private final MessageSource messageSource;
 
@@ -226,6 +231,11 @@ public class ProductServiceImpl implements IProductService {
 			}
 		}
 		return product;
+	}
+
+	@Override
+	public Hotdeal getHotdeal() {
+		return hotdealDao.findById(1L).orElse(null);
 	}
 
 }

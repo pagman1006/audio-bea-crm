@@ -25,7 +25,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.audiobea.crm.app.business.IProductService;
 import com.audiobea.crm.app.commons.ResponseData;
+import com.audiobea.crm.app.commons.dto.DtoInHotdeal;
 import com.audiobea.crm.app.commons.dto.DtoInProduct;
+import com.audiobea.crm.app.controller.mapper.HotdealMapper;
 import com.audiobea.crm.app.controller.mapper.ListProductsMapper;
 import com.audiobea.crm.app.controller.mapper.ProductMapper;
 import com.audiobea.crm.app.dao.product.model.Product;
@@ -50,12 +52,14 @@ public class ProductController {
 	@Autowired
 	private ProductMapper productMapper;
 
+	@Autowired
+	private HotdealMapper hotdealMapper;
+
 	private final MessageSource messageSource;
 
 	@GetMapping
 	@Produces({ MediaType.APPLICATION_JSON })
-	public ResponseEntity<ResponseData<DtoInProduct>> getProducts(
-			@RequestParam(name = "productType", required = false) String productType,
+	public ResponseEntity<ResponseData<DtoInProduct>> getProducts(@RequestParam(name = "productType", required = false) String productType,
 			@RequestParam(name = "productName", required = false) String productName,
 			@RequestParam(name = "brand", required = false, defaultValue = "") String brand,
 			@RequestParam(value = "subBrand", required = false, defaultValue = "") String subBrand,
@@ -107,6 +111,12 @@ public class ProductController {
 	public ResponseEntity<String> deleteProductById(@PathVariable("id") Long id) {
 		productService.deleteProductById(id);
 		return new ResponseEntity<>(HttpStatus.ACCEPTED);
+	}
+
+	@GetMapping("/hotdeal")
+	@Produces({ MediaType.APPLICATION_JSON })
+	public ResponseEntity<DtoInHotdeal> getHotdeal() {
+		return new ResponseEntity<>(hotdealMapper.hotdealToDtoInHotdeal(productService.getHotdeal()), HttpStatus.ACCEPTED);
 	}
 
 }

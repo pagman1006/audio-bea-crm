@@ -116,6 +116,13 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 		log.error("You do not have privileges to consult this information: ", forbiddenException.getMessage());
 		return buildErrorResponse(forbiddenException, HttpStatus.FORBIDDEN, request);
 	}
+	
+	@ExceptionHandler(DuplicateRecordException.class)
+	@ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+	public ResponseEntity<Object> handleConstraintViolationException(DuplicateRecordException exception, WebRequest request) {
+		log.error("Duplicate Entry", exception.getMessage());
+		return buildErrorResponse(exception, exception.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR, request);
+	}
 
 	@ExceptionHandler(Exception.class)
 	@ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)

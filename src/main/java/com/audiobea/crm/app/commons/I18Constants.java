@@ -11,7 +11,8 @@ public enum I18Constants {
 	UPLOAD_FILE_EXCEPTION("upload.file.exception"),
 	FAIL_PARSE_EXCEL_FILE("fail.parse.excel.file"),
 	NO_FILE_FOUND("file.not.found"),
-	NO_PRIVILEGES("not.privileges");
+	NO_PRIVILEGES("not.privileges"),
+	DUPLICATE_KEY("duplicate.key");
 	
 	String key;
 	

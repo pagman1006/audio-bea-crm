@@ -1,7 +1,5 @@
 package com.audiobea.crm.app.core.security;
 
-import java.util.Arrays;
-
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
@@ -23,9 +21,6 @@ import org.springframework.security.web.authentication.SimpleUrlAuthenticationSu
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.OrRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import com.audiobea.crm.app.core.security.jwt.NoRedirectStrategy;
 import com.audiobea.crm.app.core.security.jwt.business.IJWTService;
@@ -48,9 +43,7 @@ public class SecurityConfig {
 						requests -> requests.antMatchers("/**", "/audio-bea/v1/api/**").permitAll().anyRequest().authenticated())
 				.addFilter(new JWTAuthenticationFilter(authenticationManager(userDetailsService, passwordEncoder()), jwtService))
 				.addFilter(new JWTAuthorizationFilter(authenticationManager(userDetailsService, passwordEncoder()), jwtService))
-				.csrf(csrf -> csrf.disable())
-//				.cors(cors -> cors.disable())
-				.build();
+				.csrf(csrf -> csrf.disable()).build();
 	}
 
 	@Bean
@@ -78,16 +71,6 @@ public class SecurityConfig {
 		return new ProviderManager(provider);
 	}
 	
-	@Bean
-	CorsConfigurationSource corsConfigurationSource() {
-		CorsConfiguration configuration = new CorsConfiguration();
-		configuration.setAllowedOrigins(Arrays.asList("http://localhost:8080"));
-		configuration.setAllowedMethods(Arrays.asList("GET","POST"));
-		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-		source.registerCorsConfiguration("/**", configuration);
-		return source;
-	}
-
 	@Bean
 	PasswordEncoder passwordEncoder() {
 		return new BCryptPasswordEncoder();

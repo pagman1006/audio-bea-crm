@@ -8,8 +8,10 @@ import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.HttpMethod;
 
 import org.apache.commons.lang.StringUtils;
+import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -26,10 +28,11 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
 	private AuthenticationManager authenticationManager;
 	private IJWTService jwtService;
+	private static final AntPathRequestMatcher DEFAULT_ANT_PATH_REQUEST_MATCHER = new AntPathRequestMatcher("/audio-bea/v1/api/login", HttpMethod.POST);
 
 	public JWTAuthenticationFilter(AuthenticationManager authenticationManager, IJWTService jwtService) {
 		this.authenticationManager = authenticationManager;
-		setRequiresAuthenticationRequestMatcher(new AntPathRequestMatcher("/audio-bea/v1/api/login", "POST"));
+		setRequiresAuthenticationRequestMatcher(DEFAULT_ANT_PATH_REQUEST_MATCHER);
 		this.jwtService = jwtService;
 	}
 
@@ -38,6 +41,8 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
 		String username = obtainUsername(request);
 		String password = obtainPassword(request);
+		response.addHeader(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, "*");
+		response.addHeader(HttpHeaders.ACCESS_CONTROL_ALLOW_HEADERS, "*");
 		if (username == null || password == null) {
 			DtoInUser user = null;
 			try {
@@ -72,7 +77,7 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 		Map<String, Object> body = new HashMap<>();
 		body.put("token", token);
 		body.put("user", authResult.getPrincipal());
-		body.put("mensaje", String.format("Hola %s, has iniciado sesión con éxito!",
+		body.put("message", String.format("Hola %s, has iniciado sesión con éxito!",
 				((org.springframework.security.core.userdetails.User) authResult.getPrincipal()).getUsername()));
 
 		response.getWriter().write(new ObjectMapper().writeValueAsString(body));
@@ -84,7 +89,7 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 	protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed)
 			throws IOException, ServletException {
 		Map<String, Object> body = new HashMap<>();
-		body.put("mensaje", "Error de autenticación: username o password incorrecto!");
+		body.put("message", "Error de autenticación: usuario o password incorrecto!");
 		body.put("error", failed.getMessage());
 
 		response.getWriter().write(new ObjectMapper().writeValueAsString(body));

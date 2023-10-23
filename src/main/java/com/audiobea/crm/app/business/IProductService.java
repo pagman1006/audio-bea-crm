@@ -4,6 +4,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.audiobea.crm.app.dao.product.model.Brand;
+import com.audiobea.crm.app.dao.product.model.Hotdeal;
 import com.audiobea.crm.app.dao.product.model.Product;
 import com.audiobea.crm.app.dao.product.model.SubBrand;
 
@@ -37,5 +38,7 @@ public interface IProductService {
 	public boolean deleteSubBrandById(Long subBrandId);
 
 	public Product uploadImages(Long id, MultipartFile[] files);
+	
+	public Hotdeal getHotdeal();
 
 }
