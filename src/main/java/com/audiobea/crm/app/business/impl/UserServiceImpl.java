@@ -10,12 +10,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.audiobea.crm.app.business.IUserService;
-import com.audiobea.crm.app.business.dao.user.IRoleDao;
-import com.audiobea.crm.app.business.dao.user.IUserDao;
-import com.audiobea.crm.app.business.dao.user.model.Role;
-import com.audiobea.crm.app.business.dao.user.model.User;
 import com.audiobea.crm.app.commons.I18Constants;
+import com.audiobea.crm.app.core.exception.DuplicateRecordException;
 import com.audiobea.crm.app.core.exception.NoSuchElementFoundException;
+import com.audiobea.crm.app.dao.user.IRoleDao;
+import com.audiobea.crm.app.dao.user.IUserDao;
+import com.audiobea.crm.app.dao.user.model.Role;
+import com.audiobea.crm.app.dao.user.model.User;
 import com.audiobea.crm.app.utils.Utils;
 
 import lombok.AllArgsConstructor;
@@ -41,7 +42,11 @@ public class UserServiceImpl implements IUserService {
 	@Transactional(readOnly = false)
 	@Override
 	public User saveUser(User userToSave) {
-		return userDao.save(userToSave);
+		try {
+			return userDao.save(userToSave);
+		} catch (Exception e) {
+			throw new DuplicateRecordException(Utils.getLocalMessage(messageSource, I18Constants.DUPLICATE_KEY.getKey(), userToSave.getUsername()));
+		}
 	}
 
 	@Override

@@ -24,12 +24,14 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.audiobea.crm.app.business.IProductService;
-import com.audiobea.crm.app.business.dao.product.model.Product;
 import com.audiobea.crm.app.commons.ResponseData;
+import com.audiobea.crm.app.commons.dto.DtoInHotdeal;
 import com.audiobea.crm.app.commons.dto.DtoInProduct;
-import com.audiobea.crm.app.commons.dto.EnumProductType;
+import com.audiobea.crm.app.controller.mapper.HotdealMapper;
 import com.audiobea.crm.app.controller.mapper.ListProductsMapper;
 import com.audiobea.crm.app.controller.mapper.ProductMapper;
+import com.audiobea.crm.app.dao.product.model.Product;
+import com.audiobea.crm.app.utils.Constants;
 import com.audiobea.crm.app.utils.Validator;
 
 import lombok.AllArgsConstructor;
@@ -38,7 +40,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @AllArgsConstructor
 @RestController
-@RequestMapping("/v1/audio-bea/products")
+@RequestMapping(Constants.URL_BASE + "/products")
 public class ProductController {
 
 	@Autowired
@@ -50,64 +52,71 @@ public class ProductController {
 	@Autowired
 	private ProductMapper productMapper;
 
+	@Autowired
+	private HotdealMapper hotdealMapper;
+
 	private final MessageSource messageSource;
 
 	@GetMapping
 	@Produces({ MediaType.APPLICATION_JSON })
-	public ResponseEntity<ResponseData<DtoInProduct>> getProducts(
-			@RequestParam(name = "productType", required = false) EnumProductType productType,
+	public ResponseEntity<ResponseData<DtoInProduct>> getProducts(@RequestParam(name = "productType", required = false) String productType,
+			@RequestParam(name = "productName", required = false) String productName,
 			@RequestParam(name = "brand", required = false, defaultValue = "") String brand,
 			@RequestParam(value = "subBrand", required = false, defaultValue = "") String subBrand,
 			@RequestParam(name = "newProduct", required = false) boolean newProduct,
 			@RequestParam(name = "page", defaultValue = "0", required = false) Integer page,
 			@RequestParam(name = "pageSize", defaultValue = "10", required = false) Integer pageSize) {
-		Page<Product> pageable = productService.getProducts(productType, newProduct, brand, subBrand, page, pageSize);
+		Page<Product> pageable = productService.getProducts(productName, productType, newProduct, brand, subBrand, page, pageSize);
 		Validator.validatePage(pageable, messageSource);
-		ResponseData<DtoInProduct> response = new ResponseData<>(
-				listProductsMapper.productsToDtoInProducts(pageable.getContent()), pageable.getNumber(),
-				pageable.getSize(), pageable.getTotalElements(), pageable.getTotalPages());
+		ResponseData<DtoInProduct> response = new ResponseData<>(listProductsMapper.productsToDtoInProducts(pageable.getContent()),
+				pageable.getNumber(), pageable.getSize(), pageable.getTotalElements(), pageable.getTotalPages());
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 
-	@PreAuthorize("hasAuthority('ADMIN')")
 	@PostMapping()
+	@PreAuthorize("hasAuthority('ADMIN')")
 	@Produces({ MediaType.APPLICATION_JSON })
 	@Consumes({ MediaType.APPLICATION_JSON })
 	public ResponseEntity<DtoInProduct> addProduct(@RequestBody DtoInProduct product) {
 		log.debug("DtoInProduct: {}", product);
-		return new ResponseEntity<>(productMapper.productToDtoInProduct(
-				productService.saveProduct(productMapper.productDtoInToProduct(product))), HttpStatus.CREATED);
+		return new ResponseEntity<>(
+				productMapper.productToDtoInProduct(productService.saveProduct(productMapper.productDtoInToProduct(product))),
+				HttpStatus.CREATED);
 	}
 
-	@PreAuthorize("hasAuthority('ADMIN')")
 	@PostMapping(path = "/{id}/images", consumes = { MediaType.MULTIPART_FORM_DATA })
+	@PreAuthorize("hasAuthority('ADMIN')")
 	@Produces({ MediaType.APPLICATION_JSON })
 	@Consumes({ MediaType.APPLICATION_JSON })
 	@ResponseStatus(value = HttpStatus.OK)
 	public ResponseEntity<DtoInProduct> uploadImages(@PathVariable("id") Long id,
 			@RequestPart(name = "files", required = false) MultipartFile[] images) {
 		log.debug("Id: {}, Images: {}", id, images.length);
-		return new ResponseEntity<>(productMapper.productToDtoInProduct(productService.uploadImages(id, images)),
-				HttpStatus.CREATED);
+		return new ResponseEntity<>(productMapper.productToDtoInProduct(productService.uploadImages(id, images)), HttpStatus.CREATED);
 	}
 
-	@PreAuthorize("hasAuthority('ADMIN')")
 	@PutMapping("/{id}")
+	@PreAuthorize("hasAuthority('ADMIN')")
 	@Produces({ MediaType.APPLICATION_JSON })
 	@Consumes({ MediaType.APPLICATION_JSON })
 	public ResponseEntity<DtoInProduct> updateProduct(@PathVariable("id") Long id, @RequestBody DtoInProduct product) {
 		return new ResponseEntity<>(
-				productMapper.productToDtoInProduct(
-						productService.updateProduct(id, productMapper.productDtoInToProduct(product))),
+				productMapper.productToDtoInProduct(productService.updateProduct(id, productMapper.productDtoInToProduct(product))),
 				HttpStatus.CREATED);
 	}
 
-	@PreAuthorize("hasAuthority('ADMIN')")
 	@DeleteMapping("/{id}")
+	@PreAuthorize("hasAuthority('ADMIN')")
 	@Produces({ MediaType.APPLICATION_JSON })
 	public ResponseEntity<String> deleteProductById(@PathVariable("id") Long id) {
 		productService.deleteProductById(id);
 		return new ResponseEntity<>(HttpStatus.ACCEPTED);
+	}
+
+	@GetMapping("/hotdeal")
+	@Produces({ MediaType.APPLICATION_JSON })
+	public ResponseEntity<DtoInHotdeal> getHotdeal() {
+		return new ResponseEntity<>(hotdealMapper.hotdealToDtoInHotdeal(productService.getHotdeal()), HttpStatus.ACCEPTED);
 	}
 
 }

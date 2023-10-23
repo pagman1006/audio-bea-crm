@@ -23,7 +23,7 @@ public interface IUploadService {
 	public void init() throws IOException;
 
 	public DtoInFileResponse uploadExcelFile(MultipartFile file);
-
+	
 	public List<String> uploadFiles(MultipartFile[] files) throws IOException;
 
 }

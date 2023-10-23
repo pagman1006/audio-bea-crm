@@ -5,21 +5,21 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
 
-import com.audiobea.crm.app.business.dao.customer.model.Phone;
-import com.audiobea.crm.app.business.dao.customer.model.PhoneType;
 import com.audiobea.crm.app.commons.dto.DtoInPhone;
 import com.audiobea.crm.app.commons.dto.EnumPhoneType;
+import com.audiobea.crm.app.dao.customer.model.Phone;
+import com.audiobea.crm.app.dao.customer.model.PhoneType;
 import com.audiobea.crm.app.utils.Constants;
 
 @Mapper(componentModel = Constants.SPRING)
 public interface PhoneMapper {
 
-	@Mapping(target = "phoneType", source="phoneType", qualifiedByName = "enumPhoneType")
+	@Mapping(target = "phoneType", source = "phoneType", qualifiedByName = "enumPhoneType")
 	DtoInPhone phoneToDtoInPhone(Phone phone);
-	
-	@Mapping(target = "phoneType", source="phoneType", qualifiedByName = "typePhone")
+
+	@Mapping(target = "phoneType", source = "phoneType", qualifiedByName = "typePhone")
 	Phone phoneDtoToPhone(DtoInPhone dtoPhone);
-	
+
 	@Named("enumPhoneType")
 	default EnumPhoneType mapEnumType(PhoneType phoneType) {
 		if (phoneType == null || StringUtils.isBlank(phoneType.getType())) {
@@ -27,7 +27,7 @@ public interface PhoneMapper {
 		}
 		return EnumPhoneType.valueOf(phoneType.getType());
 	}
-	
+
 	@Named("typePhone")
 	default PhoneType mapPhone(EnumPhoneType type) {
 		if (type == null) {

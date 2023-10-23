@@ -23,27 +23,27 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.audiobea.crm.app.business.IUserService;
-import com.audiobea.crm.app.business.dao.user.model.User;
 import com.audiobea.crm.app.commons.ResponseData;
 import com.audiobea.crm.app.commons.dto.DtoInUser;
 import com.audiobea.crm.app.controller.mapper.ListUserMapper;
 import com.audiobea.crm.app.controller.mapper.UserMapper;
+import com.audiobea.crm.app.dao.user.model.User;
+import com.audiobea.crm.app.utils.Constants;
 import com.audiobea.crm.app.utils.Validator;
 
 import lombok.AllArgsConstructor;
 
-//@Slf4j
 @AllArgsConstructor
 @RestController
-@RequestMapping("/v1/audio-bea/users")
+@RequestMapping(Constants.URL_BASE + "/users")
 public class UserController {
 
 	@Autowired
 	private IUserService userService;
-	
+
 	@Autowired
 	private PasswordEncoder passwordEncoder;
-	
+
 	@Autowired
 	private ListUserMapper listUserMapper;
 
@@ -51,9 +51,9 @@ public class UserController {
 	private UserMapper userMapper;
 
 	private final MessageSource messageSource;
-	
-	@PreAuthorize("hasAuthority('ADMIN')")
+
 	@GetMapping
+	@PreAuthorize("hasAuthority('ADMIN')")
 	@Produces({ MediaType.APPLICATION_JSON })
 	public ResponseEntity<ResponseData<DtoInUser>> getUsers(
 			@RequestParam(name = "username", defaultValue = "", required = false) String username,
@@ -62,8 +62,8 @@ public class UserController {
 			@RequestParam(name = "pageSize", defaultValue = "10", required = false) Integer pageSize) {
 		Page<User> pageable = userService.getUsers(username, role, page, pageSize);
 		Validator.validatePage(pageable, messageSource);
-		ResponseData<DtoInUser> response = new ResponseData<>(listUserMapper.usersToDtoInUsers(pageable.getContent()),
-				pageable.getNumber(), pageable.getSize(), pageable.getTotalElements(), pageable.getTotalPages());
+		ResponseData<DtoInUser> response = new ResponseData<>(listUserMapper.usersToDtoInUsers(pageable.getContent()), pageable.getNumber(),
+				pageable.getSize(), pageable.getTotalElements(), pageable.getTotalPages());
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 
@@ -71,35 +71,32 @@ public class UserController {
 	@Produces({ MediaType.APPLICATION_JSON })
 	@Consumes({ MediaType.APPLICATION_JSON })
 	public ResponseEntity<DtoInUser> addUser(@RequestBody DtoInUser requestUser) {
-		
 		requestUser.setPassword(passwordEncoder.encode(requestUser.getPassword()));
-		DtoInUser user = userMapper.userToDtoInUser(userService.saveUser(userMapper.userDtoInToUser(requestUser)));
-		
+		final DtoInUser user = userMapper.userToDtoInUser(userService.saveUser(userMapper.userDtoInToUser(requestUser)));
 		return new ResponseEntity<>(user, HttpStatus.CREATED);
 	}
 
 	// TODO: Implementar validacion del mismo usuario
-	@PreAuthorize("hasAuthority('ADMIN') or hasAuthority('USER')")
 	@GetMapping("/{id}")
+	@PreAuthorize("hasAuthority('ADMIN') or hasAuthority('USER')")
 	@Produces({ MediaType.APPLICATION_JSON })
 	@ResponseStatus(code = HttpStatus.OK)
 	public ResponseEntity<DtoInUser> getUser(@PathVariable(value = "id") Long id) {
 		return new ResponseEntity<>(userMapper.userToDtoInUser(userService.getUserById(id)), HttpStatus.CREATED);
 	}
 
-	@PreAuthorize("hasAuthority('ADMIN') or hasAuthority('USER')")
 	@PutMapping("/{id}")
+	@PreAuthorize("hasAuthority('ADMIN') or hasAuthority('USER')")
 	@Produces({ MediaType.APPLICATION_JSON })
 	@Consumes({ MediaType.APPLICATION_JSON })
 	@ResponseStatus(code = HttpStatus.OK)
 	public ResponseEntity<DtoInUser> updateUser(@PathVariable(value = "id") Long id, @RequestBody DtoInUser user) {
-		return new ResponseEntity<>(
-				userMapper.userToDtoInUser(userService.updateUser(id, userMapper.userDtoInToUser(user))),
+		return new ResponseEntity<>(userMapper.userToDtoInUser(userService.updateUser(id, userMapper.userDtoInToUser(user))),
 				HttpStatus.CREATED);
 	}
 
-	@PreAuthorize("hasAuthority('ADMIN')")
 	@DeleteMapping("/{id}")
+	@PreAuthorize("hasAuthority('ADMIN')")
 	@Produces({ MediaType.APPLICATION_JSON })
 	@ResponseStatus(code = HttpStatus.OK)
 	public ResponseEntity<String> deleteUserById(@PathVariable(value = "id") Long id) {

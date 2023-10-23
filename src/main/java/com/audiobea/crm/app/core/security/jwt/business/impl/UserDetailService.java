@@ -11,9 +11,9 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import com.audiobea.crm.app.business.dao.user.IUserDao;
-import com.audiobea.crm.app.business.dao.user.model.Role;
-import com.audiobea.crm.app.business.dao.user.model.User;
+import com.audiobea.crm.app.dao.user.IUserDao;
+import com.audiobea.crm.app.dao.user.model.Role;
+import com.audiobea.crm.app.dao.user.model.User;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -44,8 +44,8 @@ public class UserDetailService implements UserDetailsService {
 			log.error("Login Error: User '{} dont have roles!", username);
 			throw new UsernameNotFoundException("Error en el Login: user '" + username + "' dont have roles!");
 		}
-		return new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPassword(),
-				user.isEnabled(), true, true, true, authorities);
+		return new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPassword(), user.isEnabled(), true, true,
+				true, authorities);
 	}
 
 }

@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
+import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -22,7 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
 
 	private IJWTService jwtService;
-	
+
 	public JWTAuthorizationFilter(AuthenticationManager authenticationManager, IJWTService jwtService) {
 		super(authenticationManager);
 		this.jwtService = jwtService;
@@ -31,8 +32,10 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
 			throws IOException, ServletException {
-		
+
 		log.debug("doFilterInternal");
+		response.addHeader(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, "*");
+		response.addHeader(HttpHeaders.ACCESS_CONTROL_ALLOW_HEADERS, "*");
 		String header = request.getHeader(JWTServiceImpl.HEADER_STRING);
 		log.debug("Header: {}", header);
 		if (!requiresAuthentication(header)) {
@@ -41,12 +44,12 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
 		}
 
 		UsernamePasswordAuthenticationToken authentication = null;
-		
-		if(jwtService.validate(header)) {
+
+		if (jwtService.validate(header)) {
 			authentication = new UsernamePasswordAuthenticationToken(jwtService.getUsername(header), null, jwtService.getRoles(header));
 			authentication.getAuthorities().forEach(authority -> log.debug(authority.toString()));
 		}
-		
+
 		if (authentication != null && StringUtils.isNotBlank(authentication.getName())) {
 			log.debug("Authentication: {}", authentication.getName());
 		}

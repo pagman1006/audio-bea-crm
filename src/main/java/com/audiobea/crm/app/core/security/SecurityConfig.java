@@ -32,19 +32,17 @@ import com.audiobea.crm.app.core.security.jwt.filter.JWTAuthorizationFilter;
 @EnableGlobalMethodSecurity(securedEnabled = true, prePostEnabled = true, jsr250Enabled = true)
 public class SecurityConfig {
 
-	private static final RequestMatcher PUBLIC_URLS = new OrRequestMatcher(new AntPathRequestMatcher("/v1/audio-bea/"));
+	private static final RequestMatcher PUBLIC_URLS = new OrRequestMatcher(new AntPathRequestMatcher("/audio-bea/v1/api/"));
 
 	@Bean
-	SecurityFilterChain securityFilterChain(HttpSecurity http, UserDetailsService userDetailsService,
-			IJWTService jwtService) throws Exception {
-		
+	SecurityFilterChain securityFilterChain(HttpSecurity http, UserDetailsService userDetailsService, IJWTService jwtService)
+			throws Exception {
+
 		return http.sessionManagement(management -> management.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-				.authorizeHttpRequests(requests -> requests.antMatchers("/", "/v1/audio-bea/**").permitAll()
-						.anyRequest().authenticated())
-				.addFilter(new JWTAuthenticationFilter(authenticationManager(userDetailsService, passwordEncoder()),
-						jwtService))
-				.addFilter(new JWTAuthorizationFilter(authenticationManager(userDetailsService, passwordEncoder()),
-						jwtService))
+				.authorizeHttpRequests(
+						requests -> requests.antMatchers("/**", "/audio-bea/v1/api/**").permitAll().anyRequest().authenticated())
+				.addFilter(new JWTAuthenticationFilter(authenticationManager(userDetailsService, passwordEncoder()), jwtService))
+				.addFilter(new JWTAuthorizationFilter(authenticationManager(userDetailsService, passwordEncoder()), jwtService))
 				.csrf(csrf -> csrf.disable()).build();
 	}
 
@@ -66,14 +64,13 @@ public class SecurityConfig {
 	}
 
 	@Bean
-	AuthenticationManager authenticationManager(UserDetailsService userDetailsService,
-			PasswordEncoder passwordEncoder) {
+	AuthenticationManager authenticationManager(UserDetailsService userDetailsService, PasswordEncoder passwordEncoder) {
 		DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
 		provider.setUserDetailsService(userDetailsService);
 		provider.setPasswordEncoder(passwordEncoder);
 		return new ProviderManager(provider);
 	}
-
+	
 	@Bean
 	PasswordEncoder passwordEncoder() {
 		return new BCryptPasswordEncoder();

@@ -8,8 +8,10 @@ import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.HttpMethod;
 
 import org.apache.commons.lang.StringUtils;
+import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -26,25 +28,22 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
 	private AuthenticationManager authenticationManager;
 	private IJWTService jwtService;
+	private static final AntPathRequestMatcher DEFAULT_ANT_PATH_REQUEST_MATCHER = new AntPathRequestMatcher("/audio-bea/v1/api/login", HttpMethod.POST);
 
 	public JWTAuthenticationFilter(AuthenticationManager authenticationManager, IJWTService jwtService) {
 		this.authenticationManager = authenticationManager;
-		setRequiresAuthenticationRequestMatcher(new AntPathRequestMatcher("/v1/audio-bea/login", "POST"));
+		setRequiresAuthenticationRequestMatcher(DEFAULT_ANT_PATH_REQUEST_MATCHER);
 		this.jwtService = jwtService;
 	}
 
 	@Override
-	public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
-			throws AuthenticationException {
+	public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
 
 		String username = obtainUsername(request);
 		String password = obtainPassword(request);
-
-		if (username != null && password != null) {
-			logger.info("Username desde request parameter (form-data): " + username);
-			logger.info("Password desde request parameter (form-data): " + password);
-
-		} else {
+		response.addHeader(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, "*");
+		response.addHeader(HttpHeaders.ACCESS_CONTROL_ALLOW_HEADERS, "*");
+		if (username == null || password == null) {
 			DtoInUser user = null;
 			try {
 				logger.debug("Inicia deserializacion del request");
@@ -58,12 +57,14 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
 			} catch (IOException e) {
 				e.printStackTrace();
-			}  
+			}
 		}
-		username = StringUtils.isNotBlank(username)? username.trim(): null;
-		UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(username, password);
+		
+		if (username != null && StringUtils.isNotEmpty(username)) {
+			username = username.trim();
+		}
 
-		return authenticationManager.authenticate(authToken);
+		return authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
 	}
 
 	@Override
@@ -76,7 +77,7 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 		Map<String, Object> body = new HashMap<>();
 		body.put("token", token);
 		body.put("user", authResult.getPrincipal());
-		body.put("mensaje", String.format("Hola %s, has iniciado sesión con éxito!",
+		body.put("message", String.format("Hola %s, has iniciado sesión con éxito!",
 				((org.springframework.security.core.userdetails.User) authResult.getPrincipal()).getUsername()));
 
 		response.getWriter().write(new ObjectMapper().writeValueAsString(body));
@@ -85,15 +86,15 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 	}
 
 	@Override
-	protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response,
-			AuthenticationException failed) throws IOException, ServletException {
+	protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed)
+			throws IOException, ServletException {
 		Map<String, Object> body = new HashMap<>();
-		body.put("mensaje", "Error de autenticación: username o password incorrecto!");
+		body.put("message", "Error de autenticación: usuario o password incorrecto!");
 		body.put("error", failed.getMessage());
-		
+
 		response.getWriter().write(new ObjectMapper().writeValueAsString(body));
 		response.setStatus(401);
 		response.setContentType("application/json");
 	}
-	
+
 }

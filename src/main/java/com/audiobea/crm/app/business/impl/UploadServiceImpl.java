@@ -7,6 +7,7 @@ import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -32,10 +33,6 @@ import org.springframework.util.FileSystemUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.audiobea.crm.app.business.IUploadService;
-import com.audiobea.crm.app.business.dao.demographic.IStateDao;
-import com.audiobea.crm.app.business.dao.demographic.model.City;
-import com.audiobea.crm.app.business.dao.demographic.model.Colony;
-import com.audiobea.crm.app.business.dao.demographic.model.State;
 import com.audiobea.crm.app.commons.I18Constants;
 import com.audiobea.crm.app.commons.dto.DtoInFileExcel;
 import com.audiobea.crm.app.commons.dto.DtoInFileResponse;
@@ -43,6 +40,10 @@ import com.audiobea.crm.app.core.exception.NoSuchFileException;
 import com.audiobea.crm.app.core.exception.ParseFileException;
 import com.audiobea.crm.app.core.exception.UploadFileException;
 import com.audiobea.crm.app.core.exception.ValidFileException;
+import com.audiobea.crm.app.dao.demographic.IStateDao;
+import com.audiobea.crm.app.dao.demographic.model.City;
+import com.audiobea.crm.app.dao.demographic.model.Colony;
+import com.audiobea.crm.app.dao.demographic.model.State;
 import com.audiobea.crm.app.utils.Constants;
 import com.audiobea.crm.app.utils.ExcelHelper;
 import com.audiobea.crm.app.utils.Utils;
@@ -60,6 +61,9 @@ public class UploadServiceImpl implements IUploadService {
 	private Integer citiesCount = 0;
 	private Integer coloniesCount = 0;
 
+	private static final DecimalFormat decimalF = new DecimalFormat("00.00");
+	private static final DecimalFormat df = new DecimalFormat("#,###");
+
 	@Autowired
 	private IStateDao stateDao;
 
@@ -69,8 +73,7 @@ public class UploadServiceImpl implements IUploadService {
 		Resource resource = null;
 		resource = new UrlResource(pathImage.toUri());
 		if (!resource.exists() || !resource.isReadable()) {
-			throw new UploadFileException(
-					Utils.getLocalMessage(messageSource, I18Constants.UPLOAD_FILE_EXCEPTION.getKey(), filename));
+			throw new UploadFileException(Utils.getLocalMessage(messageSource, I18Constants.UPLOAD_FILE_EXCEPTION.getKey(), filename));
 		}
 		return resource;
 	}
@@ -93,8 +96,7 @@ public class UploadServiceImpl implements IUploadService {
 			try {
 				Files.delete(rootPath);
 			} catch (IOException e) {
-				throw new NoSuchFileException(
-						Utils.getLocalMessage(messageSource, I18Constants.NO_FILE_FOUND.getKey(), filename));
+				throw new NoSuchFileException(Utils.getLocalMessage(messageSource, I18Constants.NO_FILE_FOUND.getKey(), filename));
 			}
 		}
 		return true;
@@ -129,21 +131,26 @@ public class UploadServiceImpl implements IUploadService {
 			log.debug("Colonies loaded: {}", coloniesCount);
 			log.debug("Upload time: {}", strTimeUpload);
 
-			stateDao.saveAll(listStates);
-
-			long timeSave = new Date().getTime();
-			String strSaveTime = getFinishTimeStr(timeUpload, timeSave);
-			String strTotalTime = getFinishTimeStr(timeStart, timeSave);
-			log.debug("Save time: {}", strSaveTime);
-			log.debug("Total time: {}", strTotalTime);
-			log.debug("Upload finished!!!");
-
-			return new DtoInFileResponse((long) statesCount, (long) citiesCount, (long) coloniesCount);
+			saveColoniesAsync(listStates, coloniesCount);
+			return new DtoInFileResponse(df.format(statesCount), df.format(citiesCount), df.format(coloniesCount));
 		} catch (IOException e) {
 			log.error(e.getMessage());
 		}
-
 		return null;
+	}
+
+	private void saveColoniesAsync(List<State> listStates, int totalElements) {
+		new Thread(() -> {
+			log.debug("Start load to DBB");
+			log.debug("0.00%");
+			double elements = 0;
+			for (State state : listStates) {
+				stateDao.save(state);
+				elements += state.getCities().stream().mapToInt(city -> city.getColonies().size()).sum();
+				double avance = (elements * 100) / Double.valueOf(totalElements);
+				log.debug("{}% -> {}, {}/{}", decimalF.format(avance), state.getName(), df.format(elements), df.format(totalElements));
+			}
+		}).start();
 	}
 
 	private List<State> setupListStates(Set<State> setState) {
@@ -186,8 +193,7 @@ public class UploadServiceImpl implements IUploadService {
 		seconds = seconds - (minutes * 60);
 
 		int milliSeconds = (int) total - (seconds * 1000);
-		return String.valueOf(minutes).concat(":")
-				.concat(String.valueOf(seconds).concat(":").concat(String.valueOf(milliSeconds)));
+		return String.valueOf(minutes).concat(":").concat(String.valueOf(seconds).concat(":").concat(String.valueOf(milliSeconds)));
 	}
 
 	public Set<State> excelToListStates(InputStream input) {
@@ -217,10 +223,9 @@ public class UploadServiceImpl implements IUploadService {
 		}
 	}
 
-	private State setStateFromSetStates(Set<State> listSetStates, String nameState, String nameCity, String nameColony,
-			String codePostal) {
-		State state = listSetStates.stream().filter(s -> s.getName().equals(nameState)).collect(Collectors.toList())
-				.stream().findFirst().orElse(null);
+	private State setStateFromSetStates(Set<State> listSetStates, String nameState, String nameCity, String nameColony, String codePostal) {
+		State state = listSetStates.stream().filter(s -> s.getName().equals(nameState)).collect(Collectors.toList()).stream().findFirst()
+				.orElse(null);
 
 		if (state == null) {
 			state = new State();
@@ -262,8 +267,8 @@ public class UploadServiceImpl implements IUploadService {
 	private City setCity(State state, String nameCity) {
 		City city = null;
 		if (state.getCities() != null && !state.getCities().isEmpty()) {
-			city = state.getCities().stream().filter(c -> c.getName().equals(nameCity)).collect(Collectors.toList())
-					.stream().findFirst().orElse(null);
+			city = state.getCities().stream().filter(c -> c.getName().equals(nameCity)).collect(Collectors.toList()).stream().findFirst()
+					.orElse(null);
 		}
 		if (city == null) {
 			city = new City();
