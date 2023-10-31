@@ -5,6 +5,8 @@ target/
 !**/src/main/**/target/
 !**/src/test/**/target/
 uploads/
+serviceAccountKey.json
+audio-bea-firebase.json
 
 ### STS ###
 .apt_generated

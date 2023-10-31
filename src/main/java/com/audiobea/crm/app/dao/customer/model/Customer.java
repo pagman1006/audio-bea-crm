@@ -1,6 +1,5 @@
 package com.audiobea.crm.app.dao.customer.model;
 
-import java.io.Serial;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
@@ -20,7 +19,8 @@ import javax.validation.constraints.Size;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
-import com.audiobea.crm.app.dao.product.model.Invoice;
+import com.audiobea.crm.app.dao.demographic.model.Address;
+import com.audiobea.crm.app.dao.invoice.model.Invoice;
 import com.audiobea.crm.app.dao.user.model.User;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
@@ -31,7 +31,6 @@ import lombok.Data;
 @Table(name = "customers")
 public class Customer implements Serializable {
 
-	@Serial
 	private static final long serialVersionUID = 1L;
 	
 	@Id

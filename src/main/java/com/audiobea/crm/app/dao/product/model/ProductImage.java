@@ -27,5 +27,16 @@ public class ProductImage implements Serializable {
 	@Size(min = 3, max = 60)
 	@Column(length = 60)
 	private String imageName;
+	
+	private boolean selected;
 
+	public ProductImage() {
+		super();
+	}
+	
+	public ProductImage(@Size(min = 3, max = 60) String imageName) {
+		super();
+		this.imageName = imageName;
+	}
+	
 }

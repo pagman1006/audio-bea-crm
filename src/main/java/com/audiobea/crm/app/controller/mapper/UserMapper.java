@@ -10,12 +10,12 @@ import com.audiobea.crm.app.utils.Constants;
 
 @Mapper(componentModel = Constants.SPRING)
 public interface UserMapper {
-	
-	@Mapping(target = "password", source="password", qualifiedByName = "passwordMap")
+
+	@Mapping(target = "password", source = "password", qualifiedByName = "passwordMap")
 	DtoInUser userToDtoInUser(User user);
-	
+
 	User userDtoInToUser(DtoInUser dtoUser);
-	
+
 	@Named("passwordMap")
 	default String passwordMap(String password) {
 		return "**********";

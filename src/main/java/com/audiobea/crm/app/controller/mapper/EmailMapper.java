@@ -18,10 +18,10 @@ public interface EmailMapper {
 	@Mapping(target = "email", source = "emailAddress")
 	DtoInEmail emailToDtoInEmail(Email email);
 
-	@Mapping(target = "emailType", source="emailType", qualifiedByName = "typeEmail")
+	@Mapping(target = "emailType", source = "emailType", qualifiedByName = "typeEmail")
 	@Mapping(target = "emailAddress", source = "email")
 	Email emailDtoInToPhone(DtoInEmail dtoEmail);
-	
+
 	@Named("enumTypeEmail")
 	default EnumEmailType mapEnumType(EmailType emailType) {
 		if (emailType == null || StringUtils.isBlank(emailType.getType())) {

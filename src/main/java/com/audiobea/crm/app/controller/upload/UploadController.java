@@ -16,26 +16,26 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.audiobea.crm.app.business.IUploadService;
 import com.audiobea.crm.app.commons.dto.DtoInFileResponse;
+import com.audiobea.crm.app.utils.Constants;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @RestController
-@RequestMapping("/v1/audio-bea/uploads/excel")
+@RequestMapping(Constants.URL_BASE + "/uploads/excel")
 public class UploadController {
 
-    @Autowired
-    private IUploadService uploadService;
+	@Autowired
+	private IUploadService uploadService;
 
-    @PreAuthorize("hasAuthority('ADMIN')")
-    @PostMapping("/colonies")
-    @Produces({MediaType.APPLICATION_JSON})
-    @Consumes({MediaType.APPLICATION_JSON})
-    public ResponseEntity<DtoInFileResponse> uploadFile(
-            @RequestParam(name = "file", required = false) MultipartFile file) {
-        log.debug("Load started of file");
-        DtoInFileResponse response = uploadService.uploadExcelFile(file);
-        log.debug("Load finished of file");
-        return new ResponseEntity<>(response, HttpStatus.CREATED);
-    }
+	@PreAuthorize("hasAuthority('ADMIN')")
+	@PostMapping("/colonies")
+	@Produces({ MediaType.APPLICATION_JSON })
+	@Consumes({ MediaType.APPLICATION_JSON })
+	public ResponseEntity<DtoInFileResponse> uploadFile(@RequestParam(name = "file", required = false) MultipartFile file) {
+		log.debug("Load started of file");
+		DtoInFileResponse response = uploadService.uploadExcelFile(file);
+		log.debug("Load finished of file");
+		return new ResponseEntity<>(response, HttpStatus.CREATED);
+	}
 }

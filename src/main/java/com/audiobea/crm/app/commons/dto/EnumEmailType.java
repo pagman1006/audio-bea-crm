@@ -1,12 +1,13 @@
 package com.audiobea.crm.app.commons.dto;
 
-import lombok.Getter;
-import org.codehaus.jackson.annotate.JsonProperty;
-
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
+
+import org.codehaus.jackson.annotate.JsonProperty;
+
+import lombok.Getter;
 
 @Getter
 @XmlRootElement(name = "enumEmailType", namespace = "com:audiobea:crm:app:commons:dto")

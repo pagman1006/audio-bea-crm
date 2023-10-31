@@ -1,14 +1,14 @@
 package com.audiobea.crm.app.controller.mapper;
 
+import java.util.List;
+
+import org.mapstruct.Mapper;
+
 import com.audiobea.crm.app.commons.dto.DtoInProduct;
 import com.audiobea.crm.app.dao.product.model.Product;
 import com.audiobea.crm.app.utils.Constants;
 
-import org.mapstruct.Mapper;
-
-import java.util.List;
-
-@Mapper(componentModel = Constants.SPRING)
+@Mapper(componentModel = Constants.SPRING, uses = { ProductMapper.class })
 public interface ListProductsMapper {
 
     List<DtoInProduct> productsToDtoInProducts(List<Product> products);

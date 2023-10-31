@@ -5,8 +5,9 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
-import lombok.Getter;
 import org.codehaus.jackson.annotate.JsonProperty;
+
+import lombok.Getter;
 
 @Getter
 @XmlRootElement(name = "enumPhoneType", namespace = "com:audiobea:crm:app:commons:dto")
