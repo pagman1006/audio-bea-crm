@@ -7,6 +7,7 @@ target/
 uploads/
 serviceAccountKey.json
 audio-bea-firebase.json
+application.yml
 
 ### STS ###
 .apt_generated

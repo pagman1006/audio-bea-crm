@@ -1,9 +1,31 @@
 package com.audiobea.crm.app.business.impl;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
+import com.audiobea.crm.app.business.IProductService;
+import com.audiobea.crm.app.business.IUploadService;
+import com.audiobea.crm.app.commons.I18Constants;
+import com.audiobea.crm.app.commons.ResponseData;
+import com.audiobea.crm.app.commons.dto.DtoInBrand;
+import com.audiobea.crm.app.commons.dto.DtoInHotdeal;
+import com.audiobea.crm.app.commons.dto.DtoInProduct;
+import com.audiobea.crm.app.commons.dto.DtoInSubBrand;
+import com.audiobea.crm.app.commons.mapper.BrandMapper;
+import com.audiobea.crm.app.commons.mapper.HotdealMapper;
+import com.audiobea.crm.app.commons.mapper.ProductMapper;
+import com.audiobea.crm.app.commons.mapper.SubBrandMapper;
+import com.audiobea.crm.app.core.exception.NoSuchElementFoundException;
+import com.audiobea.crm.app.dao.product.IBrandDao;
+import com.audiobea.crm.app.dao.product.IHotdealDao;
+import com.audiobea.crm.app.dao.product.IProductDao;
+import com.audiobea.crm.app.dao.product.ISubBrandDao;
+import com.audiobea.crm.app.dao.product.model.Brand;
+import com.audiobea.crm.app.dao.product.model.Product;
+import com.audiobea.crm.app.dao.product.model.ProductImage;
+import com.audiobea.crm.app.dao.product.model.SubBrand;
+import com.audiobea.crm.app.utils.Constants;
+import com.audiobea.crm.app.utils.Utils;
+import com.audiobea.crm.app.utils.Validator;
+import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
@@ -15,24 +37,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.audiobea.crm.app.business.IProductService;
-import com.audiobea.crm.app.business.IUploadService;
-import com.audiobea.crm.app.commons.I18Constants;
-import com.audiobea.crm.app.core.exception.NoSuchElementFoundException;
-import com.audiobea.crm.app.dao.product.IBrandDao;
-import com.audiobea.crm.app.dao.product.IHotdealDao;
-import com.audiobea.crm.app.dao.product.IProductDao;
-import com.audiobea.crm.app.dao.product.ISubBrandDao;
-import com.audiobea.crm.app.dao.product.model.Brand;
-import com.audiobea.crm.app.dao.product.model.Hotdeal;
-import com.audiobea.crm.app.dao.product.model.Product;
-import com.audiobea.crm.app.dao.product.model.ProductImage;
-import com.audiobea.crm.app.dao.product.model.SubBrand;
-import com.audiobea.crm.app.utils.Constants;
-import com.audiobea.crm.app.utils.Utils;
-
-import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @AllArgsConstructor
@@ -40,202 +48,220 @@ import lombok.extern.slf4j.Slf4j;
 @Transactional(readOnly = true)
 public class ProductServiceImpl implements IProductService {
 
-	@Autowired
-	private IUploadService uploadService;
+    private final MessageSource messageSource;
+    @Autowired
+    private IUploadService uploadService;
+    @Autowired
+    private IProductDao productDao;
+    @Autowired
+    private IBrandDao brandDao;
+    @Autowired
+    private ISubBrandDao subBrandDao;
+    @Autowired
+    private IHotdealDao hotdealDao;
+    @Autowired
+    private BrandMapper brandMapper;
+    @Autowired
+    private SubBrandMapper subBrandMapper;
+    @Autowired
+    private ProductMapper productMapper;
+    @Autowired
+    private HotdealMapper hotdealMapper;
 
-	@Autowired
-	private IProductDao productDao;
+    @Override
+    public ResponseData<DtoInProduct> getProducts(String productName, String productType, boolean isNewProduct,
+                                                  String brand, String subBrand, Integer page, Integer pageSize) {
+        Pageable pageable = PageRequest.of(page, pageSize);
+        log.debug("Marca: {}, SubMarca: {}, ProductType: {}, Nuevo: {}, Page: {}, PageSize: {}",
+                brand, subBrand, productType, isNewProduct, page, pageSize);
+        productType = StringUtils.isNotBlank(productType) ? productType : "";
+        productName = StringUtils.isNotBlank(productName) ? productName : "";
+        Page<Product> pageProduct;
+        if (isNewProduct) {
+            pageProduct = productDao.findByNewProductBrandSubBrandProductType(productName, brand, subBrand, productType, pageable);
+        } else {
+            pageProduct = productDao.findByBrandSubBrandProductType(productName, brand, subBrand, productType, pageable);
+        }
+        Validator.validatePage(pageProduct, messageSource);
+        return new ResponseData<>(pageProduct.getContent().stream().map(p -> productMapper.productToDtoInProduct(p))
+                .collect(Collectors.toList()), pageProduct);
+    }
 
-	@Autowired
-	private IBrandDao brandDao;
+    @Override
+    public DtoInProduct getProductById(Long id) {
+        return productMapper.productToDtoInProduct(productDao.findById(id).orElseThrow(() -> new NoSuchElementFoundException(
+                Utils.getLocalMessage(messageSource, I18Constants.NO_ITEM_FOUND.getKey(), String.valueOf(id)))));
+    }
 
-	@Autowired
-	private ISubBrandDao subBrandDao;
-	
-	@Autowired
-	private IHotdealDao hotdealDao;
+    @Transactional
+    @Override
+    public DtoInProduct saveProduct(DtoInProduct product) {
+        log.debug("Product: {}", product);
+        return productMapper.productToDtoInProduct(productDao.save(productMapper.productDtoInToProduct(product)));
+    }
 
-	private final MessageSource messageSource;
+    @Transactional
+    @Override
+    public DtoInProduct updateProduct(Long id, DtoInProduct product) {
+        Product productFind = productDao.findById(id).orElseThrow(() -> new NoSuchElementFoundException(
+                Utils.getLocalMessage(messageSource, I18Constants.NO_ITEM_FOUND.getKey(), String.valueOf(id))));
+        productFind.setProductName(product.getProductName());
+        productFind.setSubBrand(subBrandMapper.subBrandDtoInToSubBrand(product.getSubBrand()));
+        productFind.setPrice(product.getPrice());
+        productFind.setTitle(product.getTitle());
+        productFind.setDescription(product.getDescription());
+        return productMapper.productToDtoInProduct(productFind);
+    }
 
-	@Override
-	public Page<Product> getProducts(String productName, String productType, boolean isNewProduct, String brand, String subBrand, Integer page,
-			Integer pageSize) {
-		Pageable pageable = PageRequest.of(page, pageSize);
-		log.debug("Marca: {}, SubMarca: {}, ProductType: {}, Nuevo: {}, Page: {}, PageSize: {}", brand, subBrand, productType,
-				isNewProduct, page, pageSize);
-		productType =  StringUtils.isNotBlank(productType)? productType : "";
-		productName = StringUtils.isNotBlank(productName)? productName : "";
-		if (isNewProduct) {
-			return productDao.findByNewProductBrandSubBrandProductType(productName, brand, subBrand, productType, pageable);
-		} else {
-			return productDao.findByBrandSubBrandProductType(productName, brand, subBrand, productType, pageable);
-		}
-	}
+    @Transactional
+    @Override
+    public void deleteProductById(Long id) {
+        productDao.deleteById(id);
+    }
 
-	@Override
-	public Product getProductById(Long id) {
-		return productDao.findById(id).orElseThrow(() -> new NoSuchElementFoundException(
-				Utils.getLocalMessage(messageSource, I18Constants.NO_ITEM_FOUND.getKey(), String.valueOf(id))));
-	}
+    @Override
+    public ResponseData<DtoInBrand> getBrands(String brandName, Integer page, Integer pageSize) {
+        Pageable pageable = PageRequest.of(page, pageSize);
+        log.debug("Marca: {}, Page: {}, PageSize: {}", brandName, page, pageSize);
+        Page<Brand> pageBrand;
+        if (StringUtils.isNotBlank(brandName)) {
+            pageBrand = brandDao.findByBrandNameContains(brandName, pageable);
+        } else {
+            pageBrand = brandDao.findAll(pageable);
+        }
+        Validator.validatePage(pageBrand, messageSource);
+        return new ResponseData<>(pageBrand.getContent().stream().map(b -> brandMapper.brandToDtoInBrand(b))
+                .collect(Collectors.toList()), pageBrand);
+    }
 
-	@Transactional
-	@Override
-	public Product saveProduct(Product product) {
-		log.debug("Product: {}", product);
-		Product p = productDao.save(product);
-		log.debug("Product Saved: {}", p);
-		return p;
-	}
+    @Transactional
+    @Override
+    public DtoInBrand saveBrand(DtoInBrand brand) {
+        String name = brand.getBrandName().toUpperCase();
+        brand.setBrandName(name);
+        Brand brandToSave = brandDao.findByBrandName(brand.getBrandName());
+        if (brandToSave == null) {
+            brand.setBrandName(brand.getBrandName().toUpperCase());
+            brandToSave = brandDao.save(brandMapper.brandDtoInToBrand(brand));
+        }
+        return brandMapper.brandToDtoInBrand(brandToSave);
+    }
 
-	@Transactional
-	@Override
-	public Product updateProduct(Long id, Product product) {
-		Product productFind = productDao.findById(id).orElseThrow(() -> new NoSuchElementFoundException(
-				Utils.getLocalMessage(messageSource, I18Constants.NO_ITEM_FOUND.getKey(), String.valueOf(id))));
-		productFind.setProductName(product.getProductName());
-		productFind.setSubBrand(product.getSubBrand());
-		productFind.setPrice(product.getPrice());
-		productFind.setTitle(product.getTitle());
-		productFind.setDescription(product.getDescription());
-		return productFind;
-	}
+    @Transactional
+    @Override
+    public DtoInBrand updateBrand(Long id, DtoInBrand brand) {
+        Brand brandToSave = brandDao.findById(id).orElseThrow(() -> new NoSuchElementFoundException(
+                Utils.getLocalMessage(messageSource, I18Constants.NO_ITEM_FOUND.getKey(), String.valueOf(id))));
+        if (brandToSave != null) {
+            brandToSave.setBrandName(brand.getBrandName().toUpperCase());
+            brandToSave.setEnabled(brand.isEnabled());
+            brandDao.save(brandToSave);
+        }
+        return brandMapper.brandToDtoInBrand(brandToSave);
+    }
 
-	@Transactional
-	@Override
-	public boolean deleteProductById(Long id) {
-		boolean response = false;
-		productDao.deleteById(id);
-		response = true;
-		return response;
-	}
+    @Transactional
+    @Override
+    public boolean deleteBrandById(Long id) {
+        brandDao.deleteById(id);
+        return true;
+    }
 
-	@Override
-	public Page<Brand> getBrands(String brandName, Integer page, Integer pageSize) {
-		Pageable pageable = PageRequest.of(page, pageSize);
-		log.debug("Marca: {}, Page: {}, PageSize: {}", brandName, page, pageSize);
-		if (StringUtils.isNotBlank(brandName)) {
-			return brandDao.findByBrandNameContains(brandName, pageable);
-		}
-		return brandDao.findAll(pageable);
-	}
+    @Override
+    public ResponseData<DtoInSubBrand> getSubBrandsByBrandId(String brandId, String subBrand, Integer page, Integer pageSize) {
+        Pageable pageable = PageRequest.of(page, pageSize, Sort.by(Constants.SUB_BRAND_BRAND_NAME).and(Sort.by(Constants.SUB_BRAND)));
+        log.debug("MarcaId: {}, SubBrand: {}, Page: {}, PageSize: {}", brandId, subBrand, page, pageSize);
+        Page<SubBrand> pageSubBrand = null;
+        if (StringUtils.isNotBlank(brandId)) {
+            if (brandId.equalsIgnoreCase(Constants.ALL)) {
+                log.debug("BrandId: " + brandId);
+                pageSubBrand = subBrandDao.findAll(pageable);
+            } else if (brandId.chars().allMatch(Character::isDigit)) {
+                if (StringUtils.isNotBlank(subBrand)) {
+                    log.debug("BrandId Is Not Null && SubBrand Is Not Blank");
+                    pageSubBrand = subBrandDao.findByBrandIdAndSubBrandNameContains(Long.valueOf(brandId), subBrand, pageable);
+                } else {
+                    log.debug("BrandId Is not Null");
+                    pageSubBrand = subBrandDao.findByBrandId(Long.valueOf(brandId), pageable);
+                }
+            }
+        }
+        Validator.validatePage(pageSubBrand, messageSource);
+        return new ResponseData<>(pageSubBrand.getContent().stream().map(sb -> subBrandMapper.subBrandToDtoInSubBrand(sb))
+                .collect(Collectors.toList()), pageSubBrand);
+    }
 
-	@Transactional
-	@Override
-	public Brand saveBrand(Brand brand) {
-		String name = brand.getBrandName().toUpperCase();
-		brand.setBrandName(name);
-		Brand brandToSave = brandDao.findByBrandName(brand.getBrandName());
-		if (brandToSave == null) {
-			brand.setBrandName(brand.getBrandName().toUpperCase());
-			brandDao.save(brand);
-			brandToSave = brand;
-		}
-		return brandToSave;
-	}
+    @Transactional
+    @Override
+    public DtoInSubBrand saveSubBrand(Long brandId, DtoInSubBrand subBrand) {
+        if (StringUtils.isBlank(subBrand.getSubBrandName())) {
+            return null;
+        }
+        Brand brand = brandDao.findById(brandId).orElseThrow(() -> new NoSuchElementFoundException(
+                Utils.getLocalMessage(messageSource, I18Constants.NO_ITEM_FOUND.getKey(), String.valueOf(brandId))));
+        subBrand.setBrand(brandMapper.brandToDtoInBrand(brand));
+        return subBrandMapper.subBrandToDtoInSubBrand(subBrandDao.save(subBrandMapper.subBrandDtoInToSubBrand(subBrand)));
+    }
 
-	@Transactional
-	@Override
-	public Brand updateBrand(Long id, Brand brand) {
-		Brand brandToSave = brandDao.findById(id).orElseThrow(() -> new NoSuchElementFoundException(
-				Utils.getLocalMessage(messageSource, I18Constants.NO_ITEM_FOUND.getKey(), String.valueOf(id))));
-		if (brandToSave != null) {
-			brandToSave.setBrandName(brand.getBrandName().toUpperCase());
-			brandToSave.setEnabled(brand.isEnabled());
-			brandDao.save(brandToSave);
-		}
-		return brandToSave;
-	}
+    @Transactional
+    @Override
+    public DtoInSubBrand updateSubBrand(Long subBrandId, DtoInSubBrand subBrand) {
+        SubBrand sbToSave = subBrandDao.findById(subBrandId).orElseThrow(() -> new NoSuchElementFoundException(
+                Utils.getLocalMessage(messageSource, I18Constants.NO_ITEM_FOUND.getKey(), String.valueOf(subBrandId))));
+        if (sbToSave != null) {
+            sbToSave.setSubBrandName(subBrand.getSubBrandName().toUpperCase());
+            subBrandDao.save(sbToSave);
+        }
+        return subBrandMapper.subBrandToDtoInSubBrand(sbToSave);
+    }
 
-	@Transactional
-	@Override
-	public boolean deleteBrandById(Long id) {
-		brandDao.deleteById(id);
-		return true;
-	}
+    @Transactional
+    @Override
+    public boolean deleteSubBrandById(Long subBrandId) {
+        subBrandDao.deleteById(subBrandId);
+        return true;
+    }
 
-	@Override
-	public Page<SubBrand> getSubBrandsByBrandId(String brandId, String subBrand, Integer page, Integer pageSize) {
-		Pageable pageable = PageRequest.of(page, pageSize, Sort.by(Constants.SUB_BRAND_BRAND_NAME).and(Sort.by(Constants.SUB_BRAND)));
-		log.debug("MarcaId: {}, SubBrand: {}, Page: {}, PageSize: {}", brandId, subBrand, page, pageSize);
-		if (StringUtils.isNotBlank(brandId)) {
-			if (brandId.equalsIgnoreCase(Constants.ALL)) {
-				log.debug("BrandId: " + brandId);
-				return subBrandDao.findAll(pageable);
-			} else if (brandId.chars().allMatch(Character::isDigit)) {
-				if (StringUtils.isNotBlank(subBrand)) {
-					log.debug("BrandId Is Not Null && SubBrand Is Not Blank");
-					return subBrandDao.findByBrandIdAndSubBrandNameContains(Long.valueOf(brandId), subBrand, pageable);
-				}
-				log.debug("BrandId Is not Null");
-				return subBrandDao.findByBrandId(Long.valueOf(brandId), pageable);
-			}
-		}
-		return null;
-	}
+    @Transactional
+    @Override
+    public DtoInProduct uploadImages(Long id, MultipartFile[] files) {
+        if (id == null) {
+            return null;
+        }
+        Product product = productMapper.productDtoInToProduct(getProductById(id));
+        if (files != null && files.length > 0) {
+            log.debug("id: {}, files: {}", id, files.length);
+            log.debug("files: {}", files.length);
+            try {
+                List<String> imageNames = uploadService.uploadFiles(files);
+                if (imageNames != null && !imageNames.isEmpty()) {
+                    log.debug("imageNames: {}", imageNames.size());
+                    List<ProductImage> images = new ArrayList<>();
+                    for (String imageName : imageNames) {
+                        log.debug("Name: {}", imageName);
+                        images.add(new ProductImage(imageName));
+                    }
+                    product.setImages(images);
+                    saveProduct(productMapper.productToDtoInProduct(product));
+                }
+            } catch (IOException e) {
+                log.error(e.getMessage());
+            }
+        }
+        return productMapper.productToDtoInProduct(product);
+    }
 
-	@Transactional
-	@Override
-	public SubBrand saveSubBrand(Long brandId, SubBrand subBrand) {
-		if (StringUtils.isBlank(subBrand.getSubBrandName())) {
-			return null;
-		}
-		Brand brand = brandDao.findById(brandId).orElseThrow(() -> new NoSuchElementFoundException(
-				Utils.getLocalMessage(messageSource, I18Constants.NO_ITEM_FOUND.getKey(), String.valueOf(brandId))));
-		subBrand.setBrand(brand);
-		return subBrandDao.save(subBrand);
-	}
+    @Override
+    public DtoInHotdeal getHotdeal() {
+        return hotdealMapper.hotdealToDtoInHotdeal(hotdealDao.findById(1L).orElseThrow(() -> new NoSuchElementFoundException(
+                Utils.getLocalMessage(messageSource, I18Constants.NO_ITEM_FOUND.getKey(), String.valueOf(1L)))));
+    }
 
-	@Transactional
-	@Override
-	public SubBrand updateSubBrand(Long subBrandId, SubBrand subBrand) {
-		SubBrand sbToSave = subBrandDao.findById(subBrandId).orElseThrow(() -> new NoSuchElementFoundException(
-				Utils.getLocalMessage(messageSource, I18Constants.NO_ITEM_FOUND.getKey(), String.valueOf(subBrandId))));
-		if (sbToSave != null) {
-			sbToSave.setSubBrandName(subBrand.getSubBrandName().toUpperCase());
-			subBrandDao.save(sbToSave);
-		}
-		return sbToSave;
-	}
-
-	@Transactional
-	@Override
-	public boolean deleteSubBrandById(Long subBrandId) {
-		subBrandDao.deleteById(subBrandId);
-		return true;
-	}
-
-	@Transactional
-	@Override
-	public Product uploadImages(Long id, MultipartFile[] files) {
-		if (id == null) {
-			return null;
-		}
-		Product product = getProductById(id);
-		log.debug("id: {}, files: {}", id, files.length);
-		if (files != null && files.length > 0) {
-			log.debug("files: {}", files.length);
-			try {
-				List<String> imageNames = uploadService.uploadFiles(files);
-				if (imageNames != null && !imageNames.isEmpty()) {
-					log.debug("imageNames: {}", imageNames.size());
-					List<ProductImage> images = new ArrayList<>();
-					for (String imageName : imageNames) {
-						log.debug("Name: {}", imageName);
-						images.add(new ProductImage(imageName));
-					}
-					product.setImages(images);
-					saveProduct(product);
-				}
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-		return product;
-	}
-
-	@Override
-	public Hotdeal getHotdeal() {
-		return hotdealDao.findById(1L).orElse(null);
-	}
+    @Transactional
+    @Override
+    public DtoInHotdeal saveHotdeal(DtoInHotdeal hotdeal) {
+        hotdeal.setId(1L);
+        return hotdealMapper.hotdealToDtoInHotdeal(hotdealDao.save(hotdealMapper.hotdealDtoInToHotdeal(hotdeal)));
+    }
 
 }

@@ -1,44 +1,45 @@
 package com.audiobea.crm.app.business;
 
-import org.springframework.data.domain.Page;
+import com.audiobea.crm.app.commons.ResponseData;
+import com.audiobea.crm.app.commons.dto.DtoInBrand;
+import com.audiobea.crm.app.commons.dto.DtoInHotdeal;
+import com.audiobea.crm.app.commons.dto.DtoInProduct;
+import com.audiobea.crm.app.commons.dto.DtoInSubBrand;
 import org.springframework.web.multipart.MultipartFile;
-
-import com.audiobea.crm.app.dao.product.model.Brand;
-import com.audiobea.crm.app.dao.product.model.Hotdeal;
-import com.audiobea.crm.app.dao.product.model.Product;
-import com.audiobea.crm.app.dao.product.model.SubBrand;
 
 public interface IProductService {
 
-	public Page<Product> getProducts(String productName, String productType, boolean newProduct, String marca, String subMarca,
-			Integer page, Integer pageSize);
+    ResponseData<DtoInProduct> getProducts(String productName, String productType, boolean newProduct, String marca, String subMarca,
+                                           Integer page, Integer pageSize);
 
-	public Product getProductById(Long id);
+    DtoInProduct getProductById(Long id);
 
-	public Product saveProduct(Product product);
+    DtoInProduct saveProduct(DtoInProduct product);
 
-	public Product updateProduct(Long id, Product product);
+    DtoInProduct updateProduct(Long id, DtoInProduct product);
 
-	public boolean deleteProductById(Long id);
+    void deleteProductById(Long id);
 
-	public Page<Brand> getBrands(String brandName, Integer page, Integer pageSize);
+    ResponseData<DtoInBrand> getBrands(String brandName, Integer page, Integer pageSize);
 
-	public Brand saveBrand(Brand brand);
+    DtoInBrand saveBrand(DtoInBrand brand);
 
-	public Brand updateBrand(Long id, Brand brand);
+    DtoInBrand updateBrand(Long id, DtoInBrand brand);
 
-	public boolean deleteBrandById(Long id);
+    boolean deleteBrandById(Long id);
 
-	public Page<SubBrand> getSubBrandsByBrandId(String brandId, String subBrand, Integer page, Integer pageSize);
+    ResponseData<DtoInSubBrand> getSubBrandsByBrandId(String brandId, String subBrand, Integer page, Integer pageSize);
 
-	public SubBrand saveSubBrand(Long brandId, SubBrand subBrand);
+    DtoInSubBrand saveSubBrand(Long brandId, DtoInSubBrand subBrand);
 
-	public SubBrand updateSubBrand(Long subBrandId, SubBrand subBrand);
+    DtoInSubBrand updateSubBrand(Long subBrandId, DtoInSubBrand subBrand);
 
-	public boolean deleteSubBrandById(Long subBrandId);
+    boolean deleteSubBrandById(Long subBrandId);
 
-	public Product uploadImages(Long id, MultipartFile[] files);
-	
-	public Hotdeal getHotdeal();
+    DtoInProduct uploadImages(Long id, MultipartFile[] files);
+
+    DtoInHotdeal getHotdeal();
+
+    DtoInHotdeal saveHotdeal(DtoInHotdeal hotdeal);
 
 }

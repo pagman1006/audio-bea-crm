@@ -2,6 +2,7 @@ package com.audiobea.crm.app.controller.mapper;
 
 import java.util.List;
 
+import com.audiobea.crm.app.commons.mapper.UserMapper;
 import org.mapstruct.Mapper;
 
 import com.audiobea.crm.app.commons.dto.DtoInUser;

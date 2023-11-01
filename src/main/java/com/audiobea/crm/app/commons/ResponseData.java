@@ -8,6 +8,7 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.data.domain.Page;
 
 @Getter
 @Setter
@@ -30,6 +31,15 @@ public class ResponseData<T> implements Serializable {
 		this.pageSize = pageSize;
 		this.totalElements = totalElements;
 		this.totalPages = totalPages;
+	}
+
+	public ResponseData(List<T> data, Page<?> pageable){
+		super();
+		this.data = data;
+		this.page = pageable.getNumber();
+		this.pageSize = pageable.getSize();
+		this.totalElements = pageable.getTotalElements();
+		this.totalPages = pageable.getTotalPages();
 	}
 
 	public ResponseData() {

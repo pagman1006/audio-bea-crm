@@ -1,4 +1,4 @@
-package com.audiobea.crm.app.controller.mapper;
+package com.audiobea.crm.app.commons.mapper;
 
 import org.apache.commons.lang.StringUtils;
 import org.mapstruct.Mapper;
