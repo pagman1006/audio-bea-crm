@@ -37,7 +37,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -232,20 +231,16 @@ public class ProductServiceImpl implements IProductService {
         if (files != null && files.length > 0) {
             log.debug("id: {}, files: {}", id, files.length);
             log.debug("files: {}", files.length);
-            try {
-                List<String> imageNames = uploadService.uploadFiles(files);
-                if (imageNames != null && !imageNames.isEmpty()) {
-                    log.debug("imageNames: {}", imageNames.size());
-                    List<ProductImage> images = new ArrayList<>();
-                    for (String imageName : imageNames) {
-                        log.debug("Name: {}", imageName);
-                        images.add(new ProductImage(imageName));
-                    }
-                    product.setImages(images);
-                    saveProduct(productMapper.productToDtoInProduct(product));
+            List<String> imageNames = uploadService.uploadFiles(files);
+            if (imageNames != null && !imageNames.isEmpty()) {
+                log.debug("imageNames: {}", imageNames.size());
+                List<ProductImage> images = new ArrayList<>();
+                for (String imageName : imageNames) {
+                    log.debug("Name: {}", imageName);
+                    images.add(new ProductImage(imageName));
                 }
-            } catch (IOException e) {
-                log.error(e.getMessage());
+                product.setImages(images);
+                saveProduct(productMapper.productToDtoInProduct(product));
             }
         }
         return productMapper.productToDtoInProduct(product);

@@ -15,6 +15,7 @@ import com.audiobea.crm.app.dao.demographic.model.State;
 import com.audiobea.crm.app.utils.Constants;
 import com.audiobea.crm.app.utils.ExcelHelper;
 import com.audiobea.crm.app.utils.Utils;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
@@ -41,23 +42,23 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
+@AllArgsConstructor
 @Service
 public class UploadServiceImpl implements IUploadService {
 
     private static final DecimalFormat decimalF = new DecimalFormat("00.00");
     private static final DecimalFormat df = new DecimalFormat("#,###");
-    @Autowired
     private MessageSource messageSource;
-    private Integer statesCount = 0;
-    private Integer citiesCount = 0;
-    private Integer coloniesCount = 0;
+    private Integer statesCount;
+    private Integer citiesCount;
+    private Integer coloniesCount;
     @Autowired
     private IStateDao stateDao;
 
     @Override
     public Resource load(String filename) throws MalformedURLException {
         Path pathImage = getPath(filename);
-        Resource resource = null;
+        Resource resource;
         resource = new UrlResource(pathImage.toUri());
         if (!resource.exists() || !resource.isReadable()) {
             throw new UploadFileException(Utils.getLocalMessage(messageSource, I18Constants.UPLOAD_FILE_EXCEPTION.getKey(), filename));
@@ -134,8 +135,8 @@ public class UploadServiceImpl implements IUploadService {
             for (State state : listStates) {
                 stateDao.save(state);
                 elements += state.getCities().stream().mapToInt(city -> city.getColonies().size()).sum();
-                double avance = (elements * 100) / Double.valueOf(totalElements);
-                log.debug("{}% -> {}, {}/{}", decimalF.format(avance), state.getName(), df.format(elements), df.format(totalElements));
+                double progress = (elements * 100) / (double) totalElements;
+                log.debug("{}% -> {}, {}/{}", decimalF.format(progress), state.getName(), df.format(elements), df.format(totalElements));
             }
         }).start();
     }
@@ -210,7 +211,7 @@ public class UploadServiceImpl implements IUploadService {
         }
     }
 
-    private State setStateFromSetStates(Set<State> listSetStates, String nameState, String nameCity, String nameColony, String codePostal) {
+    private void setStateFromSetStates(Set<State> listSetStates, String nameState, String nameCity, String nameColony, String codePostal) {
         State state = listSetStates.stream().filter(s -> s.getName().equals(nameState)).collect(Collectors.toList()).stream().findFirst()
                 .orElse(null);
 
@@ -222,7 +223,6 @@ public class UploadServiceImpl implements IUploadService {
         }
         City city = setCity(state, nameCity);
         city.getColonies().add(setColony(nameColony, codePostal));
-        return state;
     }
 
     private DtoInFileExcel reedCells(Iterator<Cell> cellsInRow) {
@@ -278,13 +278,13 @@ public class UploadServiceImpl implements IUploadService {
     }
 
     @Override
-    public List<String> uploadFiles(MultipartFile[] files) throws IOException {
-        return Arrays.asList(files).stream().map(file -> {
+    public List<String> uploadFiles(MultipartFile[] files) {
+        return Arrays.stream(files).map(file -> {
             try {
                 log.debug("file: {}", file.getName());
                 return copy(file);
             } catch (IOException e) {
-                e.printStackTrace();
+                log.error(e.getMessage());
                 return null;
             }
         }).collect(Collectors.toList());
