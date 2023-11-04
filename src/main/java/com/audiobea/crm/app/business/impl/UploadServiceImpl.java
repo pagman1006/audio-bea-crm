@@ -151,7 +151,7 @@ public class UploadServiceImpl implements IUploadService {
             if (state.getCities() != null && !state.getCities().isEmpty()) {
                 int count = 0;
                 for (City city : state.getCities()) {
-                    city = setupCity(city);
+                    setupCity(city);
                     count = count + city.getColonies().size();
                     coloniesCount = coloniesCount + city.getColonies().size();
                     citiesCount++;
