@@ -28,7 +28,6 @@ public class DemographicController {
     @Autowired
     private IDemographicService demographicService;
 
-
     @GetMapping("/states")
     @Produces({MediaType.APPLICATION_JSON})
     public ResponseEntity<ResponseData<DtoInState>> getStates() {

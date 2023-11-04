@@ -15,7 +15,6 @@ import com.audiobea.crm.app.dao.demographic.model.State;
 import com.audiobea.crm.app.utils.Constants;
 import com.audiobea.crm.app.utils.ExcelHelper;
 import com.audiobea.crm.app.utils.Utils;
-import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
@@ -42,16 +41,18 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
-@AllArgsConstructor
 @Service
 public class UploadServiceImpl implements IUploadService {
 
     private static final DecimalFormat decimalF = new DecimalFormat("00.00");
     private static final DecimalFormat df = new DecimalFormat("#,###");
+
+    @Autowired
     private MessageSource messageSource;
     private Integer statesCount;
     private Integer citiesCount;
     private Integer coloniesCount;
+
     @Autowired
     private IStateDao stateDao;
 
@@ -118,7 +119,6 @@ public class UploadServiceImpl implements IUploadService {
             log.debug("Cities loaded: {}", citiesCount);
             log.debug("Colonies loaded: {}", coloniesCount);
             log.debug("Upload time: {}", strTimeUpload);
-
             saveColoniesAsync(listStates, coloniesCount);
             return new DtoInFileResponse(df.format(statesCount), df.format(citiesCount), df.format(coloniesCount));
         } catch (IOException e) {

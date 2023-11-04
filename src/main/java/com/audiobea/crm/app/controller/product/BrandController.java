@@ -9,6 +9,7 @@ import com.audiobea.crm.app.core.exception.NoSuchElementFoundException;
 import com.audiobea.crm.app.utils.Constants;
 import com.audiobea.crm.app.utils.Utils;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
@@ -20,6 +21,7 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
+@Slf4j
 @AllArgsConstructor
 @RestController
 @RequestMapping(Constants.URL_BASE + "/brands")
@@ -35,6 +37,7 @@ public class BrandController {
             @RequestParam(name = "brand", defaultValue = "", required = false) String brandName,
             @RequestParam(name = "page", defaultValue = "0", required = false) Integer page,
             @RequestParam(name = "pageSize", defaultValue = "10", required = false) Integer pageSize) {
+        log.debug("getBrands");
         return new ResponseEntity<>(productService.getBrands(brandName, page, pageSize), HttpStatus.OK);
     }
 
@@ -43,6 +46,7 @@ public class BrandController {
     @Produces({MediaType.APPLICATION_JSON})
     @Consumes({MediaType.APPLICATION_JSON})
     public ResponseEntity<DtoInBrand> addBrand(@RequestBody DtoInBrand brand) {
+        log.debug("addBrand");
         return new ResponseEntity<>(productService.saveBrand(brand), HttpStatus.CREATED);
     }
 
@@ -51,6 +55,7 @@ public class BrandController {
     @Produces({MediaType.APPLICATION_JSON})
     @Consumes({MediaType.APPLICATION_JSON})
     public ResponseEntity<DtoInBrand> updateBrand(@PathVariable("brand-id") Long brandId, @RequestBody DtoInBrand brand) {
+        log.debug("updateBrand");
         return new ResponseEntity<>(productService.updateBrand(brandId, brand), HttpStatus.CREATED);
     }
 
@@ -59,6 +64,7 @@ public class BrandController {
     @Produces({MediaType.APPLICATION_JSON})
     @ResponseStatus(code = HttpStatus.OK)
     public ResponseEntity<String> deleteBrandById(@PathVariable(value = "brand-id") Long brandId) {
+        log.debug("deleteBrand");
         if (!productService.deleteBrandById(brandId)) {
             throw new NoSuchElementFoundException(Utils.getLocalMessage(messageSource, I18Constants.NO_ITEM_FOUND.getKey()));
         }
@@ -73,6 +79,7 @@ public class BrandController {
             @RequestParam(name = "page", defaultValue = "0", required = false) Integer page,
             @RequestParam(name = "pageSize", defaultValue = "10", required = false) Integer pageSize,
             @PathVariable(value = "brand-id") String brandId) {
+        log.debug("getSubBrandsByBrandId");
         return new ResponseEntity<>(productService.getSubBrandsByBrandId(brandId, subBrand, page, pageSize), HttpStatus.OK);
     }
 
@@ -82,6 +89,7 @@ public class BrandController {
     @Consumes({MediaType.APPLICATION_JSON})
     @ResponseStatus(code = HttpStatus.CREATED)
     public ResponseEntity<DtoInSubBrand> addSubBrand(@PathVariable(value = "brand-id") Long brandId, @RequestBody DtoInSubBrand subBrand) {
+        log.debug("addSubBrand");
         return new ResponseEntity<>(productService.saveSubBrand(brandId, subBrand), HttpStatus.CREATED);
     }
 
@@ -93,6 +101,7 @@ public class BrandController {
     public ResponseEntity<DtoInSubBrand> updateSubBrand(
             @PathVariable(value = "brand-id") Long id,
             @PathVariable(value = "sub-brand-id") Long subBrandId, @RequestBody DtoInSubBrand subBrand) {
+        log.debug("updateSubBrand");
         return new ResponseEntity<>(productService.updateSubBrand(subBrandId, subBrand), HttpStatus.CREATED);
     }
 
@@ -101,6 +110,7 @@ public class BrandController {
     @Produces({MediaType.APPLICATION_JSON})
     @ResponseStatus(code = HttpStatus.OK)
     public ResponseEntity<String> deleteSubBrandById(@PathVariable(value = "sub-brand-id") Long subBrandId) {
+        log.debug("deleteSubBrandById");
         if (!productService.deleteSubBrandById(subBrandId)) {
             throw new NoSuchElementFoundException(Utils.getLocalMessage(messageSource, I18Constants.NO_ITEM_FOUND.getKey()));
         }

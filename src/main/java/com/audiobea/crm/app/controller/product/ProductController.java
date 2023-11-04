@@ -37,6 +37,7 @@ public class ProductController {
             @RequestParam(name = "newProduct", required = false) boolean newProduct,
             @RequestParam(name = "page", defaultValue = "0", required = false) Integer page,
             @RequestParam(name = "pageSize", defaultValue = "10", required = false) Integer pageSize) {
+        log.debug("getProducts");
         return new ResponseEntity<>(productService.getProducts(productName, productType, newProduct, brand, subBrand, page, pageSize), HttpStatus.OK);
     }
 
@@ -66,6 +67,7 @@ public class ProductController {
     @Produces({MediaType.APPLICATION_JSON})
     @Consumes({MediaType.APPLICATION_JSON})
     public ResponseEntity<DtoInProduct> updateProduct(@PathVariable("id") Long id, @RequestBody DtoInProduct product) {
+        log.debug("updateProduct");
         return new ResponseEntity<>(productService.updateProduct(id, product), HttpStatus.CREATED);
     }
 
@@ -73,6 +75,7 @@ public class ProductController {
     @PreAuthorize("hasAuthority('ADMIN')")
     @Produces({MediaType.APPLICATION_JSON})
     public ResponseEntity<String> deleteProductById(@PathVariable("id") Long id) {
+        log.debug("deleteProductById");
         productService.deleteProductById(id);
         return new ResponseEntity<>(HttpStatus.ACCEPTED);
     }
@@ -80,6 +83,7 @@ public class ProductController {
     @GetMapping("/hotdeal")
     @Produces({MediaType.APPLICATION_JSON})
     public ResponseEntity<DtoInHotdeal> getHotdeal() {
+        log.debug("getHotdeal");
         return new ResponseEntity<>(productService.getHotdeal(), HttpStatus.OK);
     }
 
@@ -87,6 +91,7 @@ public class ProductController {
     @PostMapping("/hotdeal")
     @Produces({MediaType.APPLICATION_JSON})
     public ResponseEntity<DtoInHotdeal> saveHotdeal(@RequestBody DtoInHotdeal hotdeal) {
+        log.debug("saveHotdeal");
         return new ResponseEntity<>(productService.saveHotdeal(hotdeal), HttpStatus.CREATED);
     }
 
