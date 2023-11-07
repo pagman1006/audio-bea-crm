@@ -59,10 +59,15 @@ public class BrandController {
         return new ResponseEntity<>(productService.updateBrand(brandId, brand), HttpStatus.CREATED);
     }
 
+    @GetMapping("/{brand-id}")
+    @Produces({MediaType.APPLICATION_JSON})
+    public ResponseEntity<DtoInBrand> getBrandById(@PathVariable("brand-id") Long brandId) {
+        return new ResponseEntity<>(productService.getBrandById(brandId), HttpStatus.OK);
+    }
+
     @DeleteMapping("/{brand-id}")
     @PreAuthorize("hasAuthority('ADMIN')")
     @Produces({MediaType.APPLICATION_JSON})
-    @ResponseStatus(code = HttpStatus.OK)
     public ResponseEntity<String> deleteBrandById(@PathVariable(value = "brand-id") Long brandId) {
         log.debug("deleteBrand");
         if (!productService.deleteBrandById(brandId)) {
@@ -81,6 +86,11 @@ public class BrandController {
             @PathVariable(value = "brand-id") String brandId) {
         log.debug("getSubBrandsByBrandId");
         return new ResponseEntity<>(productService.getSubBrandsByBrandId(brandId, subBrand, page, pageSize), HttpStatus.OK);
+    }
+
+    @GetMapping("/{brand-id}/sub-brands/{sub-brand-id}")
+    public ResponseEntity<DtoInSubBrand> getSubBrandById(@PathVariable(value = "sub-brand-id") Long subBrandId) {
+        return new ResponseEntity<>(productService.getSubBrandById(subBrandId), HttpStatus.OK);
     }
 
     @PreAuthorize("hasAuthority('ADMIN')")

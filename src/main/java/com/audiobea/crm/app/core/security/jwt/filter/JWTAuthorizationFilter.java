@@ -1,12 +1,8 @@
 package com.audiobea.crm.app.core.security.jwt.filter;
 
-import java.io.IOException;
-
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
+import com.audiobea.crm.app.core.security.jwt.business.IJWTService;
+import com.audiobea.crm.app.core.security.jwt.business.impl.JWTServiceImpl;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -14,10 +10,11 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
-import com.audiobea.crm.app.core.security.jwt.business.IJWTService;
-import com.audiobea.crm.app.core.security.jwt.business.impl.JWTServiceImpl;
-
-import lombok.extern.slf4j.Slf4j;
+import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
 @Slf4j
 public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
@@ -36,6 +33,7 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
 		log.debug("doFilterInternal");
 		response.addHeader(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, "*");
 		response.addHeader(HttpHeaders.ACCESS_CONTROL_ALLOW_HEADERS, "*");
+		response.addHeader(HttpHeaders.ACCESS_CONTROL_ALLOW_METHODS, "*");
 		String header = request.getHeader(JWTServiceImpl.HEADER_STRING);
 		log.debug("Header: {}", header);
 		if (!requiresAuthentication(header)) {

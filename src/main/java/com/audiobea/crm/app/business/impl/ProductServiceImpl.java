@@ -133,6 +133,12 @@ public class ProductServiceImpl implements IProductService {
                 .collect(Collectors.toList()), pageBrand);
     }
 
+    @Override
+    public DtoInBrand getBrandById(Long id) {
+        return brandMapper.brandToDtoInBrand(brandDao.findById(id).orElseThrow(() -> new NoSuchElementFoundException(
+                Utils.getLocalMessage(messageSource, I18Constants.NO_ITEM_FOUND.getKey(), String.valueOf(id)))));
+    }
+
     @Transactional
     @Override
     public DtoInBrand saveBrand(DtoInBrand brand) {
@@ -188,6 +194,12 @@ public class ProductServiceImpl implements IProductService {
         Validator.validatePage(pageSubBrand, messageSource);
         return new ResponseData<>(pageSubBrand.getContent().stream().map(sb -> subBrandMapper.subBrandToDtoInSubBrand(sb))
                 .collect(Collectors.toList()), pageSubBrand);
+    }
+
+    @Override
+    public DtoInSubBrand getSubBrandById(Long subBrandId) {
+        return subBrandMapper.subBrandToDtoInSubBrand(subBrandDao.findById(subBrandId).orElseThrow(() -> new NoSuchElementFoundException(
+                Utils.getLocalMessage(messageSource, I18Constants.NO_ITEM_FOUND.getKey(), String.valueOf(subBrandId)))));
     }
 
     @Transactional

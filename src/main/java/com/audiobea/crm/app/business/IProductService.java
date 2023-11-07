@@ -22,6 +22,8 @@ public interface IProductService {
 
     ResponseData<DtoInBrand> getBrands(String brandName, Integer page, Integer pageSize);
 
+    DtoInBrand getBrandById(Long id);
+
     DtoInBrand saveBrand(DtoInBrand brand);
 
     DtoInBrand updateBrand(Long id, DtoInBrand brand);
@@ -29,6 +31,9 @@ public interface IProductService {
     boolean deleteBrandById(Long id);
 
     ResponseData<DtoInSubBrand> getSubBrandsByBrandId(String brandId, String subBrand, Integer page, Integer pageSize);
+
+
+    DtoInSubBrand getSubBrandById(Long subBrandId);
 
     DtoInSubBrand saveSubBrand(Long brandId, DtoInSubBrand subBrand);
 
