@@ -1,11 +1,8 @@
 package com.audiobea.crm.app.controller.upload;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -29,9 +26,7 @@ public class UploadController {
 	private IUploadService uploadService;
 
 	@PreAuthorize("hasAuthority('ADMIN')")
-	@PostMapping("/colonies")
-	@Produces({ MediaType.APPLICATION_JSON })
-	@Consumes({ MediaType.APPLICATION_JSON })
+	@PostMapping(path = "/colonies", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<DtoInFileResponse> uploadFile(@RequestParam(name = "file", required = false) MultipartFile file) {
 		log.debug("Load started of file");
 		DtoInFileResponse response = uploadService.uploadExcelFile(file);

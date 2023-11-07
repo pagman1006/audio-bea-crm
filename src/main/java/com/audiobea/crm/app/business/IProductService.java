@@ -28,7 +28,7 @@ public interface IProductService {
 
     DtoInBrand updateBrand(Long id, DtoInBrand brand);
 
-    boolean deleteBrandById(Long id);
+    void deleteBrandById(Long id);
 
     ResponseData<DtoInSubBrand> getSubBrandsByBrandId(String brandId, String subBrand, Integer page, Integer pageSize);
 
@@ -39,7 +39,7 @@ public interface IProductService {
 
     DtoInSubBrand updateSubBrand(Long subBrandId, DtoInSubBrand subBrand);
 
-    boolean deleteSubBrandById(Long subBrandId);
+    void deleteSubBrandById(Long subBrandId);
 
     DtoInProduct uploadImages(Long id, MultipartFile[] files);
 

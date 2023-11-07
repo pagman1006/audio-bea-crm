@@ -1,11 +1,12 @@
 package com.audiobea.crm.app.dao.demographic;
 
-import org.springframework.data.repository.PagingAndSortingRepository;
-
 import com.audiobea.crm.app.dao.demographic.model.State;
 
-public interface IStateDao extends PagingAndSortingRepository<State, Long> {
+import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.PagingAndSortingRepository;
 
-	public State findByName(String name);
+public interface IStateDao extends PagingAndSortingRepository<State, Long>, CrudRepository<State, Long> {
+
+	State findByName(String name);
 	
 }

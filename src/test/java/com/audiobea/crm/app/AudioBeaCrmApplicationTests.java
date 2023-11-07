@@ -3,11 +3,11 @@ package com.audiobea.crm.app;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class AudioBeaCrmApplicationTests {
+public class AudioBeaCrmApplicationTests {
 
-//	@Test
-//	void contextLoads() {
-//		
-//	}
+    //@Test
+    //void contextLoads() {
+    //    Assert.notNull(true);
+    //}
 
 }

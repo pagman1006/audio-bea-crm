@@ -2,15 +2,13 @@ package com.audiobea.crm.app.dao.user.model;
 
 import java.io.Serializable;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import javax.persistence.UniqueConstraint;
-import javax.validation.constraints.Size;
-
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import lombok.Data;
 
 @Data
@@ -29,7 +27,6 @@ public class Role implements Serializable {
 	@Column(name = "authority_id")
 	private Long id;
 	
-	@Size(min = 3, max = 15)
 	@Column(length = 15)
 	private String authority;
 

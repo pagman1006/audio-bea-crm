@@ -78,7 +78,7 @@ public class UploadServiceImpl implements IUploadService {
     }
 
     @Override
-    public boolean delete(String filename) throws NoSuchFileException {
+    public void delete(String filename) throws NoSuchFileException {
         Path rootPath = getPath(filename);
         File file = rootPath.toFile();
         if (file.exists() && file.canRead()) {
@@ -88,7 +88,6 @@ public class UploadServiceImpl implements IUploadService {
                 throw new NoSuchFileException(Utils.getLocalMessage(messageSource, I18Constants.NO_FILE_FOUND.getKey(), filename));
             }
         }
-        return true;
     }
 
     @Override
@@ -163,11 +162,10 @@ public class UploadServiceImpl implements IUploadService {
         return listState;
     }
 
-    private City setupCity(City city) {
+    private void setupCity(City city) {
         List<Colony> colonies = new ArrayList<>(city.getColonies());
         Collections.sort(colonies);
         city.setColonies(colonies);
-        return city;
     }
 
     private String getFinishTimeStr(long timeStart, long timeFinish) {

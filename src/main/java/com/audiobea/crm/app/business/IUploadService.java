@@ -15,7 +15,7 @@ public interface IUploadService {
 
     String copy(MultipartFile file) throws IOException;
 
-    boolean delete(String filename) throws NoSuchFileException;
+    void delete(String filename) throws NoSuchFileException;
 
     void deleteAll();
 

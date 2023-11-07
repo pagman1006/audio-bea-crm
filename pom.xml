@@ -6,16 +6,16 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>2.7.17</version>
+		<version>3.1.5</version>
 		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.audiobea.crm.app</groupId>
 	<artifactId>audio-bea-crm</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>audio-bea-crm</name>
-	<description>Servicio REST de CRM Audio-Bea</description>
+	<description>Audio-Bea CRM's REST Service</description>
 	<properties>
-		<java.version>11</java.version>
+		<java.version>17</java.version>
 		<org.mapstruct.version>1.5.5.Final</org.mapstruct.version>
 	</properties>
 	<dependencies>
@@ -69,27 +69,19 @@
 			<artifactId>spring-boot-starter-aop</artifactId>
 		</dependency>
 
-
-		<!--Dependencia para WADL-->
+		<!-- Dependency Apache Commons Lang -->
 		<dependency>
-			<groupId>org.jvnet.ws.wadl</groupId>
-			<artifactId>wadl-core</artifactId>
-			<version>1.1.6</version>
-		</dependency>
-		<dependency>
-			<groupId>org.jvnet.ws.wadl</groupId>
-			<artifactId>wadl-client-plugin</artifactId>
-			<version>1.1.6</version>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-lang3</artifactId>
 		</dependency>
 
-
-		<!-- Dependencia para Security y OAuth2-->
+		<!-- Dependency for Security & OAuth2-->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-security</artifactId>
 		</dependency>
 
-		<!-- Dependencias JWT -->
+		<!-- Dependencies JWT -->
 		<dependency>
 			<groupId>io.jsonwebtoken</groupId>
 			<artifactId>jjwt-api</artifactId>
@@ -106,8 +98,6 @@
 			<version>0.11.5</version>
 			<scope>runtime</scope>
 		</dependency>
-
-
 	</dependencies>
 
 	<build>

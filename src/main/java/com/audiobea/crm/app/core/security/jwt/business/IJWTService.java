@@ -1,25 +1,24 @@
 package com.audiobea.crm.app.core.security.jwt.business;
 
-import java.io.IOException;
-import java.util.Collection;
-
+import io.jsonwebtoken.Claims;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 
-import io.jsonwebtoken.Claims;
+import java.io.IOException;
+import java.util.Collection;
 
 public interface IJWTService {
 
-	public String create(Authentication auth) throws IOException;
+    String create(Authentication auth) throws IOException;
 
-	public boolean validate(String token);
+    boolean validate(String token);
 
-	public Claims getClaims(String token);
+    Claims getClaims(String token);
 
-	public String getUsername(String token);
+    String getUsername(String token);
 
-	public Collection<GrantedAuthority> getRoles(String token) throws IOException;
+    Collection<GrantedAuthority> getRoles(String token) throws IOException;
 
-	public String resolve(String token);
+    String resolve(String token);
 
 }
