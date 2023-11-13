@@ -1,20 +1,5 @@
 package com.audiobea.crm.app.business.impl;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.MessageSource;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
-
 import com.audiobea.crm.app.business.IProductService;
 import com.audiobea.crm.app.business.IUploadService;
 import com.audiobea.crm.app.commons.I18Constants;
@@ -39,9 +24,22 @@ import com.audiobea.crm.app.dao.product.model.SubBrand;
 import com.audiobea.crm.app.utils.Constants;
 import com.audiobea.crm.app.utils.Utils;
 import com.audiobea.crm.app.utils.Validator;
-
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @AllArgsConstructor
@@ -117,7 +115,7 @@ public class ProductServiceImpl implements IProductService {
     @Transactional
     @Override
     public void deleteProductById(Long id) {
-        productDao.deleteById(id);
+        //productDao.deleteById(id);
     }
 
     @Override
@@ -249,6 +247,7 @@ public class ProductServiceImpl implements IProductService {
                 List<ProductImage> images = new ArrayList<>();
                 for (String imageName : imageNames) {
                     log.debug("Name: {}", imageName);
+                    new ProductImage(imageName);
                     images.add(new ProductImage(imageName));
                 }
                 product.setImages(images);

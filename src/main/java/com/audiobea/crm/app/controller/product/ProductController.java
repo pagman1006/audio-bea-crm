@@ -1,31 +1,19 @@
 package com.audiobea.crm.app.controller.product;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RequestPart;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
-
 import com.audiobea.crm.app.business.IProductService;
 import com.audiobea.crm.app.commons.ResponseData;
 import com.audiobea.crm.app.commons.dto.DtoInHotdeal;
 import com.audiobea.crm.app.commons.dto.DtoInProduct;
 import com.audiobea.crm.app.utils.Constants;
-
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @Slf4j
 @AllArgsConstructor
@@ -46,9 +34,16 @@ public class ProductController {
 			@RequestParam(name = "page", defaultValue = "0", required = false) Integer page,
 			@RequestParam(name = "pageSize", defaultValue = "10", required = false) Integer pageSize) {
 		log.debug("getProducts");
+		log.debug("PageSize: {}", pageSize);
 		return new ResponseEntity<>(
 				productService.getProducts(productName, productType, newProduct, brand, subBrand, page, pageSize),
 				HttpStatus.OK);
+	}
+
+	@GetMapping(path = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<DtoInProduct> getProductById(@PathVariable("id") Long id) {
+		log.debug("getProductById: {}", id);
+		return new ResponseEntity<>(productService.getProductById(id), HttpStatus.OK);
 	}
 
 	@PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)

@@ -1,20 +1,19 @@
 package com.audiobea.crm.app.dao.product.model;
 
+import jakarta.persistence.*;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.io.Serial;
 import java.io.Serializable;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import lombok.Data;
-
+@NoArgsConstructor
 @Data
 @Entity
 @Table(name = "products_images")
 public class ProductImage implements Serializable {
 
+	@Serial
 	private static final long serialVersionUID = 1L;
 	
 	@Id
@@ -26,9 +25,7 @@ public class ProductImage implements Serializable {
 	private String imageName;
 	
 	private boolean selected;
-	
-	public ProductImage(String imageName) {
-		this.imageName = imageName;
-	}
 
+	public ProductImage(String imageName) {
+	}
 }
