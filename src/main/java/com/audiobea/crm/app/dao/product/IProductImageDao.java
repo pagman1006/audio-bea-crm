@@ -1,8 +1,7 @@
 package com.audiobea.crm.app.dao.product;
 
-import org.springframework.data.repository.PagingAndSortingRepository;
-
 import com.audiobea.crm.app.dao.product.model.ProductImage;
+import org.springframework.data.mongodb.repository.MongoRepository;
 
-public interface IProductImageDao extends PagingAndSortingRepository<ProductImage, Long> {
+public interface IProductImageDao extends MongoRepository<ProductImage, String> {
 }

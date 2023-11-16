@@ -1,54 +1,42 @@
 package com.audiobea.crm.app.dao.product.model;
 
-import jakarta.persistence.*;
 import lombok.Data;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.DBRef;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.List;
 
 @Data
-@Entity
-@Table(name = "products")
+@Document("products")
 public class Product implements Serializable {
 
 	@Serial
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "product_id")
-	private Long id;
-
-	@Column(length = 60)
+	private String id;
 	private String productName;
-
 	private Double price;
 	private Double discount;
-	
-	@Column(length = 60)
 	private String title;
 	private String description;
 	private Integer stock;
-	
-	@OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-	@JoinColumn(name = "product_type_id")
+
+	@DBRef
 	private ProductType productType;
-	
-	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-	@JoinColumn(name = "product_id")
+
+	@DBRef
 	private List<ProductImage> images;
-	
-	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-	@JoinColumn(name = "product_id")
+
+	@DBRef
 	private List<ProductRanking> rankings;
-	
-	@ManyToOne
-	@JoinColumn(name = "sub_brand_id")
+
+	@DBRef
 	private SubBrand subBrand;
-	
 	private boolean newProduct;
-	
 	private boolean enabled;
 
 }

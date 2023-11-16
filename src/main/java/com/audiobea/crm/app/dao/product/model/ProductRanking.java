@@ -1,27 +1,21 @@
 package com.audiobea.crm.app.dao.product.model;
 
+import lombok.Data;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+
+import java.io.Serial;
 import java.io.Serializable;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import lombok.Data;
-
 @Data
-@Entity
-@Table(name = "products_ranking")
+@Document("products_ranking")
 public class ProductRanking implements Serializable {
-	
+
+	@Serial
 	private static final long serialVersionUID = 1L;
-	
+
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "product_ranking_id")
-	private Long id;
-	
+	private String id;
 	private Integer ranking;
 
 }

@@ -6,13 +6,13 @@ import org.springframework.security.core.Authentication;
 
 public interface ICustomerService {
 
-	ResponseData<DtoInCustomer> getCustomers(String firstName, String firstLastName, Integer page, Integer pageSize);
+	ResponseData<DtoInCustomer> getCustomers(String name, String lastName, Integer page, Integer pageSize);
 
 	DtoInCustomer saveCustomer(DtoInCustomer customer);
 
-	DtoInCustomer updateCustomer(Long customerId, DtoInCustomer customer);
+	DtoInCustomer updateCustomer(String customerId, DtoInCustomer customer);
 
-	void deleteCustomer(Long customerId);
+	void deleteCustomer(String customerId);
 
-	DtoInCustomer getCustomerById(Long customerId, Authentication auth);
+	DtoInCustomer getCustomerById(String customerId, Authentication auth);
 }

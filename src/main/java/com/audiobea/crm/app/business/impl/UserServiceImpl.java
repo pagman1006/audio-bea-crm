@@ -31,60 +31,64 @@ import java.util.stream.Collectors;
 @Transactional(readOnly = true)
 public class UserServiceImpl implements IUserService {
 
-    private final MessageSource messageSource;
-    @Autowired
-    private IUserDao userDao;
-    @Autowired
-    private IRoleDao roleDao;
-    @Autowired
-    private UserMapper userMapper;
-    @Autowired
-    private RoleMapper roleMapper;
+	private final MessageSource messageSource;
+	@Autowired
+	private IUserDao userDao;
+	@Autowired
+	private IRoleDao roleDao;
+	@Autowired
+	private UserMapper userMapper;
+	@Autowired
+	private RoleMapper roleMapper;
 
-    @Override
-    public ResponseData<DtoInUser> getUsers(final String username, final String role, final Integer page, final Integer pageSize) {
-        Pageable pageable = PageRequest.of(page, pageSize, Sort.by("username"));
-        Page<User> pageUser = userDao.findBYUsernameContainsAndRolesAuthorityContains(username, role, pageable);
-        Validator.validatePage(pageUser, messageSource);
-        return new ResponseData<>(pageUser.getContent().stream().map(p -> userMapper.userToDtoInUser(p)).collect(Collectors.toList()), pageUser);
-    }
+	@Override
+	public ResponseData<DtoInUser> getUsers(final String username, final String role, final Integer page, final Integer pageSize) {
+		Pageable pageable = PageRequest.of(page, pageSize, Sort.by("username"));
+		Page<User> pageUser = userDao.findAll(pageable);
+		//userDao.findBYUsernameContainsAndRolesAuthorityContains(username, role, pageable);
+		Validator.validatePage(pageUser, messageSource);
+		return new ResponseData<>(pageUser.getContent().stream().map(p -> userMapper.userToDtoInUser(p)).collect(Collectors.toList()), pageUser);
+	}
 
-    @Transactional
-    @Override
-    public DtoInUser saveUser(DtoInUser userToSave) {
-        try {
-            return userMapper.userToDtoInUser(userDao.save(userMapper.userDtoInToUser(userToSave)));
-        } catch (Exception e) {
-            throw new DuplicateRecordException(Utils.getLocalMessage(messageSource, I18Constants.DUPLICATE_KEY.getKey(), userToSave.getUsername()));
-        }
-    }
+	@Transactional
+	@Override
+	public DtoInUser saveUser(DtoInUser userToSave) {
+		try {
+			User user = userMapper.userDtoInToUser(userToSave);
+			user.getRoles().forEach(role -> roleDao.save(role));
+			return userMapper.userToDtoInUser(userDao.save(user));
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new DuplicateRecordException(Utils.getLocalMessage(messageSource, I18Constants.DUPLICATE_KEY.getKey(), userToSave.getUsername()));
+		}
+	}
 
-    @Override
-    public DtoInUser getUserById(Long id) {
-        return userMapper.userToDtoInUser(userDao.findById(id).orElseThrow(() -> new NoSuchElementFoundException(
-                Utils.getLocalMessage(messageSource, I18Constants.NO_ITEM_FOUND.getKey(), String.valueOf(id)))));
-    }
+	@Override
+	public DtoInUser getUserById(String id) {
+		return userMapper.userToDtoInUser(userDao.findById(id).orElseThrow(() -> new NoSuchElementFoundException(
+				Utils.getLocalMessage(messageSource, I18Constants.NO_ITEM_FOUND.getKey(), id))));
+	}
 
-    @Transactional
-    @Override
-    public DtoInUser updateUser(Long id, DtoInUser userToSave) {
-        User user = userDao.findById(id).orElseThrow(() -> new NoSuchElementFoundException(
-                Utils.getLocalMessage(messageSource, I18Constants.NO_ITEM_FOUND.getKey(), String.valueOf(id))));
-        user.setPassword(userToSave.getPassword());
-        for (Role role : user.getRoles()) {
-            roleDao.delete(role);
-        }
+	@Transactional
+	@Override
+	public DtoInUser updateUser(String id, DtoInUser userToSave) {
+		User user = userDao.findById(id).orElseThrow(() -> new NoSuchElementFoundException(
+				Utils.getLocalMessage(messageSource, I18Constants.NO_ITEM_FOUND.getKey(), id)));
+		user.setPassword(userToSave.getPassword());
+		for (Role role : user.getRoles()) {
+			roleDao.delete(role);
+		}
 
-        user.setRoles(userToSave.getRoles().stream().map(r -> roleMapper.roleDtoInToRole(r)).collect(Collectors.toList()));
-        return userMapper.userToDtoInUser(userDao.save(user));
-    }
+		user.setRoles(userToSave.getRoles().stream().map(r -> roleMapper.roleDtoInToRole(r)).collect(Collectors.toList()));
+		return userMapper.userToDtoInUser(userDao.save(user));
+	}
 
-    @Transactional
-    @Override
-    public void deleteUserById(Long id) {
-        User user = userDao.findById(id).orElseThrow(() -> new NoSuchElementFoundException(
-                Utils.getLocalMessage(messageSource, I18Constants.NO_ITEM_FOUND.getKey(), String.valueOf(id))));
-        userDao.delete(user);
-    }
+	@Transactional
+	@Override
+	public void deleteUserById(String id) {
+		User user = userDao.findById(id).orElseThrow(() -> new NoSuchElementFoundException(
+				Utils.getLocalMessage(messageSource, I18Constants.NO_ITEM_FOUND.getKey(), id)));
+		userDao.delete(user);
+	}
 
 }

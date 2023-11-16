@@ -12,36 +12,36 @@ public interface IProductService {
     ResponseData<DtoInProduct> getProducts(String productName, String productType, boolean newProduct, String marca, String subMarca,
                                            Integer page, Integer pageSize);
 
-    DtoInProduct getProductById(Long id);
+    DtoInProduct getProductById(String id);
 
     DtoInProduct saveProduct(DtoInProduct product);
 
-    DtoInProduct updateProduct(Long id, DtoInProduct product);
+    DtoInProduct updateProduct(String id, DtoInProduct product);
 
-    void deleteProductById(Long id);
+    void deleteProductById(String id);
 
     ResponseData<DtoInBrand> getBrands(String brandName, Integer page, Integer pageSize);
 
-    DtoInBrand getBrandById(Long id);
+    DtoInBrand getBrandById(String id);
 
     DtoInBrand saveBrand(DtoInBrand brand);
 
-    DtoInBrand updateBrand(Long id, DtoInBrand brand);
+    DtoInBrand updateBrand(String id, DtoInBrand brand);
 
-    void deleteBrandById(Long id);
+    void deleteBrandById(String id);
 
     ResponseData<DtoInSubBrand> getSubBrandsByBrandId(String brandId, String subBrand, Integer page, Integer pageSize);
 
 
-    DtoInSubBrand getSubBrandById(Long subBrandId);
+    DtoInSubBrand getSubBrandById(String subBrandId);
 
-    DtoInSubBrand saveSubBrand(Long brandId, DtoInSubBrand subBrand);
+    DtoInSubBrand saveSubBrand(String brandId, DtoInSubBrand subBrand);
 
-    DtoInSubBrand updateSubBrand(Long subBrandId, DtoInSubBrand subBrand);
+    DtoInSubBrand updateSubBrand(String subBrandId, DtoInSubBrand subBrand);
 
-    void deleteSubBrandById(Long subBrandId);
+    void deleteSubBrandById(String subBrandId);
 
-    DtoInProduct uploadImages(Long id, MultipartFile[] files);
+    DtoInProduct uploadImages(String id, MultipartFile[] files);
 
     DtoInHotdeal getHotdeal();
 

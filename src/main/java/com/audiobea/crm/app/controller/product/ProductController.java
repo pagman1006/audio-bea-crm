@@ -41,7 +41,7 @@ public class ProductController {
 	}
 
 	@GetMapping(path = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<DtoInProduct> getProductById(@PathVariable("id") Long id) {
+	public ResponseEntity<DtoInProduct> getProductById(@PathVariable("id") String id) {
 		log.debug("getProductById: {}", id);
 		return new ResponseEntity<>(productService.getProductById(id), HttpStatus.OK);
 	}
@@ -57,7 +57,7 @@ public class ProductController {
 			MediaType.MULTIPART_FORM_DATA_VALUE }, produces = MediaType.APPLICATION_JSON_VALUE)
 	@PreAuthorize("hasAuthority('ADMIN')")
 	@ResponseStatus(value = HttpStatus.OK)
-	public ResponseEntity<DtoInProduct> uploadImages(@PathVariable("id") Long id,
+	public ResponseEntity<DtoInProduct> uploadImages(@PathVariable("id") String id,
 			@RequestPart(name = "files", required = false) MultipartFile[] images) {
 		log.debug("Id: {}, Images: {}", id, images.length);
 		return new ResponseEntity<>(productService.uploadImages(id, images), HttpStatus.CREATED);
@@ -65,14 +65,14 @@ public class ProductController {
 
 	@PutMapping(path = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	@PreAuthorize("hasAuthority('ADMIN')")
-	public ResponseEntity<DtoInProduct> updateProduct(@PathVariable("id") Long id, @RequestBody DtoInProduct product) {
+	public ResponseEntity<DtoInProduct> updateProduct(@PathVariable("id") String id, @RequestBody DtoInProduct product) {
 		log.debug("updateProduct");
 		return new ResponseEntity<>(productService.updateProduct(id, product), HttpStatus.CREATED);
 	}
 
 	@DeleteMapping(path = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
 	@PreAuthorize("hasAuthority('ADMIN')")
-	public ResponseEntity<String> deleteProductById(@PathVariable("id") Long id) {
+	public ResponseEntity<String> deleteProductById(@PathVariable("id") String id) {
 		log.debug("deleteProductById");
 		productService.deleteProductById(id);
 		return new ResponseEntity<>(HttpStatus.ACCEPTED);

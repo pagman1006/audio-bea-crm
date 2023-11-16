@@ -1,21 +1,18 @@
 package com.audiobea.crm.app.dao.demographic;
 
 import com.audiobea.crm.app.dao.demographic.model.City;
-import com.audiobea.crm.app.utils.Constants;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.PagingAndSortingRepository;
-import org.springframework.data.repository.query.Param;
+import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.data.mongodb.repository.Query;
 
-public interface ICityDao extends PagingAndSortingRepository<City, Long> {
+import java.util.List;
 
-	City findByName(String name);
+public interface ICityDao extends MongoRepository<City, String> {
 
-	@Query(value = Constants.FIND_CITIES_BY_STATE_ID, nativeQuery = true)
-	Page<City> findByStateId(@Param("stateId") Long stateId, Pageable pageable);
+	@Query(value = "{'_id': {'$in': ?0}}")
+	Page<City> findByStateIdIn(List<String> names, Pageable pageable);
 
-	@Query(value = Constants.FIND_CITIES_BY_STATE_NAME_CITY_NAME, nativeQuery = true)
-	Page<City> findByStateNameAndCityName(@Param("state") String state, @Param("city") String city, Pageable pageable);
-
+	@Query(value = "{'_id': {'$in': ?0}}")
+	List<City> findAllByStateIdIn(List<String> names);
 }

@@ -1,8 +1,7 @@
 package com.audiobea.crm.app.dao.customer;
 
-import org.springframework.data.repository.PagingAndSortingRepository;
-
 import com.audiobea.crm.app.dao.customer.model.PhoneType;
+import org.springframework.data.mongodb.repository.MongoRepository;
 
-public interface IPhoneTypeDao extends PagingAndSortingRepository<PhoneType, Long> {
+public interface IPhoneTypeDao extends MongoRepository<PhoneType, String> {
 }

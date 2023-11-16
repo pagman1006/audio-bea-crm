@@ -1,18 +1,17 @@
 package com.audiobea.crm.app.commons.dto;
 
+import com.audiobea.crm.app.dao.product.model.ProductRanking;
+import lombok.Data;
+
 import java.io.Serializable;
 import java.util.List;
-
-import com.audiobea.crm.app.dao.product.model.ProductRanking;
-
-import lombok.Data;
 
 @Data
 public class DtoInProduct implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	private Long id;
+	private String id;
 	private String productName;
 	private Double price;
 	private Double discount;

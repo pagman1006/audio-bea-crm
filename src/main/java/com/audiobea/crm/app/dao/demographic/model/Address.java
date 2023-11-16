@@ -1,32 +1,27 @@
 package com.audiobea.crm.app.dao.demographic.model;
 
+import lombok.Data;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.DocumentReference;
+
+import java.io.Serial;
 import java.io.Serializable;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
-import lombok.Data;
-
 @Data
-@Entity
-@Table(name = "address")
+@Document("address")
 public class Address implements Serializable {
-	
+
+	@Serial
 	private static final long serialVersionUID = 1L;
-	
+
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
+	private String id;
 	private String street;
 	private String outdoorNumber;
 	private String indoorNumber;
-	
-	@ManyToOne
-	@JoinColumn(name = "colony_id")
+
+	@DocumentReference
 	private Colony colony;
-	
+
 }

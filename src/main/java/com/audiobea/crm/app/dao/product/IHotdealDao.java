@@ -1,9 +1,8 @@
 package com.audiobea.crm.app.dao.product;
 
-import org.springframework.data.repository.CrudRepository;
-
 import com.audiobea.crm.app.dao.product.model.Hotdeal;
+import org.springframework.data.mongodb.repository.MongoRepository;
 
-public interface IHotdealDao extends CrudRepository<Hotdeal, Long> {
+public interface IHotdealDao extends MongoRepository<Hotdeal, String> {
 
 }

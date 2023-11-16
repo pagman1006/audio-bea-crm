@@ -14,7 +14,7 @@ public class DtoInRole implements Serializable {
 	@Serial
 	private static final long serialVersionUID = 1L;
 	
-	private Long id;
+	private String id;
 	private String authority;
 
 }

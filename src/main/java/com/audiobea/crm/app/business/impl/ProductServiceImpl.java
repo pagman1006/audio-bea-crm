@@ -75,11 +75,11 @@ public class ProductServiceImpl implements IProductService {
                 brand, subBrand, productType, isNewProduct, page, pageSize);
         productType = StringUtils.isNotBlank(productType) ? productType : "";
         productName = StringUtils.isNotBlank(productName) ? productName : "";
-        Page<Product> pageProduct;
+        Page<Product> pageProduct = null;
         if (isNewProduct) {
-            pageProduct = productDao.findByNewProductBrandSubBrandProductType(productName, brand, subBrand, productType, pageable);
+            //pageProduct = productDao.findByNewProductBrandSubBrandProductType(productName, brand, subBrand, productType, pageable);
         } else {
-            pageProduct = productDao.findByBrandSubBrandProductType(productName, brand, subBrand, productType, pageable);
+            //pageProduct = productDao.findByBrandSubBrandProductType(productName, brand, subBrand, productType, pageable);
         }
         Validator.validatePage(pageProduct, messageSource);
         return new ResponseData<>(pageProduct.getContent().stream().map(p -> productMapper.productToDtoInProduct(p))
@@ -87,7 +87,7 @@ public class ProductServiceImpl implements IProductService {
     }
 
     @Override
-    public DtoInProduct getProductById(Long id) {
+    public DtoInProduct getProductById(String id) {
         return productMapper.productToDtoInProduct(productDao.findById(id).orElseThrow(() -> new NoSuchElementFoundException(
                 Utils.getLocalMessage(messageSource, I18Constants.NO_ITEM_FOUND.getKey(), String.valueOf(id)))));
     }
@@ -101,7 +101,7 @@ public class ProductServiceImpl implements IProductService {
 
     @Transactional
     @Override
-    public DtoInProduct updateProduct(Long id, DtoInProduct product) {
+    public DtoInProduct updateProduct(String id, DtoInProduct product) {
         Product productFind = productDao.findById(id).orElseThrow(() -> new NoSuchElementFoundException(
                 Utils.getLocalMessage(messageSource, I18Constants.NO_ITEM_FOUND.getKey(), String.valueOf(id))));
         productFind.setProductName(product.getProductName());
@@ -114,7 +114,7 @@ public class ProductServiceImpl implements IProductService {
 
     @Transactional
     @Override
-    public void deleteProductById(Long id) {
+    public void deleteProductById(String id) {
         //productDao.deleteById(id);
     }
 
@@ -134,7 +134,7 @@ public class ProductServiceImpl implements IProductService {
     }
 
     @Override
-    public DtoInBrand getBrandById(Long id) {
+    public DtoInBrand getBrandById(String id) {
         return brandMapper.brandToDtoInBrand(brandDao.findById(id).orElseThrow(() -> new NoSuchElementFoundException(
                 Utils.getLocalMessage(messageSource, I18Constants.NO_ITEM_FOUND.getKey(), String.valueOf(id)))));
     }
@@ -154,7 +154,7 @@ public class ProductServiceImpl implements IProductService {
 
     @Transactional
     @Override
-    public DtoInBrand updateBrand(Long id, DtoInBrand brand) {
+    public DtoInBrand updateBrand(String id, DtoInBrand brand) {
         Brand brandToSave = brandDao.findById(id).orElseThrow(() -> new NoSuchElementFoundException(
                 Utils.getLocalMessage(messageSource, I18Constants.NO_ITEM_FOUND.getKey(), String.valueOf(id))));
         if (brandToSave != null) {
@@ -167,7 +167,7 @@ public class ProductServiceImpl implements IProductService {
 
     @Transactional
     @Override
-    public void deleteBrandById(Long id) {
+    public void deleteBrandById(String id) {
         brandDao.deleteById(id);
     }
 
@@ -183,10 +183,10 @@ public class ProductServiceImpl implements IProductService {
             } else if (brandId.chars().allMatch(Character::isDigit)) {
                 if (StringUtils.isNotBlank(subBrand)) {
                     log.debug("BrandId Is Not Null && SubBrand Is Not Blank");
-                    pageSubBrand = subBrandDao.findByBrandIdAndSubBrandNameContains(Long.valueOf(brandId), subBrand, pageable);
+                    //pageSubBrand = subBrandDao.findByBrandIdAndSubBrandNameContains(Long.valueOf(brandId), subBrand, pageable);
                 } else {
                     log.debug("BrandId Is not Null");
-                    pageSubBrand = subBrandDao.findByBrandId(Long.valueOf(brandId), pageable);
+                    //pageSubBrand = subBrandDao.findByBrandId(Long.valueOf(brandId), pageable);
                 }
             }
         }
@@ -196,14 +196,14 @@ public class ProductServiceImpl implements IProductService {
     }
 
     @Override
-    public DtoInSubBrand getSubBrandById(Long subBrandId) {
+    public DtoInSubBrand getSubBrandById(String subBrandId) {
         return subBrandMapper.subBrandToDtoInSubBrand(subBrandDao.findById(subBrandId).orElseThrow(() -> new NoSuchElementFoundException(
                 Utils.getLocalMessage(messageSource, I18Constants.NO_ITEM_FOUND.getKey(), String.valueOf(subBrandId)))));
     }
 
     @Transactional
     @Override
-    public DtoInSubBrand saveSubBrand(Long brandId, DtoInSubBrand subBrand) {
+    public DtoInSubBrand saveSubBrand(String brandId, DtoInSubBrand subBrand) {
         if (StringUtils.isBlank(subBrand.getSubBrandName())) {
             return null;
         }
@@ -215,7 +215,7 @@ public class ProductServiceImpl implements IProductService {
 
     @Transactional
     @Override
-    public DtoInSubBrand updateSubBrand(Long subBrandId, DtoInSubBrand subBrand) {
+    public DtoInSubBrand updateSubBrand(String subBrandId, DtoInSubBrand subBrand) {
         SubBrand sbToSave = subBrandDao.findById(subBrandId).orElseThrow(() -> new NoSuchElementFoundException(
                 Utils.getLocalMessage(messageSource, I18Constants.NO_ITEM_FOUND.getKey(), String.valueOf(subBrandId))));
         if (sbToSave != null) {
@@ -227,13 +227,13 @@ public class ProductServiceImpl implements IProductService {
 
     @Transactional
     @Override
-    public void deleteSubBrandById(Long subBrandId) {
+    public void deleteSubBrandById(String subBrandId) {
         subBrandDao.deleteById(subBrandId);
     }
 
     @Transactional
     @Override
-    public DtoInProduct uploadImages(Long id, MultipartFile[] files) {
+    public DtoInProduct uploadImages(String id, MultipartFile[] files) {
         if (id == null) {
             return null;
         }
@@ -259,14 +259,14 @@ public class ProductServiceImpl implements IProductService {
 
     @Override
     public DtoInHotdeal getHotdeal() {
-        return hotdealMapper.hotdealToDtoInHotdeal(hotdealDao.findById(1L).orElseThrow(() -> new NoSuchElementFoundException(
+        return hotdealMapper.hotdealToDtoInHotdeal(hotdealDao.findById("1L").orElseThrow(() -> new NoSuchElementFoundException(
                 Utils.getLocalMessage(messageSource, I18Constants.NO_ITEM_FOUND.getKey(), String.valueOf(1L)))));
     }
 
     @Transactional
     @Override
     public DtoInHotdeal saveHotdeal(DtoInHotdeal hotdeal) {
-        hotdeal.setId(1L);
+        //hotdeal.setId(1L);
         return hotdealMapper.hotdealToDtoInHotdeal(hotdealDao.save(hotdealMapper.hotdealDtoInToHotdeal(hotdeal)));
     }
 
