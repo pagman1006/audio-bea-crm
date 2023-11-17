@@ -1,5 +1,9 @@
 package com.audiobea.crm.app.core.security;
 
+import com.audiobea.crm.app.core.security.jwt.NoRedirectStrategy;
+import com.audiobea.crm.app.core.security.jwt.business.IJWTService;
+import com.audiobea.crm.app.core.security.jwt.filter.JWTAuthenticationFilter;
+import com.audiobea.crm.app.core.security.jwt.filter.JWTAuthorizationFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
@@ -22,11 +26,6 @@ import org.springframework.security.web.authentication.SimpleUrlAuthenticationSu
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.OrRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
-
-import com.audiobea.crm.app.core.security.jwt.NoRedirectStrategy;
-import com.audiobea.crm.app.core.security.jwt.business.IJWTService;
-import com.audiobea.crm.app.core.security.jwt.filter.JWTAuthenticationFilter;
-import com.audiobea.crm.app.core.security.jwt.filter.JWTAuthorizationFilter;
 
 @Configuration
 @EnableWebSecurity

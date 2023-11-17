@@ -78,13 +78,8 @@ public class DemographicServiceImpl implements IDemographicService {
             if (stateId.equalsIgnoreCase(Constants.ALL)) {
                 pageCities = cityDao.findAll(pageable);
             } else {
-                log.debug("Return Cities from state id: " + stateId);
-                State state = stateDao.findById(stateId).orElseThrow(() -> new NoSuchElementFoundException(
-                        Utils.getLocalMessage(messageSource, I18Constants.NO_ITEM_FOUND.getKey(), stateId)));
-                if (state != null) {
-                    List<String> names = state.getCities().stream().map(City::getId).collect(Collectors.toList());
-                    pageCities = cityDao.findByStateIdIn(names, pageable);
-                }
+                log.debug("Return Cities from state id: {}", stateId);
+                pageCities = cityDao.findByStateId(stateId, pageable);
             }
         }
         Validator.validatePage(pageCities, messageSource);
@@ -105,32 +100,11 @@ public class DemographicServiceImpl implements IDemographicService {
                     log.debug("State: All, City: All, Colony: " + colonyName + " Postal Code: " + postalCode);
                     pageColonies = colonyDao.findAllByColonyOrPostalCode(colonyName, postalCode, pageable);
                 } else {
-                    City city = cityDao.findById(cityId).orElseThrow(() -> new NoSuchElementFoundException(
-                            Utils.getLocalMessage(messageSource, I18Constants.NO_ITEM_FOUND.getKey(), cityId)));
-                    if (city != null) {
-                        log.debug("State: All, City: " + cityId + " Colony: " + colonyName + " Postal Code: " + postalCode);
-                        List<String> names = city.getColonies().stream().map(Colony::getId).collect(Collectors.toList());
-                        log.debug("names size: {}", names.size());
-                        pageColonies = colonyDao.findByCityId(names, colonyName, postalCode, pageable);
-                        log.debug("Colonies size: {}", pageColonies.getContent().size());
-                    }
+                    pageColonies = colonyDao.findByCityId(cityId, colonyName, postalCode, pageable);
                 }
             } else {
                 log.debug("State: {} City: {}, Colony: {}, Postal Code: {}", stateId, cityId, colonyName, postalCode);
-                State state = stateDao.findById(stateId).orElseThrow(() -> new NoSuchElementFoundException(
-                        Utils.getLocalMessage(messageSource, I18Constants.NO_ITEM_FOUND.getKey(), stateId)));
-                log.debug("State Name: {}", state.getName());
-                final List<String> names = new ArrayList<>();
-                if (cityId.equalsIgnoreCase(Constants.ALL)) {
-                    state.getCities().forEach(city -> city.getColonies().forEach(col -> names.add(col.getId())));
-                } else {
-                    City city = state.getCities().stream().filter(c -> c.getId().equalsIgnoreCase(cityId)).findFirst()
-                            .orElseThrow(() -> new NoSuchElementFoundException(Utils
-                                    .getLocalMessage(messageSource, I18Constants.NO_ITEM_FOUND.getKey(), stateId)));
-                    city.getColonies().forEach(col -> names.add(col.getId()));
-                }
-                log.debug("Names Size: {}", names.size());
-                pageColonies = colonyDao.findByCityId(names, colonyName, postalCode, pageable);
+                pageColonies = colonyDao.findByStateIdAndCityId(stateId, cityId, colonyName, postalCode, pageable);
             }
         }
         Validator.validatePage(pageColonies, messageSource);

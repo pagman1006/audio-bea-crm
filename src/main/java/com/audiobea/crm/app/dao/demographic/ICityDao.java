@@ -15,4 +15,7 @@ public interface ICityDao extends MongoRepository<City, String> {
 
 	@Query(value = "{'_id': {'$in': ?0}}")
 	List<City> findAllByStateIdIn(List<String> names);
+
+	@Query(value = "{'stateId': ?0}")
+	Page<City> findByStateId(String stateId, Pageable pageable);
 }

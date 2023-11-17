@@ -3,6 +3,7 @@ package com.audiobea.crm.app.dao.demographic.model;
 import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.DocumentReference;
 
@@ -19,6 +20,7 @@ public class State implements Serializable, Comparable<State> {
 
 	@Id
 	private String id;
+	@Indexed(unique = true)
 	private String name;
 
 	@DocumentReference(lazy = true)

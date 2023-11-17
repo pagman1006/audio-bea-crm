@@ -20,6 +20,7 @@ public class ProductImage implements Serializable {
 	private String id;
 	private String imageName;
 	private boolean selected;
+	private String productId;
 
 	public ProductImage(String imageName) {
 	}

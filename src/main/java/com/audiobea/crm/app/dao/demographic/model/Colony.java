@@ -18,6 +18,8 @@ public class Colony implements Serializable, Comparable<Colony> {
     private String id;
     private String name;
     private String postalCode;
+    private String stateId;
+    private String cityId;
 
     @Override
     public int compareTo(Colony c) {

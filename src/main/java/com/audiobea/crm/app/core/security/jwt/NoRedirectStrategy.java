@@ -1,10 +1,9 @@
 package com.audiobea.crm.app.core.security.jwt;
 
-import org.springframework.security.web.RedirectStrategy;
-
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.web.RedirectStrategy;
 
 @Slf4j
 public class NoRedirectStrategy implements RedirectStrategy {

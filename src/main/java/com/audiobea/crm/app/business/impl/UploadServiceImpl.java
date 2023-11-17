@@ -131,13 +131,22 @@ public class UploadServiceImpl implements IUploadService {
 
 	private void saveColoniesAsync(List<State> listStates, int totalElements) {
 		new Thread(() -> {
+			long timeStart = new Date().getTime();
 			log.debug("Start load to DBB");
 			log.debug("0.00%");
 			double elements = 0;
 			for (State state : listStates) {
 				if (stateDao.findByName(state.getName()).orElse(null) == null) {
+					String stateId = stateDao.save(state).getId();
 					state.getCities().forEach(city -> {
-						colonyDao.saveAll(city.getColonies());
+						city.setStateId(stateId);
+						String cityId = cityDao.save(city).getId();
+						city.getColonies().forEach(col -> {
+							col.setStateId(stateId);
+							col.setCityId(cityId);
+							colonyDao.save(col);
+						});
+						//colonyDao.saveAll(city.getColonies());
 						cityDao.save(city);
 					});
 					stateDao.save(state);
@@ -147,6 +156,9 @@ public class UploadServiceImpl implements IUploadService {
 				log.debug("{}% -> {}, {}/{}", decimalF.format(progress), state.getName(), df.format(elements),
 						  df.format(totalElements));
 			}
+			long timeFinish = new Date().getTime();
+			String totalTimeSave = getFinishTimeStr(timeStart, timeFinish);
+			log.debug("Saved time: {}", totalTimeSave);
 		}).start();
 	}
 

@@ -2,8 +2,8 @@ package com.audiobea.crm.app.dao.product.model;
 
 import lombok.Data;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.DocumentReference;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -24,19 +24,18 @@ public class Product implements Serializable {
 	private String title;
 	private String description;
 	private Integer stock;
-
-	@DBRef
 	private ProductType productType;
 
-	@DBRef
+	@DocumentReference
 	private List<ProductImage> images;
 
-	@DBRef
+	@DocumentReference
 	private List<ProductRanking> rankings;
 
-	@DBRef
-	private SubBrand subBrand;
-	private boolean newProduct;
+	private String brandId;
+	private String subBrandId;
+
+	private boolean productNew;
 	private boolean enabled;
 
 }

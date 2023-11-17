@@ -13,11 +13,9 @@ import com.audiobea.crm.app.dao.customer.model.Customer;
 import com.audiobea.crm.app.dao.customer.model.Email;
 import com.audiobea.crm.app.dao.customer.model.Phone;
 import com.audiobea.crm.app.dao.demographic.IAddressDao;
-import com.audiobea.crm.app.dao.demographic.IColonyDao;
 import com.audiobea.crm.app.dao.demographic.model.Address;
 import com.audiobea.crm.app.dao.invoice.IInvoiceDao;
 import com.audiobea.crm.app.dao.invoice.model.Invoice;
-import com.audiobea.crm.app.dao.user.IUserDao;
 import com.audiobea.crm.app.utils.Constants;
 import com.audiobea.crm.app.utils.Utils;
 import com.audiobea.crm.app.utils.Validator;
@@ -48,10 +46,6 @@ public class CustomerServiceImpl implements ICustomerService {
 
 	@Autowired
 	private ICustomerDao customerDao;
-	@Autowired
-	private IUserDao userDao;
-	@Autowired
-	private IColonyDao colonyDao;
 	@Autowired
 	private IAddressDao addressDao;
 	@Autowired

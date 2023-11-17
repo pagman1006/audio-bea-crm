@@ -1,9 +1,6 @@
 package com.audiobea.crm.app.core.exception;
 
-import java.util.Objects;
-
-import javax.security.sasl.AuthenticationException;
-
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
@@ -20,7 +17,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
-import lombok.extern.slf4j.Slf4j;
+import javax.security.sasl.AuthenticationException;
+import java.util.Objects;
 
 @Slf4j(topic = "GLOBAL_EXCEPTION_HANDLER")
 @RestControllerAdvice

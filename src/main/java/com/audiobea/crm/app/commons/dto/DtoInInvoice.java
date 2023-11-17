@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
@@ -14,6 +15,7 @@ import java.util.List;
 @JsonInclude(Include.NON_NULL)
 public class DtoInInvoice implements Serializable {
 	
+	@Serial
 	private static final long serialVersionUID = 1L;
 	private String id;
 
