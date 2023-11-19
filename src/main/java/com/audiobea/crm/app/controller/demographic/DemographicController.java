@@ -8,7 +8,6 @@ import com.audiobea.crm.app.commons.dto.DtoInState;
 import com.audiobea.crm.app.utils.Constants;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -20,10 +19,9 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping(Constants.URL_BASE + "/demographics")
 public class DemographicController {
 
-	@Autowired
-	private IDemographicService demographicService;
+	private final IDemographicService demographicService;
 
-	@GetMapping(path = "/states", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(path = "/states", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<ResponseData<DtoInState>> getStates() {
 		return new ResponseEntity<>(demographicService.getStates(), HttpStatus.OK);
 	}

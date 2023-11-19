@@ -6,7 +6,6 @@ import com.audiobea.crm.app.commons.dto.DtoInImage;
 import com.audiobea.crm.app.utils.Constants;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -20,8 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping(Constants.URL_BASE + "/image-collection")
 public class ImageController {
 
-    @Autowired
-    private IImageService imageService;
+    private final IImageService imageService;
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ResponseData<DtoInImage>> getImagesCollection() {

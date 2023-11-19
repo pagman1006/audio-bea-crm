@@ -17,6 +17,7 @@ public class SubBrand implements Serializable {
 	@Id
 	private String id;
 	private String subBrandName;
+	private String brandId;
 
 	private boolean enabled;
 

@@ -13,7 +13,6 @@ import com.audiobea.crm.app.utils.Validator;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -29,9 +28,7 @@ import java.util.stream.Collectors;
 @Transactional(readOnly = true)
 public class BrandServiceImpl implements IBrandService {
 
-    @Autowired
     private IBrandDao brandDao;
-    @Autowired
     private BrandMapper brandMapper;
 
     private MessageSource messageSource;

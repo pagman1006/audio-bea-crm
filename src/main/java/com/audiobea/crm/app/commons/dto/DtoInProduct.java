@@ -22,7 +22,7 @@ public class DtoInProduct implements Serializable {
 	private String title;
 	private String description;
 	private Integer stock;
-	private DtoInProductType productType;
+	private String productTypeId;
 	private List<DtoInProductImage> images;
 	private List<ProductRanking> rankings;
 	private String brandId;

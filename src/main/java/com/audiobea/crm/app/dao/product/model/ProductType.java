@@ -2,6 +2,7 @@ package com.audiobea.crm.app.dao.product.model;
 
 import lombok.Data;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.io.Serial;
@@ -16,6 +17,7 @@ public class ProductType implements Serializable {
 
 	@Id
 	private String id;
+	@Indexed(unique = true)
 	private String type;
 
 }

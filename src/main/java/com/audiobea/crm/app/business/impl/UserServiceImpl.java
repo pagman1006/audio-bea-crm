@@ -10,12 +10,10 @@ import com.audiobea.crm.app.core.exception.DuplicateRecordException;
 import com.audiobea.crm.app.core.exception.NoSuchElementFoundException;
 import com.audiobea.crm.app.dao.user.IRoleDao;
 import com.audiobea.crm.app.dao.user.IUserDao;
-import com.audiobea.crm.app.dao.user.model.Role;
 import com.audiobea.crm.app.dao.user.model.User;
 import com.audiobea.crm.app.utils.Utils;
 import com.audiobea.crm.app.utils.Validator;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -31,15 +29,12 @@ import java.util.stream.Collectors;
 @Transactional(readOnly = true)
 public class UserServiceImpl implements IUserService {
 
-	private final MessageSource messageSource;
-	@Autowired
+	private MessageSource messageSource;
 	private IUserDao userDao;
-	@Autowired
 	private IRoleDao roleDao;
-	@Autowired
 	private UserMapper userMapper;
-	@Autowired
 	private RoleMapper roleMapper;
+
 
 	@Override
 	public ResponseData<DtoInUser> getUsers(final String username, final String role, final Integer page, final Integer pageSize) {
@@ -55,10 +50,9 @@ public class UserServiceImpl implements IUserService {
 	public DtoInUser saveUser(DtoInUser userToSave) {
 		try {
 			User user = userMapper.userDtoInToUser(userToSave);
-			user.getRoles().forEach(role -> roleDao.save(role));
+			roleDao.saveAll(user.getRoles());
 			return userMapper.userToDtoInUser(userDao.save(user));
 		} catch (Exception e) {
-			e.printStackTrace();
 			throw new DuplicateRecordException(Utils.getLocalMessage(messageSource, I18Constants.DUPLICATE_KEY.getKey(), userToSave.getUsername()));
 		}
 	}
@@ -75,9 +69,7 @@ public class UserServiceImpl implements IUserService {
 		User user = userDao.findById(id).orElseThrow(() -> new NoSuchElementFoundException(
 				Utils.getLocalMessage(messageSource, I18Constants.NO_ITEM_FOUND.getKey(), id)));
 		user.setPassword(userToSave.getPassword());
-		for (Role role : user.getRoles()) {
-			roleDao.delete(role);
-		}
+		roleDao.deleteAll(user.getRoles());
 
 		user.setRoles(userToSave.getRoles().stream().map(r -> roleMapper.roleDtoInToRole(r)).collect(Collectors.toList()));
 		return userMapper.userToDtoInUser(userDao.save(user));

@@ -17,7 +17,6 @@ import com.audiobea.crm.app.utils.Validator;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -34,17 +33,12 @@ import java.util.stream.Collectors;
 @Transactional(readOnly = true)
 public class SubBrandServiceImpl implements ISubBrandService {
 
-    @Autowired
     private ISubBrandDao subBrandDao;
-    @Autowired
     private IBrandDao brandDao;
-    @Autowired
     private SubBrandMapper subBrandMapper;
-    @Autowired
     private BrandMapper brandMapper;
 
     private MessageSource messageSource;
-
 
     @Override
     public ResponseData<DtoInSubBrand> getSubBrandsByBrandId(String brandId, String subBrand, Integer page, Integer pageSize) {
@@ -54,15 +48,9 @@ public class SubBrandServiceImpl implements ISubBrandService {
         if (StringUtils.isNotBlank(brandId)) {
             if (brandId.equalsIgnoreCase(Constants.ALL)) {
                 log.debug("BrandId: " + brandId);
-                pageSubBrand = subBrandDao.findAll(pageable);
-            } else if (brandId.chars().allMatch(Character::isDigit)) {
-                if (StringUtils.isNotBlank(subBrand)) {
-                    log.debug("BrandId Is Not Null && SubBrand Is Not Blank");
-                    //pageSubBrand = subBrandDao.findByBrandIdAndSubBrandNameContains(Long.valueOf(brandId), subBrand, pageable);
-                } else {
-                    log.debug("BrandId Is not Null");
-                    //pageSubBrand = subBrandDao.findByBrandId(Long.valueOf(brandId), pageable);
-                }
+                pageSubBrand = subBrandDao.findSubBrandBySubBrandNameContains(subBrand.toUpperCase(), pageable);
+            } else {
+                pageSubBrand = subBrandDao.findSubBrandByBrandIdAndSubBrandNameContains(brandId, subBrand.toUpperCase(), pageable);
             }
         }
         Validator.validatePage(pageSubBrand, messageSource);
@@ -83,8 +71,13 @@ public class SubBrandServiceImpl implements ISubBrandService {
         }
         Brand brand = brandDao.findById(brandId).orElseThrow(() -> new NoSuchElementFoundException(
                 Utils.getLocalMessage(messageSource, I18Constants.NO_ITEM_FOUND.getKey(), brandId)));
-        subBrand.setBrand(brandMapper.brandToDtoInBrand(brand));
-        return subBrandMapper.subBrandToDtoInSubBrand(subBrandDao.save(subBrandMapper.subBrandDtoInToSubBrand(subBrand)));
+        if (brand.getSubBrands() == null || brand.getSubBrands().isEmpty()) {
+            brand.setSubBrands(new java.util.ArrayList<>());
+        }
+        SubBrand subBrandSaved = subBrandDao.save(subBrandMapper.subBrandDtoInToSubBrand(subBrand));
+        brand.getSubBrands().add(subBrandSaved);
+        brandDao.save(brand);
+        return subBrandMapper.subBrandToDtoInSubBrand(subBrandSaved);
     }
 
     @Override
@@ -102,4 +95,5 @@ public class SubBrandServiceImpl implements ISubBrandService {
     public void deleteSubBrandById(String subBrandId) {
         subBrandDao.deleteById(subBrandId);
     }
+
 }

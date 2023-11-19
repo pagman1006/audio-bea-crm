@@ -22,7 +22,6 @@ import com.audiobea.crm.app.utils.Validator;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -42,27 +41,17 @@ import java.util.stream.Collectors;
 @Transactional(readOnly = true)
 public class CustomerServiceImpl implements ICustomerService {
 
-	private final MessageSource messageSource;
+	private MessageSource messageSource;
 
-	@Autowired
 	private ICustomerDao customerDao;
-	@Autowired
 	private IAddressDao addressDao;
-	@Autowired
 	private IPhoneDao phoneDao;
-	@Autowired
 	private IEmailDao emailDao;
-	@Autowired
 	private IInvoiceDao invoiceDao;
-	@Autowired
 	private CustomerMapper customerMapper;
-	@Autowired
 	private AddressMapper addressMapper;
-	@Autowired
 	private PhoneMapper phoneMapper;
-	@Autowired
 	private EmailMapper emailMapper;
-	@Autowired
 	private InvoiceMapper invoiceMapper;
 
 	@Override

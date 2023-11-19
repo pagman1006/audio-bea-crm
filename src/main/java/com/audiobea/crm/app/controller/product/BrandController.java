@@ -1,15 +1,18 @@
 package com.audiobea.crm.app.controller.product;
 
 import com.audiobea.crm.app.business.IBrandService;
-import com.audiobea.crm.app.business.IProductService;
 import com.audiobea.crm.app.business.ISubBrandService;
+import com.audiobea.crm.app.commons.I18Constants;
 import com.audiobea.crm.app.commons.ResponseData;
 import com.audiobea.crm.app.commons.dto.DtoInBrand;
 import com.audiobea.crm.app.commons.dto.DtoInSubBrand;
+import com.audiobea.crm.app.core.exception.NoSuchElementFoundException;
 import com.audiobea.crm.app.utils.Constants;
+import com.audiobea.crm.app.utils.Utils;
+import io.micrometer.common.util.StringUtils;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -22,12 +25,10 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping(Constants.URL_BASE + "/brands")
 public class BrandController {
 
-    @Autowired
-    private IProductService productService;
-    @Autowired
     private IBrandService brandService;
-    @Autowired
     private ISubBrandService subBrandService;
+
+    private MessageSource messageSource;
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ResponseData<DtoInBrand>> getBrands(
@@ -77,7 +78,11 @@ public class BrandController {
     }
 
     @GetMapping(path = "/{brand-id}/sub-brands/{sub-brand-id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<DtoInSubBrand> getSubBrandById(@PathVariable(value = "sub-brand-id") String subBrandId) {
+    public ResponseEntity<DtoInSubBrand> getSubBrandById(
+            @PathVariable(value = "sub-brand-id") String subBrandId, @PathVariable("brand-id") String brandId) {
+        if (StringUtils.isNotBlank(brandId)) {
+            throw new NoSuchElementFoundException(Utils.getLocalMessage(messageSource, I18Constants.NO_ITEM_FOUND.getKey(), brandId));
+        }
         return new ResponseEntity<>(subBrandService.getSubBrandById(subBrandId), HttpStatus.OK);
     }
 
@@ -102,8 +107,12 @@ public class BrandController {
     @PreAuthorize("hasAuthority('ADMIN')")
     @DeleteMapping(path = "/{brand-id}/sub-brands/{sub-brand-id}", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(code = HttpStatus.OK)
-    public ResponseEntity<String> deleteSubBrandById(@PathVariable(value = "sub-brand-id") String subBrandId) {
+    public ResponseEntity<String> deleteSubBrandById(
+            @PathVariable(value = "sub-brand-id") String subBrandId, @PathVariable("brand-id") String brandId) {
         log.debug("deleteSubBrandById");
+        if (StringUtils.isNotBlank(brandId)) {
+            throw new NoSuchElementFoundException(Utils.getLocalMessage(messageSource, I18Constants.NO_ITEM_FOUND.getKey(), brandId));
+        }
         subBrandService.deleteSubBrandById(subBrandId);
         return new ResponseEntity<>(HttpStatus.OK);
     }

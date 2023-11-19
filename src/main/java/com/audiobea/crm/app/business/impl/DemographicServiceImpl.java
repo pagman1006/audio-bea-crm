@@ -22,7 +22,6 @@ import com.audiobea.crm.app.utils.Validator;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -39,19 +38,13 @@ import java.util.stream.Collectors;
 @Service
 public class DemographicServiceImpl implements IDemographicService {
 
-    private final MessageSource messageSource;
-    @Autowired
+    private MessageSource messageSource;
     private IStateDao stateDao;
-    @Autowired
     private ICityDao cityDao;
-    @Autowired
     private IColonyDao colonyDao;
 
-    @Autowired
     private StateMapper stateMapper;
-    @Autowired
     private CityMapper cityMapper;
-    @Autowired
     private ColonyMapper colonyMapper;
 
     @Override

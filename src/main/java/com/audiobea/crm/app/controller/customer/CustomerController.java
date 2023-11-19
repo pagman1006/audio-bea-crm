@@ -6,7 +6,6 @@ import com.audiobea.crm.app.commons.dto.DtoInCustomer;
 import com.audiobea.crm.app.utils.Constants;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -22,10 +21,9 @@ import java.security.Principal;
 @RequestMapping(Constants.URL_BASE + "/admin/customers")
 public class CustomerController {
 
-	@Autowired
-	private ICustomerService customerService;
+	private final ICustomerService customerService;
 
-	@GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
 	@PreAuthorize("hasAuthority('ADMIN')")
 	public ResponseEntity<ResponseData<DtoInCustomer>> getCustomers(
 			@RequestParam(name = "name", defaultValue = "", required = false) String name,

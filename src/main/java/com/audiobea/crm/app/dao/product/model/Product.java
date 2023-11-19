@@ -24,7 +24,7 @@ public class Product implements Serializable {
 	private String title;
 	private String description;
 	private Integer stock;
-	private ProductType productType;
+	private String productTypeId;
 
 	@DocumentReference
 	private List<ProductImage> images;

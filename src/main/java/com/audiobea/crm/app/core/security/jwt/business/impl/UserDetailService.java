@@ -3,8 +3,8 @@ package com.audiobea.crm.app.core.security.jwt.business.impl;
 import com.audiobea.crm.app.dao.user.IUserDao;
 import com.audiobea.crm.app.dao.user.model.Role;
 import com.audiobea.crm.app.dao.user.model.User;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -16,13 +16,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
+@AllArgsConstructor
 @Service
 public class UserDetailService implements UserDetailsService {
 
-	@Autowired
-	private IUserDao userDao;
+	private final IUserDao userDao;
 
-	@Override
+    @Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 		User user = userDao.findByUsername(username);
 

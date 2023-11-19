@@ -20,7 +20,7 @@ public class DtoInSubBrand implements Serializable {
 	@NotEmpty
 	private String subBrandName;
 	@NotNull
-	private DtoInBrand brand;
+	private String brandId;
 	private boolean enabled;
 
 }

@@ -7,7 +7,6 @@ import com.audiobea.crm.app.commons.dto.DtoInProduct;
 import com.audiobea.crm.app.utils.Constants;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -21,10 +20,9 @@ import org.springframework.web.multipart.MultipartFile;
 @RequestMapping(Constants.URL_BASE + "/products")
 public class ProductController {
 
-	@Autowired
-	private IProductService productService;
+	private final IProductService productService;
 
-	@GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<ResponseData<DtoInProduct>> getProducts(
 			@RequestParam(name = "productType", required = false) String productType,
 			@RequestParam(name = "productName", required = false) String productName,
@@ -78,16 +76,16 @@ public class ProductController {
 		return new ResponseEntity<>(HttpStatus.ACCEPTED);
 	}
 
-	@GetMapping(path = "/hotdeal", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<DtoInHotdeal> getHotdeal() {
-		log.debug("getHotdeal");
-		return new ResponseEntity<>(productService.getHotdeal(), HttpStatus.OK);
+	@GetMapping(path = "/hot-deal", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<DtoInHotdeal> getHotDeal() {
+		log.debug("getHotDeal");
+		return new ResponseEntity<>(productService.getHotDeal(), HttpStatus.OK);
 	}
 
-	@PostMapping(path = "/hotdeal", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<DtoInHotdeal> saveHotdeal(@RequestBody DtoInHotdeal hotdeal) {
-		log.debug("saveHotdeal");
-		return new ResponseEntity<>(productService.saveHotdeal(hotdeal), HttpStatus.CREATED);
+	@PostMapping(path = "/hot-deal", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<DtoInHotdeal> saveHotDeal(@RequestBody DtoInHotdeal hotDeal) {
+		log.debug("saveHotDeal");
+		return new ResponseEntity<>(productService.saveHotDeal(hotDeal), HttpStatus.CREATED);
 	}
 
 }

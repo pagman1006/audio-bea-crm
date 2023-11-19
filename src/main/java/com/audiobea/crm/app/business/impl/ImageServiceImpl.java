@@ -9,7 +9,6 @@ import com.audiobea.crm.app.dao.product.model.Image;
 import com.audiobea.crm.app.utils.Validator;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 
@@ -21,10 +20,8 @@ import java.util.stream.Collectors;
 @Service
 public class ImageServiceImpl implements IImageService {
 
-    private final MessageSource messageSource;
-    @Autowired
+    private MessageSource messageSource;
     private IImageDao imageDao;
-    @Autowired
     private ImageMapper imageMapper;
 
     @Override

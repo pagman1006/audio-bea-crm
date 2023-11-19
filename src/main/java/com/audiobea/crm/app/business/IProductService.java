@@ -20,8 +20,8 @@ public interface IProductService {
 
     DtoInProduct uploadImages(String productId, MultipartFile[] files);
 
-    DtoInHotdeal getHotdeal();
+    DtoInHotdeal getHotDeal();
 
-    DtoInHotdeal saveHotdeal(DtoInHotdeal hotdeal);
+    DtoInHotdeal saveHotDeal(DtoInHotdeal hotdeal);
 
 }
