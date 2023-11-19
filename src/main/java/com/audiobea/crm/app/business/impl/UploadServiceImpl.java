@@ -7,13 +7,13 @@ import com.audiobea.crm.app.commons.dto.DtoInFileResponse;
 import com.audiobea.crm.app.core.exception.NoSuchFileException;
 import com.audiobea.crm.app.core.exception.ParseFileException;
 import com.audiobea.crm.app.core.exception.UploadFileException;
-import com.audiobea.crm.app.core.exception.ValidFileException;
+import com.audiobea.crm.app.dao.demographic.ICityDao;
+import com.audiobea.crm.app.dao.demographic.IColonyDao;
 import com.audiobea.crm.app.dao.demographic.IStateDao;
 import com.audiobea.crm.app.dao.demographic.model.City;
 import com.audiobea.crm.app.dao.demographic.model.Colony;
 import com.audiobea.crm.app.dao.demographic.model.State;
 import com.audiobea.crm.app.utils.Constants;
-import com.audiobea.crm.app.utils.ExcelHelper;
 import com.audiobea.crm.app.utils.Utils;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,7 +22,6 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -48,12 +47,15 @@ public class UploadServiceImpl implements IUploadService {
 
     private static final DecimalFormat decimalF = new DecimalFormat("00.00");
     private static final DecimalFormat df = new DecimalFormat("#,###");
-    private MessageSource messageSource;
-    private Integer statesCount;
-    private Integer citiesCount;
-    private Integer coloniesCount;
-    @Autowired
+
+    private static Integer statesCount = 0;
+    private static Integer citiesCount = 0;
+    private static Integer coloniesCount = 0;
+
     private IStateDao stateDao;
+    private ICityDao cityDao;
+    private IColonyDao colonyDao;
+    private MessageSource messageSource;
 
     @Override
     public Resource load(String filename) throws MalformedURLException {
@@ -77,7 +79,7 @@ public class UploadServiceImpl implements IUploadService {
     }
 
     @Override
-    public boolean delete(String filename) throws NoSuchFileException {
+    public void delete(String filename) throws NoSuchFileException {
         Path rootPath = getPath(filename);
         File file = rootPath.toFile();
         if (file.exists() && file.canRead()) {
@@ -87,7 +89,6 @@ public class UploadServiceImpl implements IUploadService {
                 throw new NoSuchFileException(Utils.getLocalMessage(messageSource, I18Constants.NO_FILE_FOUND.getKey(), filename));
             }
         }
-        return true;
     }
 
     @Override
@@ -103,9 +104,7 @@ public class UploadServiceImpl implements IUploadService {
     @Override
     public DtoInFileResponse uploadExcelFile(MultipartFile file) {
         long timeStart = new Date().getTime();
-        if (!ExcelHelper.hasExcelFormat(file)) {
-            throw new ValidFileException(Utils.getLocalMessage(messageSource, I18Constants.NOT_VALID_EXCEL.getKey()));
-        }
+        Utils.hasExcelFormat(file, messageSource);
         statesCount = 0;
         citiesCount = 0;
         coloniesCount = 0;
@@ -118,7 +117,6 @@ public class UploadServiceImpl implements IUploadService {
             log.debug("Cities loaded: {}", citiesCount);
             log.debug("Colonies loaded: {}", coloniesCount);
             log.debug("Upload time: {}", strTimeUpload);
-
             saveColoniesAsync(listStates, coloniesCount);
             return new DtoInFileResponse(df.format(statesCount), df.format(citiesCount), df.format(coloniesCount));
         } catch (IOException e) {
@@ -129,15 +127,33 @@ public class UploadServiceImpl implements IUploadService {
 
     private void saveColoniesAsync(List<State> listStates, int totalElements) {
         new Thread(() -> {
+            long timeStart = new Date().getTime();
             log.debug("Start load to DBB");
             log.debug("0.00%");
             double elements = 0;
             for (State state : listStates) {
-                stateDao.save(state);
+                if (stateDao.findByName(state.getName()).orElse(null) == null) {
+                    String stateId = stateDao.save(state).getId();
+                    state.getCities().forEach(city -> {
+                        city.setStateId(stateId);
+                        String cityId = cityDao.save(city).getId();
+                        city.getColonies().forEach(col -> {
+                            col.setStateId(stateId);
+                            col.setCityId(cityId);
+                            colonyDao.save(col);
+                        });
+                        //colonyDao.saveAll(city.getColonies());
+                        cityDao.save(city);
+                    });
+                    stateDao.save(state);
+                }
                 elements += state.getCities().stream().mapToInt(city -> city.getColonies().size()).sum();
                 double progress = (elements * 100) / (double) totalElements;
                 log.debug("{}% -> {}, {}/{}", decimalF.format(progress), state.getName(), df.format(elements), df.format(totalElements));
             }
+            long timeFinish = new Date().getTime();
+            String totalTimeSave = getFinishTimeStr(timeStart, timeFinish);
+            log.debug("Saved time: {}", totalTimeSave);
         }).start();
     }
 
@@ -151,8 +167,8 @@ public class UploadServiceImpl implements IUploadService {
             if (state.getCities() != null && !state.getCities().isEmpty()) {
                 int count = 0;
                 for (City city : state.getCities()) {
-                    city = setupCity(city);
-                    count = count + city.getColonies().size();
+                    setupCity(city);
+                    count += city.getColonies().size();
                     coloniesCount = coloniesCount + city.getColonies().size();
                     citiesCount++;
                 }
@@ -163,11 +179,10 @@ public class UploadServiceImpl implements IUploadService {
         return listState;
     }
 
-    private City setupCity(City city) {
+    private void setupCity(City city) {
         List<Colony> colonies = new ArrayList<>(city.getColonies());
         Collections.sort(colonies);
         city.setColonies(colonies);
-        return city;
     }
 
     private String getFinishTimeStr(long timeStart, long timeFinish) {
@@ -206,14 +221,12 @@ public class UploadServiceImpl implements IUploadService {
             }
             return listSetStates;
         } catch (IOException e) {
-            throw new ParseFileException(
-                    Utils.getLocalMessage(messageSource, I18Constants.FAIL_PARSE_EXCEL_FILE.getKey(), Constants.SHEET));
+            throw new ParseFileException(Utils.getLocalMessage(messageSource, I18Constants.FAIL_PARSE_EXCEL_FILE.getKey(), Constants.SHEET));
         }
     }
 
     private void setStateFromSetStates(Set<State> listSetStates, String nameState, String nameCity, String nameColony, String codePostal) {
-        State state = listSetStates.stream().filter(s -> s.getName().equals(nameState)).collect(Collectors.toList()).stream().findFirst()
-                .orElse(null);
+        State state = listSetStates.stream().filter(s -> s.getName().equals(nameState)).findFirst().orElse(null);
 
         if (state == null) {
             state = new State();
@@ -254,8 +267,7 @@ public class UploadServiceImpl implements IUploadService {
     private City setCity(State state, String nameCity) {
         City city = null;
         if (state.getCities() != null && !state.getCities().isEmpty()) {
-            city = state.getCities().stream().filter(c -> c.getName().equals(nameCity)).collect(Collectors.toList()).stream().findFirst()
-                    .orElse(null);
+            city = state.getCities().stream().filter(c -> c.getName().equals(nameCity)).findFirst().orElse(null);
         }
         if (city == null) {
             city = new City();

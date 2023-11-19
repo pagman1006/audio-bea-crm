@@ -14,7 +14,7 @@ public enum I18Constants {
 	NO_PRIVILEGES("not.privileges"),
 	DUPLICATE_KEY("duplicate.key");
 	
-	String key;
+	final String key;
 	
 	I18Constants(String key) {
 		this.key = key;

@@ -9,10 +9,10 @@ public interface IUserService {
 
 	DtoInUser saveUser(DtoInUser user);
 
-	DtoInUser getUserById(Long id);
+	DtoInUser getUserById(String id);
 
-	DtoInUser updateUser(Long id, DtoInUser user);
+	DtoInUser updateUser(String id, DtoInUser user);
 
-	void deleteUserById(Long id);
+	void deleteUserById(String id);
 
 }

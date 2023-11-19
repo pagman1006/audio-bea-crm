@@ -1,20 +1,23 @@
 package com.audiobea.crm.app.commons;
 
-import java.io.Serializable;
-import java.util.List;
-
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
-
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.domain.Page;
 
+import java.io.Serial;
+import java.io.Serializable;
+import java.util.List;
+
 @Getter
 @Setter
 @JsonInclude(Include.NON_NULL)
+@JsonPropertyOrder(alphabetic = true)
 public class ResponseData<T> implements Serializable {
 
+	@Serial
 	private static final long serialVersionUID = 1L;
 
 	private transient List<T> data;

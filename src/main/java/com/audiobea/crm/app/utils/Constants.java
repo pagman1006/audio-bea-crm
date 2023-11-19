@@ -7,7 +7,7 @@ public class Constants {
 
 	public static final String URL_BASE = "/audio-bea/v1/api";
 	public static final String XS_NAMESPACE = "http://www.w3.org/2001/XMLSchema";
-	public static final String TITLE_WADL = "Spring REST Service WADL";
+	public static final String TITLE_WADL = "API REST AUDIO-BEA WADL";
 	
 	public static final String UPLOADS_FOLDER = "uploads";
 	public static final String SHEET = "data";

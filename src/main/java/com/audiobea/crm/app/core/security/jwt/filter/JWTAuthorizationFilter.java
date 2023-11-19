@@ -1,28 +1,25 @@
 package com.audiobea.crm.app.core.security.jwt.filter;
 
-import java.io.IOException;
-
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.apache.commons.lang.StringUtils;
+import com.audiobea.crm.app.core.security.jwt.business.IJWTService;
+import com.audiobea.crm.app.core.security.jwt.business.impl.JWTServiceImpl;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
-import com.audiobea.crm.app.core.security.jwt.business.IJWTService;
-import com.audiobea.crm.app.core.security.jwt.business.impl.JWTServiceImpl;
-
-import lombok.extern.slf4j.Slf4j;
+import java.io.IOException;
 
 @Slf4j
 public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
 
-	private IJWTService jwtService;
+	private final IJWTService jwtService;
 
 	public JWTAuthorizationFilter(AuthenticationManager authenticationManager, IJWTService jwtService) {
 		super(authenticationManager);
@@ -36,6 +33,7 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
 		log.debug("doFilterInternal");
 		response.addHeader(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, "*");
 		response.addHeader(HttpHeaders.ACCESS_CONTROL_ALLOW_HEADERS, "*");
+		response.addHeader(HttpHeaders.ACCESS_CONTROL_ALLOW_METHODS, "*");
 		String header = request.getHeader(JWTServiceImpl.HEADER_STRING);
 		log.debug("Header: {}", header);
 		if (!requiresAuthentication(header)) {
@@ -60,7 +58,7 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
 	}
 
 	protected boolean requiresAuthentication(String header) {
-		log.debug("headerRequiresAutentication: {}", !(header == null || !header.startsWith(JWTServiceImpl.TOKEN_PREFIX)));
+		log.debug("headerRequiresAuthentication: {}", !(header == null || !header.startsWith(JWTServiceImpl.TOKEN_PREFIX)));
 		return !(header == null || !header.startsWith(JWTServiceImpl.TOKEN_PREFIX));
 	}
 

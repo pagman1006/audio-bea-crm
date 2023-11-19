@@ -1,15 +1,14 @@
 package com.audiobea.crm.app.commons.mapper;
 
-import org.apache.commons.lang.StringUtils;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.Named;
-
 import com.audiobea.crm.app.commons.dto.DtoInEmail;
 import com.audiobea.crm.app.commons.dto.EnumEmailType;
 import com.audiobea.crm.app.dao.customer.model.Email;
 import com.audiobea.crm.app.dao.customer.model.EmailType;
 import com.audiobea.crm.app.utils.Constants;
+import org.apache.commons.lang3.StringUtils;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.Named;
 
 @Mapper(componentModel = Constants.SPRING)
 public interface EmailMapper {
@@ -20,7 +19,7 @@ public interface EmailMapper {
 
 	@Mapping(target = "emailType", source = "emailType", qualifiedByName = "typeEmail")
 	@Mapping(target = "emailAddress", source = "email")
-	Email emailDtoInToPhone(DtoInEmail dtoEmail);
+	Email emailDtoInToEmail(DtoInEmail dtoEmail);
 
 	@Named("enumTypeEmail")
 	default EnumEmailType mapEnumType(EmailType emailType) {

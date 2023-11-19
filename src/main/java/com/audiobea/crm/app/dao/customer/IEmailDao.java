@@ -1,8 +1,7 @@
 package com.audiobea.crm.app.dao.customer;
 
-import org.springframework.data.repository.PagingAndSortingRepository;
-
 import com.audiobea.crm.app.dao.customer.model.Email;
+import org.springframework.data.mongodb.repository.MongoRepository;
 
-public interface IEmailDao extends PagingAndSortingRepository<Email, Long> {
+public interface IEmailDao extends MongoRepository<Email, String> {
 }

@@ -1,11 +1,10 @@
 package com.audiobea.crm.app.dao.user;
 
-import org.springframework.data.repository.PagingAndSortingRepository;
-
 import com.audiobea.crm.app.dao.user.model.Role;
+import org.springframework.data.mongodb.repository.MongoRepository;
 
-public interface IRoleDao extends PagingAndSortingRepository<Role, Long> {
+public interface IRoleDao extends MongoRepository<Role, String> {
 	
-	Role findByAuthority(String authority);
+	//Role findByAuthority(String authority);
 
 }

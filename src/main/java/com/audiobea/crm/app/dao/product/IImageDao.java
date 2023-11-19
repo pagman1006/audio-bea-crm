@@ -1,12 +1,8 @@
 package com.audiobea.crm.app.dao.product;
 
-import java.util.List;
-
-import org.springframework.data.repository.Repository;
-
 import com.audiobea.crm.app.dao.product.model.Image;
+import org.springframework.data.mongodb.repository.MongoRepository;
 
-public interface IImageDao extends Repository<Image, Long> {
-	
-	public List<Image> findAll();
+public interface IImageDao extends MongoRepository<Image, String> {
+
 }
