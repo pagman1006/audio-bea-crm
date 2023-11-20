@@ -22,6 +22,12 @@ public class Address implements Serializable {
 	private String indoorNumber;
 
 	@DocumentReference
+	private State state;
+
+	@DocumentReference
+	private City city;
+
+	@DocumentReference
 	private Colony colony;
 
 }

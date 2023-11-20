@@ -132,21 +132,19 @@ public class UploadServiceImpl implements IUploadService {
             log.debug("0.00%");
             double elements = 0;
             for (State state : listStates) {
-                if (stateDao.findByName(state.getName()).orElse(null) == null) {
-                    String stateId = stateDao.save(state).getId();
-                    state.getCities().forEach(city -> {
-                        city.setStateId(stateId);
-                        String cityId = cityDao.save(city).getId();
-                        city.getColonies().forEach(col -> {
-                            col.setStateId(stateId);
-                            col.setCityId(cityId);
-                            colonyDao.save(col);
-                        });
-                        //colonyDao.saveAll(city.getColonies());
-                        cityDao.save(city);
-                    });
-                    stateDao.save(state);
+                // Save state, save city, save colony
+                State st = stateDao.save(state);
+                for (City city : st.getCities()) {
+                    city.setState(st);
+                    City ct = cityDao.save(city);
+                    for (Colony colony : ct.getColonies()) {
+                        colony.setCity(ct);
+                        colony.setState(st);
+                    }
+                    city.setColonies(colonyDao.saveAll(ct.getColonies()));
                 }
+                st.setCities(cityDao.saveAll(st.getCities()));
+                stateDao.save(st);
                 elements += state.getCities().stream().mapToInt(city -> city.getColonies().size()).sum();
                 double progress = (elements * 100) / (double) totalElements;
                 log.debug("{}% -> {}, {}/{}", decimalF.format(progress), state.getName(), df.format(elements), df.format(totalElements));

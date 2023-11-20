@@ -27,7 +27,7 @@ public class ProductController {
 			@RequestParam(name = "productType", required = false) String productType,
 			@RequestParam(name = "productName", required = false) String productName,
 			@RequestParam(name = "brand", required = false, defaultValue = "") String brand,
-			@RequestParam(value = "subBrand", required = false, defaultValue = "") String subBrand,
+			@RequestParam(name = "subBrand", required = false, defaultValue = "") String subBrand,
 			@RequestParam(name = "newProduct", required = false) boolean newProduct,
 			@RequestParam(name = "page", defaultValue = "0", required = false) Integer page,
 			@RequestParam(name = "pageSize", defaultValue = "10", required = false) Integer pageSize) {

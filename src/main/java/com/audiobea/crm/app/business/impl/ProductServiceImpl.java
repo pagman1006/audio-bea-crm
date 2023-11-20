@@ -9,10 +9,10 @@ import com.audiobea.crm.app.commons.dto.DtoInProduct;
 import com.audiobea.crm.app.commons.mapper.HotdealMapper;
 import com.audiobea.crm.app.commons.mapper.ProductMapper;
 import com.audiobea.crm.app.core.exception.NoSuchElementFoundException;
-import com.audiobea.crm.app.dao.product.IHotdealDao;
-import com.audiobea.crm.app.dao.product.IProductDao;
+import com.audiobea.crm.app.dao.product.*;
 import com.audiobea.crm.app.dao.product.model.Product;
 import com.audiobea.crm.app.dao.product.model.ProductImage;
+import com.audiobea.crm.app.dao.product.model.ProductRanking;
 import com.audiobea.crm.app.utils.Utils;
 import com.audiobea.crm.app.utils.Validator;
 import lombok.AllArgsConstructor;
@@ -26,8 +26,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -38,6 +37,9 @@ public class ProductServiceImpl implements IProductService {
 
     private IUploadService uploadService;
     private IProductDao productDao;
+    private IProductImageDao productImageDao;
+    private IProductRankingDao productRankingDao;
+    private IProductTypeDao productTypeDao;
     private IHotdealDao hotDealDao;
     private ProductMapper productMapper;
     private HotdealMapper hotdealMapper;
@@ -48,6 +50,7 @@ public class ProductServiceImpl implements IProductService {
     public ResponseData<DtoInProduct> getProducts(String productName, String productType, boolean isNewProduct,
             String brand, String subBrand, Integer page, Integer pageSize)
     {
+
         Pageable pageable = PageRequest.of(page, pageSize);
         productName = StringUtils.isNotBlank(productName) ? productName : "";
         productType = StringUtils.isNotBlank(productType) ? productType : "";
@@ -74,18 +77,55 @@ public class ProductServiceImpl implements IProductService {
 
     @Override
     public DtoInProduct getProductById(String productId) {
-        return productMapper.productToDtoInProduct(productDao.findById(productId)
-                                                             .orElseThrow(() -> new NoSuchElementFoundException(
-                                                                     Utils.getLocalMessage(messageSource,
-                                                                                           I18Constants.NO_ITEM_FOUND.getKey(),
-                                                                                           productId))));
+        return productMapper.productToDtoInProduct(
+                productDao.findById(productId)
+                          .orElseThrow(() -> new NoSuchElementFoundException(
+                                  Utils.getLocalMessage(messageSource,
+                                                        I18Constants.NO_ITEM_FOUND.getKey(),
+                                                        productId))));
     }
 
     @Transactional
     @Override
-    public DtoInProduct saveProduct(DtoInProduct product) {
-        log.debug("Product: {}", product);
-        return productMapper.productToDtoInProduct(productDao.save(productMapper.productDtoInToProduct(product)));
+    public DtoInProduct saveProduct(DtoInProduct dtoInProduct) {
+        log.debug("Product: {}", dtoInProduct);
+        Product product = productMapper.productDtoInToProduct(dtoInProduct);
+        return productMapper.productToDtoInProduct(productDao.save(product));
+    }
+
+    private List<ProductImage> setProductImages(Product product) {
+        Set<String> imageNames = new HashSet<>();
+        imageNames.add("product01.png");
+        imageNames.add("product02.png");
+        imageNames.add("product03.png");
+        imageNames.add("product04.png");
+        imageNames.add("product05.png");
+        List<ProductImage> list = new ArrayList<>();
+        int random = new Random().nextInt(5) + 1;
+        int count = 0;
+        for (String imageName : imageNames) {
+            count++;
+            ProductImage image = new ProductImage();
+            image.setImageName(imageName);
+            image.setProductId(product.getId());
+            image.setSelected(count == random);
+            productImageDao.save(image);
+            list.add(image);
+        }
+        return list;
+    }
+
+    private List<ProductRanking> setProductRankings() {
+        List<ProductRanking> list = new ArrayList<>();
+        int random = new Random().nextInt(10) + 1;
+        for (int i = 0; i < random; i++) {
+            int rank = new Random().nextInt(5) + 1;
+            ProductRanking ranking = new ProductRanking();
+            ranking.setRanking(rank);
+            productRankingDao.save(ranking);
+            list.add(ranking);
+        }
+        return list;
     }
 
     @Transactional
@@ -138,7 +178,8 @@ public class ProductServiceImpl implements IProductService {
                         hotDealDao
                                 .findAll().stream().findFirst()
                                 .orElseThrow(() -> new NoSuchElementFoundException(
-                                        Utils.getLocalMessage(messageSource, I18Constants.NO_ITEM_FOUND.getKey(), String.valueOf(1L)))));
+                                        Utils.getLocalMessage(messageSource, I18Constants.NO_ITEM_FOUND.getKey(),
+                                                              String.valueOf(1L)))));
     }
 
     @Transactional

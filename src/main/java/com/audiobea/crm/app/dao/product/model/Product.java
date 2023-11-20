@@ -27,13 +27,18 @@ public class Product implements Serializable {
 	private String productTypeId;
 
 	@DocumentReference
-	private List<ProductImage> images;
+	private ProductType productType;
 
+	@DocumentReference
+	private List<ProductImage> images;
 	@DocumentReference
 	private List<ProductRanking> rankings;
 
-	private String brandId;
-	private String subBrandId;
+	@DocumentReference
+	private Brand brand;
+
+	@DocumentReference
+	private SubBrand subBrand;
 
 	private boolean productNew;
 	private boolean enabled;
