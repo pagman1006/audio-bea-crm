@@ -20,5 +20,7 @@ public class DtoInColony implements Serializable {
 	private String name;
 	@NotEmpty
 	private String postalCode;
+	private String stateId;
+	private String cityId;
 
 }

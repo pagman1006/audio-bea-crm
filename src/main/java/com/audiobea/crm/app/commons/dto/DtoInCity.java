@@ -18,5 +18,6 @@ public class DtoInCity implements Serializable {
 	private String id;
 	@NotEmpty
 	private String name;
+	private String stateId;
 	
 }

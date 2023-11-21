@@ -135,11 +135,11 @@ public class UploadServiceImpl implements IUploadService {
                 // Save state, save city, save colony
                 State st = stateDao.save(state);
                 for (City city : st.getCities()) {
-                    city.setState(st);
+                    city.setStateId(st.getId());
                     City ct = cityDao.save(city);
                     for (Colony colony : ct.getColonies()) {
-                        colony.setCity(ct);
-                        colony.setState(st);
+                        colony.setCityId(ct.getId());
+                        colony.setStateId(st.getId());
                     }
                     city.setColonies(colonyDao.saveAll(ct.getColonies()));
                 }

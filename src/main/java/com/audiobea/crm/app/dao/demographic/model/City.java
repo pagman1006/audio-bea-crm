@@ -20,8 +20,7 @@ public class City implements Serializable, Comparable<City> {
 	private String id;
 	private String name;
 
-	@DocumentReference
-	private State state;
+	private String stateId;
 
 	@DocumentReference(lazy = true)
 	private List<Colony> colonies;

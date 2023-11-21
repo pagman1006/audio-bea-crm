@@ -12,9 +12,11 @@ public enum I18Constants {
 	FAIL_PARSE_EXCEL_FILE("fail.parse.excel.file"),
 	NO_FILE_FOUND("file.not.found"),
 	NO_PRIVILEGES("not.privileges"),
-	DUPLICATE_KEY("duplicate.key");
-	
-	final String key;
+	DUPLICATE_KEY("duplicate.key"),
+	INVALID_PARAMETERS("invalid.parameters");
+
+
+    final String key;
 	
 	I18Constants(String key) {
 		this.key = key;

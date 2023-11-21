@@ -10,15 +10,25 @@ import java.util.List;
 
 public interface IColonyDao extends MongoRepository<Colony, String> {
 
-	@Query(value = "{'name': {$regex: ?0, $options: 'i'}, 'postalCode': {$regex: ?1}}")
-	Page<Colony> findAllByColonyOrPostalCode(String colonyName, String postalCode, Pageable pageable);
+    @Query(value = "{'name': {$regex: ?0, $options: 'i'}, 'postalCode': {$regex: ?1}}")
+    Page<Colony> findAllByColonyOrPostalCode(String colonyName, String postalCode, Pageable pageable);
 
-	@Query(value = "{'_id': {'$in': ?0}, 'name': {$regex: ?1, $options: 'i'}, 'postalCode': {$regex: ?2}}")
-	Page<Colony> findByCityId(List<String> names, String colonyName, String postalCode, Pageable pageable);
+    @Query(value = "{'cityId': ?0, 'name': {$regex: ?1, $options: 'i'}, 'postalCode': {$regex: ?2}}")
+    Page<Colony> findByCityId(String cityId, String colonyName, String postalCode, Pageable pageable);
 
-	@Query(value = "{'cityId': ?0, 'name': {$regex: ?1, $options: 'i'}, 'postalCode': {$regex: ?2}}")
-	Page<Colony> findByCityId(String cityId, String colonyName, String postalCode, Pageable pageable);
+    @Query(value = "{'stateId': ?0, 'cityId': ?1, 'name': {$regex: ?2, $options: 'i'}, 'postalCode': {$regex: ?3}}")
+    Page<Colony> findByStateIdAndCityId(String stateId, String cityId, String colonyName, String postalCode,
+            Pageable pageable);
 
-	@Query(value = "{'stateId': ?0, 'cityId': ?1, 'name': {$regex: ?2, $options: 'i'}, 'postalCode': {$regex: ?3}}")
-	Page<Colony> findByStateIdAndCityId(String stateId, String cityId, String colonyName, String postalCode, Pageable pageable);
+    @Query(value = "{'stateId': ?0, 'name': {$regex: ?1, $options: 'i'}, 'postalCode': {$regex: ?2}}")
+    Page<Colony> findByStateId(String stateId, String colonyName, String postalCode, Pageable pageable);
+
+    Page<Colony> findByStateIdInAndNameContainingAndPostalCodeContaining(List<String> states, String colonyName,
+            String postalCode, Pageable pageable);
+
+    Page<Colony> findByCityIdInAndNameContainingAndPostalCodeContaining(List<String> cities, String colonyName,
+            String postalCode, Pageable pageable);
+
+    Page<Colony> findByStateIdInAndCityIdInAndNameContainingAndPostalCodeContaining(List<String> states, List<String> cities,
+            String colonyName, String postalCode, Pageable pageable);
 }

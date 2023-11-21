@@ -29,17 +29,18 @@ public class DemographicController {
 	@GetMapping(path = "/states/{stateId}/cities", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<ResponseData<DtoInCity>> getCitiesByState(
 			@PathVariable(name = "stateId") String stateId,
+			@RequestParam(name = "name", defaultValue = "", required = false) String cityName,
 			@RequestParam(name = "page", defaultValue = "0", required = false) Integer page,
 			@RequestParam(name = "pageSize", defaultValue = "10", required = false) Integer pageSize) {
 		log.debug("State Id: {}", stateId);
-		return new ResponseEntity<>(demographicService.getCitiesByStateId(stateId, page, pageSize), HttpStatus.OK);
+		return new ResponseEntity<>(demographicService.getCitiesByStateId(stateId, cityName, page, pageSize), HttpStatus.OK);
 	}
 
 	@GetMapping(path = "/states/{stateId}/cities/{cityId}/colonies", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<ResponseData<DtoInColony>> getColonies(
-			@PathVariable(name = "stateId") String stateId,
-			@PathVariable(name = "cityId") String cityId, @RequestParam(name = "postalCode", required = false) String postalCode,
-			@RequestParam(name = "name", required = false) String colonyName,
+			@PathVariable(name = "stateId") String stateId, @PathVariable(name = "cityId") String cityId,
+			@RequestParam(name = "name", defaultValue = "", required = false) String colonyName,
+			@RequestParam(name = "postalCode", defaultValue = "", required = false) String postalCode,
 			@RequestParam(name = "page", defaultValue = "0", required = false) Integer page,
 			@RequestParam(name = "pageSize", defaultValue = "10", required = false) Integer pageSize) {
 
