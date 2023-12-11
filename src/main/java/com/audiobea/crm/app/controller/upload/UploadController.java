@@ -1,7 +1,9 @@
 package com.audiobea.crm.app.controller.upload;
 
 import com.audiobea.crm.app.business.IUploadService;
+import com.audiobea.crm.app.commons.ResponseData;
 import com.audiobea.crm.app.commons.dto.DtoInFileResponse;
+import com.audiobea.crm.app.commons.dto.DtoInProduct;
 import com.audiobea.crm.app.utils.Constants;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,6 +30,15 @@ public class UploadController {
 	public ResponseEntity<DtoInFileResponse> uploadFile(@RequestParam(name = "file", required = false) MultipartFile file) {
 		log.debug("Load started of file");
 		DtoInFileResponse response = uploadService.uploadExcelFile(file);
+		log.debug("Load finished of file");
+		return new ResponseEntity<>(response, HttpStatus.CREATED);
+	}
+
+	@PreAuthorize("hasAuthority('ADMIN')")
+	@PostMapping(path = "/products", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<ResponseData<DtoInProduct>> uploadProducts(@RequestParam(name = "file", required = false) MultipartFile file) {
+		log.debug("Load started of file");
+		ResponseData<DtoInProduct> response = uploadService.uploadProducts(file);
 		log.debug("Load finished of file");
 		return new ResponseEntity<>(response, HttpStatus.CREATED);
 	}

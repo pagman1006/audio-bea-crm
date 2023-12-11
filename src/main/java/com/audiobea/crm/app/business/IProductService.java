@@ -7,7 +7,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 public interface IProductService {
 
-    ResponseData<DtoInProduct> getProducts(String productName, String productType, boolean newProduct, String marca, String subMarca,
+    ResponseData<DtoInProduct> getProducts(String productName, String productType, boolean newProduct, String brandName, String subBrandName,
                                            Integer page, Integer pageSize);
 
     DtoInProduct getProductById(String productId);

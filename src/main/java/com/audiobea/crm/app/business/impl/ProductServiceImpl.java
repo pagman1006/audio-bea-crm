@@ -1,11 +1,13 @@
 package com.audiobea.crm.app.business.impl;
 
+import com.audiobea.crm.app.business.IBrandService;
 import com.audiobea.crm.app.business.IProductService;
 import com.audiobea.crm.app.business.IUploadService;
 import com.audiobea.crm.app.commons.I18Constants;
 import com.audiobea.crm.app.commons.ResponseData;
 import com.audiobea.crm.app.commons.dto.DtoInHotdeal;
 import com.audiobea.crm.app.commons.dto.DtoInProduct;
+import com.audiobea.crm.app.commons.mapper.BrandMapper;
 import com.audiobea.crm.app.commons.mapper.HotdealMapper;
 import com.audiobea.crm.app.commons.mapper.ProductMapper;
 import com.audiobea.crm.app.core.exception.NoSuchElementFoundException;
@@ -36,53 +38,45 @@ import java.util.stream.Collectors;
 public class ProductServiceImpl implements IProductService {
 
     private IUploadService uploadService;
+    private IBrandService brandService;
     private IProductDao productDao;
     private IProductImageDao productImageDao;
     private IProductRankingDao productRankingDao;
     private IProductTypeDao productTypeDao;
     private IHotdealDao hotDealDao;
     private ProductMapper productMapper;
+    private BrandMapper brandMapper;
     private HotdealMapper hotdealMapper;
 
     private MessageSource messageSource;
 
     @Override
     public ResponseData<DtoInProduct> getProducts(String productName, String productType, boolean isNewProduct,
-            String brand, String subBrand, Integer page, Integer pageSize)
-    {
-
+            String brandName, String subBrandName, Integer page, Integer pageSize) {
         Pageable pageable = PageRequest.of(page, pageSize);
-        productName = StringUtils.isNotBlank(productName) ? productName : "";
-        productType = StringUtils.isNotBlank(productType) ? productType : "";
-        brand = StringUtils.isNotBlank(brand) ? brand : "";
-        subBrand = StringUtils.isNotBlank(subBrand) ? subBrand : "";
-        log.debug("Marca: {}, SubMarca: {}, ProductType: {}, Nuevo: {}, Page: {}, PageSize: {}", brand, subBrand,
-                  productType, isNewProduct, page, pageSize);
+        log.debug("Marca: {}, SubMarca: {}, ProductType: {}, Nuevo: {}, Page: {}, PageSize: {}", brandName,
+                subBrandName, productType, isNewProduct, page, pageSize);
         Page<Product> pageProduct;
-        if (isNewProduct) {
-            pageProduct = productDao.findAllByNameBrandIdSubBrandIdProductTypeIdProductNew(productName, brand, subBrand,
-                                                                                           productType, true, pageable);
-            log.debug("News Products: {}", pageProduct.getTotalElements());
+        if (StringUtils.isNotBlank(productName)) {
+            pageProduct = productDao.findByProductName(productName, pageable);
         } else {
-            pageProduct = productDao.findAllByNameBrandIdSubBrandIdProductTypeId(productName, brand, subBrand,
-                                                                                 productType, pageable);
-            log.debug("No News Products: {}", pageProduct.getTotalElements());
+            pageProduct = productDao.findAll(pageable);
         }
         Validator.validatePage(pageProduct, messageSource);
         return new ResponseData<>(pageProduct.getContent()
-                                             .stream()
-                                             .map(p -> productMapper.productToDtoInProduct(p))
-                                             .collect(Collectors.toList()), pageProduct);
+                .stream()
+                .map(p -> productMapper.productToDtoInProduct(p))
+                .collect(Collectors.toList()), pageProduct);
     }
 
     @Override
     public DtoInProduct getProductById(String productId) {
         return productMapper.productToDtoInProduct(
                 productDao.findById(productId)
-                          .orElseThrow(() -> new NoSuchElementFoundException(
-                                  Utils.getLocalMessage(messageSource,
-                                                        I18Constants.NO_ITEM_FOUND.getKey(),
-                                                        productId))));
+                        .orElseThrow(() -> new NoSuchElementFoundException(
+                                Utils.getLocalMessage(messageSource,
+                                        I18Constants.NO_ITEM_FOUND.getKey(),
+                                        productId))));
     }
 
     @Transactional
@@ -132,8 +126,8 @@ public class ProductServiceImpl implements IProductService {
     @Override
     public DtoInProduct updateProduct(String productId, DtoInProduct product) {
         productDao.findById(productId)
-                  .orElseThrow(() -> new NoSuchElementFoundException(
-                          Utils.getLocalMessage(messageSource, I18Constants.NO_ITEM_FOUND.getKey(), productId)));
+                .orElseThrow(() -> new NoSuchElementFoundException(
+                        Utils.getLocalMessage(messageSource, I18Constants.NO_ITEM_FOUND.getKey(), productId)));
         product.setId(productId);
         return productMapper.productToDtoInProduct(productDao.save(productMapper.productDtoInToProduct(product)));
     }
@@ -179,7 +173,7 @@ public class ProductServiceImpl implements IProductService {
                                 .findAll().stream().findFirst()
                                 .orElseThrow(() -> new NoSuchElementFoundException(
                                         Utils.getLocalMessage(messageSource, I18Constants.NO_ITEM_FOUND.getKey(),
-                                                              String.valueOf(1L)))));
+                                                String.valueOf(1L)))));
     }
 
     @Transactional

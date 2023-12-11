@@ -2,8 +2,12 @@ package com.audiobea.crm.app.business.impl;
 
 import com.audiobea.crm.app.business.IUploadService;
 import com.audiobea.crm.app.commons.I18Constants;
-import com.audiobea.crm.app.commons.dto.DtoInFileExcel;
+import com.audiobea.crm.app.commons.ResponseData;
+import com.audiobea.crm.app.commons.dto.DtoInDemographicExcelFile;
 import com.audiobea.crm.app.commons.dto.DtoInFileResponse;
+import com.audiobea.crm.app.commons.dto.DtoInProduct;
+import com.audiobea.crm.app.commons.dto.DtoInProductExcelFile;
+import com.audiobea.crm.app.commons.mapper.ProductMapper;
 import com.audiobea.crm.app.core.exception.NoSuchFileException;
 import com.audiobea.crm.app.core.exception.ParseFileException;
 import com.audiobea.crm.app.core.exception.UploadFileException;
@@ -13,6 +17,14 @@ import com.audiobea.crm.app.dao.demographic.IStateDao;
 import com.audiobea.crm.app.dao.demographic.model.City;
 import com.audiobea.crm.app.dao.demographic.model.Colony;
 import com.audiobea.crm.app.dao.demographic.model.State;
+import com.audiobea.crm.app.dao.product.IBrandDao;
+import com.audiobea.crm.app.dao.product.IProductDao;
+import com.audiobea.crm.app.dao.product.IProductTypeDao;
+import com.audiobea.crm.app.dao.product.ISubBrandDao;
+import com.audiobea.crm.app.dao.product.model.Brand;
+import com.audiobea.crm.app.dao.product.model.Product;
+import com.audiobea.crm.app.dao.product.model.ProductType;
+import com.audiobea.crm.app.dao.product.model.SubBrand;
 import com.audiobea.crm.app.utils.Constants;
 import com.audiobea.crm.app.utils.Utils;
 import lombok.AllArgsConstructor;
@@ -55,7 +67,12 @@ public class UploadServiceImpl implements IUploadService {
     private IStateDao stateDao;
     private ICityDao cityDao;
     private IColonyDao colonyDao;
+    private IProductDao productDao;
+    private IBrandDao brandDao;
+    private ISubBrandDao subBrandDao;
+    private IProductTypeDao productTypeDao;
     private MessageSource messageSource;
+    private ProductMapper productMapper;
 
     @Override
     public Resource load(String filename) throws MalformedURLException {
@@ -63,7 +80,8 @@ public class UploadServiceImpl implements IUploadService {
         Resource resource;
         resource = new UrlResource(pathImage.toUri());
         if (!resource.exists() || !resource.isReadable()) {
-            throw new UploadFileException(Utils.getLocalMessage(messageSource, I18Constants.UPLOAD_FILE_EXCEPTION.getKey(), filename));
+            throw new UploadFileException(
+                    Utils.getLocalMessage(messageSource, I18Constants.UPLOAD_FILE_EXCEPTION.getKey(), filename));
         }
         return resource;
     }
@@ -123,6 +141,198 @@ public class UploadServiceImpl implements IUploadService {
             log.error(e.getMessage());
         }
         return null;
+    }
+
+    @Override
+    public ResponseData<DtoInProduct> uploadProducts(MultipartFile file) {
+        long timeStart = new Date().getTime();
+        Utils.hasExcelFormat(file, messageSource);
+        try {
+            List<DtoInProduct> listProducts = excelToListProducts(file.getInputStream());
+            long timeUpload = new Date().getTime();
+            String strTimeUpload = getFinishTimeStr(timeStart, timeUpload);
+            if (listProducts != null && !listProducts.isEmpty()){
+                log.debug("Products loaded: {}", listProducts.size());
+            }
+            log.debug("Upload time: {}", strTimeUpload);
+            return new ResponseData<>(listProducts, null, null, null, null);
+        } catch (IOException e) {
+            log.error(e.getMessage());
+        }
+        return null;
+    }
+
+    private List<DtoInProduct> excelToListProducts(InputStream inputStream) {
+        try (Workbook workbook = new XSSFWorkbook(inputStream)) {
+            Sheet sheet = workbook.getSheet(Constants.SHEET);
+            Iterator<Row> rows = sheet.iterator();
+            int rowNumber = 0;
+            List<Product> listProducts = new ArrayList<>();
+            while (rows.hasNext()) {
+                Row currentRow = rows.next();
+                if (rowNumber == 0) { // Skip header
+                    rowNumber++;
+                    continue;
+                }
+                Iterator<Cell> cellsInRow = currentRow.iterator();
+                DtoInProductExcelFile file = reedCellsProduct(cellsInRow);
+                Brand brand = getBrandFromFile(file);
+                SubBrand subBrand = getSubBrandFromFile(file);
+                if (subBrand != null && brand != null) {
+                    subBrand.setBrandId(brand.getId());
+                    subBrandDao.save(subBrand);
+                    brand.getSubBrands().add(subBrand);
+                    brandDao.save(brand);
+                }
+
+                ProductType productType = getProductTypeFromFile(file);
+                String brandId = brand == null ? null : brand.getId();
+                String subBrandId = subBrand == null ? null : subBrand.getId();
+                Product product = getProductFromFile(file, brandId, subBrandId, productType);
+                if (subBrand != null && brand != null && product != null) {
+                    subBrand.setBrandId(brand.getId());
+                    subBrand.getProducts().add(product);
+                    subBrandDao.save(subBrand);
+
+                    brand.getSubBrands().add(subBrand);
+                    brand.getProducts().add(product);
+                    brandDao.save(brand);
+                }
+                listProducts.add(product);
+            }
+            return listProducts.isEmpty()? null
+                    : listProducts.stream().map(productMapper::productToDtoInProduct).collect(Collectors.toList());
+        } catch (IOException e) {
+            throw new ParseFileException(Utils.getLocalMessage(messageSource, I18Constants.FAIL_PARSE_EXCEL_FILE.getKey(), Constants.SHEET));
+        }
+    }
+
+    private DtoInProductExcelFile reedCellsProduct(Iterator<Cell> cellsInRow) {
+        DtoInProductExcelFile file = new DtoInProductExcelFile();
+        int cellIdx = 0;
+        while (cellsInRow.hasNext()) {
+            Cell currentCell = cellsInRow.next();
+            switch (cellIdx) {
+                case 0:
+                    log.debug("getBrand");
+                    file.setBrand(Utils.removeAccents(currentCell.getStringCellValue()));
+                    log.debug(file.getBrand());
+                    break;
+                case 1:
+                    log.debug("getSubBrand");
+                    file.setSubBrand(Utils.removeAccents(currentCell.getStringCellValue()));
+                    log.debug(file.getSubBrand());
+                    break;
+                case 2:
+                    log.debug("getDescription");
+                    file.setDescription(Utils.removeAccents(currentCell.getStringCellValue()));
+                    log.debug(file.getDescription());
+                    break;
+                case 3:
+                    log.debug("getDiscount");
+                    file.setDiscount(currentCell.getNumericCellValue());
+                    log.debug(String.valueOf(file.getDiscount()));
+                    break;
+                case 4:
+                    log.debug("getEnabled");
+                    file.setEnabled(currentCell.getNumericCellValue() == 1);
+                    log.debug(String.valueOf(file.getEnabled()));
+                    break;
+                case 5:
+                    log.debug("getProductNew");
+                    file.setProductNew(currentCell.getNumericCellValue() == 1);
+                    log.debug(String.valueOf(file.getProductNew()));
+                    break;
+                case 6:
+                    log.debug("getPrice");
+                    file.setPrice(currentCell.getNumericCellValue());
+                    log.debug(String.valueOf(file.getPrice()));
+                    break;
+                case 7:
+                    log.debug("getProductName");
+                    file.setProductName(Utils.removeAccents(currentCell.getStringCellValue()));
+                    log.debug(file.getProductName());
+                    break;
+                case 8:
+                    log.debug("getStock");
+                    file.setStock((int) currentCell.getNumericCellValue());
+                    log.debug(String.valueOf(file.getStock()));
+                    break;
+                case 9:
+                    log.debug("getTitle");
+                    file.setTitle(Utils.removeAccents(currentCell.getStringCellValue()));
+                    log.debug(file.getTitle());
+                    break;
+                case 10:
+                    log.debug("getType");
+                    file.setType(Utils.removeAccents(currentCell.getStringCellValue()));
+                    log.debug(file.getType());
+                    break;
+                default:
+                    break;
+            }
+            cellIdx++;
+        }
+        return file;
+    }
+
+    private Brand getBrandFromFile(DtoInProductExcelFile file) {
+        if (file.getBrand() == null || file.getBrand().isEmpty()) {
+            return null;
+        }
+        Brand brand = brandDao.findByBrandName(file.getBrand()).orElse(null);
+        if (brand == null) {
+            brand = new Brand();
+            brand.setBrandName(file.getBrand());
+            brand.setSubBrands(new ArrayList<>());
+            brand.setProducts(new ArrayList<>());
+            return brandDao.save(brand);
+        }
+        return brand;
+    }
+
+    private SubBrand getSubBrandFromFile(DtoInProductExcelFile file) {
+        if (file.getSubBrand() == null || file.getSubBrand().isEmpty()) {
+            return null;
+        }
+        SubBrand subBrand = subBrandDao.findBySubBrandName(file.getSubBrand()).orElse(null);
+        if (subBrand == null) {
+            subBrand = new SubBrand();
+            subBrand.setSubBrandName(file.getSubBrand());
+            subBrand.setProducts(new ArrayList<>());
+            return subBrandDao.save(subBrand);
+        }
+        return subBrand;
+    }
+
+    private ProductType getProductTypeFromFile(DtoInProductExcelFile file) {
+        if (file == null || file.getType() == null || file.getType().isEmpty()) {
+            return null;
+        }
+        ProductType productType = productTypeDao.findProductTypeByType(file.getType()).orElse(null);
+        if (productType == null) {
+            productType = new ProductType();
+            productType.setType(file.getType());
+            return productTypeDao.save(productType);
+        }
+        return productType;
+    }
+
+    private Product getProductFromFile(DtoInProductExcelFile file, String brandId, String subBrandId, ProductType productType) {
+        if (file == null || file.getProductName() == null || file.getProductName().isEmpty()) {
+            return null;
+        }
+        Product product = new Product();
+        product.setProductNew(file.getProductNew());
+        product.setPrice(file.getPrice());
+        product.setDiscount(file.getDiscount());
+        product.setTitle(file.getTitle());
+        product.setDescription(file.getDescription());
+        product.setStock(file.getStock());
+        product.setProductType(productType);
+        product.setBrandId(brandId);
+        product.setSubBrandId(subBrandId);
+        return productDao.save(product);
     }
 
     private void saveColoniesAsync(List<State> listStates, int totalElements) {
@@ -210,7 +420,7 @@ public class UploadServiceImpl implements IUploadService {
                     continue;
                 }
                 Iterator<Cell> cellsInRow = currentRow.iterator();
-                DtoInFileExcel file = reedCells(cellsInRow);
+                DtoInDemographicExcelFile file = reedCells(cellsInRow);
                 String nameState = file.getState();
                 String nameCity = file.getCity();
                 String nameColony = file.getColony();
@@ -236,8 +446,8 @@ public class UploadServiceImpl implements IUploadService {
         city.getColonies().add(setColony(nameColony, codePostal));
     }
 
-    private DtoInFileExcel reedCells(Iterator<Cell> cellsInRow) {
-        DtoInFileExcel file = new DtoInFileExcel();
+    private DtoInDemographicExcelFile reedCells(Iterator<Cell> cellsInRow) {
+        DtoInDemographicExcelFile file = new DtoInDemographicExcelFile();
         int cellIdx = 0;
         while (cellsInRow.hasNext()) {
             Cell currentCell = cellsInRow.next();

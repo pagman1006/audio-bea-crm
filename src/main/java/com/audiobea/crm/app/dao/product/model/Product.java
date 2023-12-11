@@ -24,7 +24,6 @@ public class Product implements Serializable {
 	private String title;
 	private String description;
 	private Integer stock;
-	private String productTypeId;
 
 	@DocumentReference
 	private ProductType productType;
@@ -34,11 +33,8 @@ public class Product implements Serializable {
 	@DocumentReference
 	private List<ProductRanking> rankings;
 
-	@DocumentReference
-	private Brand brand;
-
-	@DocumentReference
-	private SubBrand subBrand;
+	private String brandId;
+	private String subBrandId;
 
 	private boolean productNew;
 	private boolean enabled;

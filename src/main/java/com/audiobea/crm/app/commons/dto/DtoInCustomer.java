@@ -22,6 +22,7 @@ public class DtoInCustomer implements Serializable {
 	@NotEmpty
 	private String name;
 	private String lastName;
+
 	@JsonFormat(pattern = "yyyy-MM-dd")
 	@DateTimeFormat(pattern = "yyyy-MM-dd")
 	private Date birthday;

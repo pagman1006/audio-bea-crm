@@ -20,6 +20,7 @@ public class DtoInAddress implements Serializable {
 	private String street;
 	private String outdoorNumber;
 	private String indoorNumber;
-	
+	private DtoInState state;
+	private DtoInCity city;
 	private DtoInColony colony;
 }

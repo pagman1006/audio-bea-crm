@@ -22,9 +22,6 @@ public class SubBrand implements Serializable {
 	private String brandId;
 
 	@DocumentReference
-	private Brand brand;
-
-	@DocumentReference
 	private List<Product> products;
 
 	private boolean enabled;
