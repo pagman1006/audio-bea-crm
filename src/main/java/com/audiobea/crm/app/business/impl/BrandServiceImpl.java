@@ -22,8 +22,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.stream.Collectors;
 
-@Service
 @Slf4j
+@Service
 @AllArgsConstructor
 @Transactional(readOnly = true)
 public class BrandServiceImpl implements IBrandService {

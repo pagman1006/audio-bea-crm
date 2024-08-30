@@ -6,6 +6,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.DocumentReference;
+import org.springframework.lang.NonNull;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -27,7 +28,7 @@ public class State implements Serializable, Comparable<State> {
 	private List<City> cities;
 
 	@Override
-	public int compareTo(State s) {
+	public int compareTo(@NonNull State s) {
 		if (StringUtils.isBlank(name) || StringUtils.isBlank(s.getName())) {
 			return 0;
 

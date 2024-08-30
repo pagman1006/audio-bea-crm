@@ -65,7 +65,7 @@ public class DemographicServiceImpl implements IDemographicService {
     @Override
     public ResponseData<DtoInCity> getCitiesByStateId(String stateId, Integer page, Integer pageSize) {
         Pageable pageable = PageRequest.of(page, pageSize, Sort.by("name"));
-        log.debug("StateId: " + stateId);
+        log.debug("StateId: {}", stateId);
         Page<City> pageCities = null;
         if (StringUtils.isNotBlank(stateId)) {
             if (stateId.equalsIgnoreCase(Constants.ALL)) {
@@ -90,7 +90,7 @@ public class DemographicServiceImpl implements IDemographicService {
         if (StringUtils.isNotBlank(stateId) && StringUtils.isNotBlank(cityId)) {
             if (stateId.equalsIgnoreCase(Constants.ALL)) {
                 if (cityId.equalsIgnoreCase(Constants.ALL)) {
-                    log.debug("State: All, City: All, Colony: " + colonyName + " Postal Code: " + postalCode);
+                    log.debug("State: All, City: All, Colony: {},  Postal Code: {}", colonyName, postalCode);
                     pageColonies = colonyDao.findAllByColonyOrPostalCode(colonyName, postalCode, pageable);
                 } else {
                     pageColonies = colonyDao.findByCityId(cityId, colonyName, postalCode, pageable);

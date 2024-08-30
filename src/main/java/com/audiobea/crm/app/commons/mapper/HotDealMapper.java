@@ -1,15 +1,15 @@
 package com.audiobea.crm.app.commons.mapper;
 
 import com.audiobea.crm.app.commons.dto.DtoInHotdeal;
-import com.audiobea.crm.app.dao.product.model.Hotdeal;
+import com.audiobea.crm.app.dao.product.model.HotDeal;
 import com.audiobea.crm.app.utils.Constants;
 import org.mapstruct.Mapper;
 
 @Mapper(componentModel = Constants.SPRING)
-public interface HotdealMapper {
+public interface HotDealMapper {
 	
-	DtoInHotdeal hotdealToDtoInHotdeal(Hotdeal hotdeal);
+	DtoInHotdeal hotdealToDtoInHotdeal(HotDeal hotDeal);
 	
-	Hotdeal hotdealDtoInToHotdeal(DtoInHotdeal hotdeal);
+	HotDeal hotdealDtoInToHotdeal(DtoInHotdeal hotDeal);
 
 }

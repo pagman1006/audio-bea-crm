@@ -6,10 +6,10 @@ import com.audiobea.crm.app.commons.I18Constants;
 import com.audiobea.crm.app.commons.ResponseData;
 import com.audiobea.crm.app.commons.dto.DtoInHotdeal;
 import com.audiobea.crm.app.commons.dto.DtoInProduct;
-import com.audiobea.crm.app.commons.mapper.HotdealMapper;
+import com.audiobea.crm.app.commons.mapper.HotDealMapper;
 import com.audiobea.crm.app.commons.mapper.ProductMapper;
 import com.audiobea.crm.app.core.exception.NoSuchElementFoundException;
-import com.audiobea.crm.app.dao.product.IHotdealDao;
+import com.audiobea.crm.app.dao.product.IHotDealDao;
 import com.audiobea.crm.app.dao.product.IProductDao;
 import com.audiobea.crm.app.dao.product.model.Product;
 import com.audiobea.crm.app.dao.product.model.ProductImage;
@@ -38,9 +38,9 @@ public class ProductServiceImpl implements IProductService {
 
     private IUploadService uploadService;
     private IProductDao productDao;
-    private IHotdealDao hotDealDao;
+    private IHotDealDao hotDealDao;
     private ProductMapper productMapper;
-    private HotdealMapper hotdealMapper;
+    private HotDealMapper hotdealMapper;
 
     private MessageSource messageSource;
 

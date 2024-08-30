@@ -1,8 +1,0 @@
-package com.audiobea.crm.app.dao.product;
-
-import com.audiobea.crm.app.dao.product.model.Hotdeal;
-import org.springframework.data.mongodb.repository.MongoRepository;
-
-public interface IHotdealDao extends MongoRepository<Hotdeal, String> {
-
-}

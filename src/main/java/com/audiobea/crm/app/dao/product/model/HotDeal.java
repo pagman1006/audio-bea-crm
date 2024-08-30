@@ -11,8 +11,8 @@ import java.io.Serializable;
 import java.util.Date;
 
 @Data
-@Document("hotdeal")
-public class Hotdeal implements Serializable {
+@Document("hot-deal")
+public class HotDeal implements Serializable {
 
 	@Serial
 	private static final long serialVersionUID = 1L;
@@ -22,6 +22,6 @@ public class Hotdeal implements Serializable {
 	private String name;
 	@JsonFormat(pattern = "yyyy-MM-dd")
 	@DateTimeFormat(pattern = "yyyy-MM-dd")
-	private Date hotdeal;
+	private Date hotDeal;
 
 }
