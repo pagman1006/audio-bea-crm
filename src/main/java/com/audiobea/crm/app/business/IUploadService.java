@@ -1,6 +1,8 @@
 package com.audiobea.crm.app.business;
 
+import com.audiobea.crm.app.commons.ResponseData;
 import com.audiobea.crm.app.commons.dto.DtoInFileResponse;
+import com.audiobea.crm.app.commons.dto.DtoInProduct;
 import com.audiobea.crm.app.core.exception.NoSuchFileException;
 import org.springframework.core.io.Resource;
 import org.springframework.web.multipart.MultipartFile;
@@ -25,4 +27,5 @@ public interface IUploadService {
 
     List<String> uploadFiles(MultipartFile[] files);
 
+    ResponseData<DtoInProduct> uploadProducts(MultipartFile file);
 }

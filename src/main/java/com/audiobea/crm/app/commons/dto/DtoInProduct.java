@@ -1,6 +1,5 @@
 package com.audiobea.crm.app.commons.dto;
 
-import com.audiobea.crm.app.dao.product.model.ProductRanking;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.Data;
 
@@ -22,11 +21,11 @@ public class DtoInProduct implements Serializable {
 	private String title;
 	private String description;
 	private Integer stock;
-	private String productTypeId;
+	private DtoInProductType productType;
 	private List<DtoInProductImage> images;
-	private List<ProductRanking> rankings;
-	private String brandId;
-	private String subBrandId;
+	private List<DtoInProductRanking> rankings;
+	private DtoInBrand brand;
+	private DtoInSubBrand subBrand;
 	private boolean productNew;
 	
 	private boolean enabled;

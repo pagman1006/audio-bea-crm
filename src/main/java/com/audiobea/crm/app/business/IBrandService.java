@@ -9,6 +9,8 @@ public interface IBrandService {
 
     DtoInBrand getBrandById(String brandId);
 
+    DtoInBrand getBrandByName(String brandName);
+
     DtoInBrand saveBrand(DtoInBrand brand);
 
     DtoInBrand updateBrand(String brandId, DtoInBrand brand);

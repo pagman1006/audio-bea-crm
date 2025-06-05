@@ -12,6 +12,6 @@ public interface StateMapper {
 
     DtoInState stateToDtoInState(State state);
 
-    @Mapping(ignore = true, target = "cities")
+    @Mapping(target = "cities", ignore = true)
     State dtoIntStateToState(DtoInState dtoState);
 }

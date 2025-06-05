@@ -7,6 +7,7 @@ import lombok.Data;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.util.List;
 
 @Data
 @JsonInclude(Include.NON_NULL)
@@ -18,5 +19,7 @@ public class DtoInCity implements Serializable {
 	private String id;
 	@NotEmpty
 	private String name;
-	
+	private String stateId;
+
+	private List<DtoInColony> colonies;
 }

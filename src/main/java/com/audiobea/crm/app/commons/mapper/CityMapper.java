@@ -9,6 +9,7 @@ import org.mapstruct.ReportingPolicy;
 @Mapper(componentModel = Constants.SPRING, unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface CityMapper {
 
+
     DtoInCity cityToDtoInCity(City city);
 
     City dtoIntCityToCity(DtoInCity city);

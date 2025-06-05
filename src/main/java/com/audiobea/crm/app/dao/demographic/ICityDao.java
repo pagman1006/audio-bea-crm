@@ -10,12 +10,18 @@ import java.util.List;
 
 public interface ICityDao extends MongoRepository<City, String> {
 
-	@Query(value = "{'_id': {'$in': ?0}}")
-	Page<City> findByStateIdIn(List<String> names, Pageable pageable);
+	@Query(value = "{'name': {$regex: ?0, $options: 'i'}}")
+	List<City> findAllByName(String name);
+
+	Page<City> findByNameContaining(String name, Pageable pageable);
+
+	@Query(value = "{'stateId': ?0, 'name': {'$regex': ?1, '$options': 'i'}}")
+	Page<City> findByStateIdAndName(String stateId, String name, Pageable pageable);
 
 	@Query(value = "{'_id': {'$in': ?0}}")
 	List<City> findAllByStateIdIn(List<String> names);
 
 	@Query(value = "{'stateId': ?0}")
 	Page<City> findByStateId(String stateId, Pageable pageable);
+
 }

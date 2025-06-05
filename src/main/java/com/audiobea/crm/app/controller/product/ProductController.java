@@ -24,15 +24,15 @@ public class ProductController {
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<ResponseData<DtoInProduct>> getProducts(
-			@RequestParam(name = "productType", required = false) String productType,
-			@RequestParam(name = "productName", required = false) String productName,
+			@RequestParam(name = "productType", required = false, defaultValue = "") String productType,
+			@RequestParam(name = "productName", required = false, defaultValue = "") String productName,
 			@RequestParam(name = "brand", required = false, defaultValue = "") String brand,
-			@RequestParam(value = "subBrand", required = false, defaultValue = "") String subBrand,
+			@RequestParam(name = "subBrand", required = false, defaultValue = "") String subBrand,
 			@RequestParam(name = "newProduct", required = false) boolean newProduct,
 			@RequestParam(name = "page", defaultValue = "0", required = false) Integer page,
 			@RequestParam(name = "pageSize", defaultValue = "10", required = false) Integer pageSize) {
-		log.debug("getProducts");
-		log.debug("PageSize: {}", pageSize);
+		log.debug("getProducts: {}, {}, {}, {}, {}, {}, {}.", productName, productType, newProduct, brand, subBrand,
+				  page, pageSize);
 		return new ResponseEntity<>(
 				productService.getProducts(productName, productType, newProduct, brand, subBrand, page, pageSize),
 				HttpStatus.OK);

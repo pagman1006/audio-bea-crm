@@ -11,7 +11,7 @@ public interface IDemographicService {
 
     DtoInState getStateById(String stateId);
 
-    ResponseData<DtoInCity> getCitiesByStateId(String stateId, Integer page, Integer pageSize);
+    ResponseData<DtoInCity> getCitiesByStateId(String stateId, String cityName, Integer page, Integer pageSize);
 
     ResponseData<DtoInColony> findColoniesByStateIdAndCityId(String stateId, String cityId, String colonyName, String postalCode, Integer page, Integer pageSize);
 

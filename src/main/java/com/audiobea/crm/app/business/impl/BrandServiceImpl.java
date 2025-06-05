@@ -45,13 +45,21 @@ public class BrandServiceImpl implements IBrandService {
         }
         Validator.validatePage(pageBrand, messageSource);
         return new ResponseData<>(pageBrand.getContent().stream().map(b -> brandMapper.brandToDtoInBrand(b))
-                .collect(Collectors.toList()), pageBrand);
+                                           .collect(Collectors.toList()), pageBrand);
     }
 
     @Override
     public DtoInBrand getBrandById(String brandId) {
-        return brandMapper.brandToDtoInBrand(brandDao.findById(brandId).orElseThrow(() -> new NoSuchElementFoundException(
-                Utils.getLocalMessage(messageSource, I18Constants.NO_ITEM_FOUND.getKey(), brandId))));
+        return brandMapper.brandToDtoInBrand(
+                brandDao.findById(brandId).orElseThrow(() -> new NoSuchElementFoundException(
+                        Utils.getLocalMessage(messageSource, I18Constants.NO_ITEM_FOUND.getKey(), brandId))));
+    }
+
+    @Override
+    public DtoInBrand getBrandByName(String brandName) {
+        return brandMapper.brandToDtoInBrand(brandDao.findByBrandName(brandName)
+                                                     .orElseThrow(() -> new NoSuchElementFoundException(
+                                                             Utils.getLocalMessage(messageSource, I18Constants.NO_ITEM_FOUND.getKey(), brandName))));
     }
 
     @Transactional

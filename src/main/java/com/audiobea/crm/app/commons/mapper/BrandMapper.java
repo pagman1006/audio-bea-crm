@@ -8,7 +8,7 @@ import org.mapstruct.Mapper;
 @Mapper(componentModel = Constants.SPRING)
 public interface BrandMapper {
 
-    DtoInBrand brandToDtoInBrand(Brand brands);
+    DtoInBrand brandToDtoInBrand(Brand brand);
 
-    Brand brandDtoInToBrand(DtoInBrand dtoBrands);
+    Brand brandDtoInToBrand(DtoInBrand dtoBrand);
 }

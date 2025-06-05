@@ -29,7 +29,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -52,37 +51,48 @@ public class DemographicServiceImpl implements IDemographicService {
         List<State> listStates = stateDao.findAll();
         Validator.validateList(listStates, messageSource);
         ResponseData<DtoInState> response = new ResponseData<>();
-        response.setData(listStates.stream().map(state -> stateMapper.stateToDtoInState(state)).collect(Collectors.toList()));
+        response.setData(
+                listStates.stream().map(state -> stateMapper.stateToDtoInState(state)).collect(Collectors.toList()));
         return response;
     }
 
     @Override
     public DtoInState getStateById(String stateId) {
-        return stateMapper.stateToDtoInState(stateDao.findById(stateId).orElseThrow(() -> new NoSuchElementFoundException(
-                Utils.getLocalMessage(messageSource, I18Constants.NO_ITEM_FOUND.getKey(), stateId))));
+        return stateMapper.stateToDtoInState(
+                stateDao.findById(stateId).orElseThrow(() -> new NoSuchElementFoundException(
+                        Utils.getLocalMessage(messageSource, I18Constants.NO_ITEM_FOUND.getKey(), stateId))));
     }
 
     @Override
-    public ResponseData<DtoInCity> getCitiesByStateId(String stateId, Integer page, Integer pageSize) {
+    public ResponseData<DtoInCity> getCitiesByStateId(String stateId, String cityName, Integer page, Integer pageSize) {
         Pageable pageable = PageRequest.of(page, pageSize, Sort.by("name"));
-        log.debug("StateId: {}", stateId);
+        log.debug("StateId: " + stateId);
         Page<City> pageCities = null;
         if (StringUtils.isNotBlank(stateId)) {
             if (stateId.equalsIgnoreCase(Constants.ALL)) {
-                pageCities = cityDao.findAll(pageable);
+                log.debug("City: {}", cityName);
+                pageCities = StringUtils.isBlank(cityName) ? cityDao.findAll(pageable)
+                        : cityDao.findByNameContaining(cityName.toUpperCase(), pageable);
             } else {
-                log.debug("Return Cities from state id: {}", stateId);
-                pageCities = cityDao.findByStateId(stateId, pageable);
+                log.debug("Return Cities from state id: {}, cityName: {}", stateId, cityName.toUpperCase());
+                pageCities = StringUtils.isBlank(cityName) ? cityDao.findByStateId(stateId, pageable)
+                        : cityDao.findByStateIdAndName(stateId, cityName.toUpperCase(), pageable);
             }
         }
         Validator.validatePage(pageCities, messageSource);
         return new ResponseData<>(pageCities.getContent().stream().map(city -> cityMapper.cityToDtoInCity(city))
-                .collect(Collectors.toList()), pageCities);
+                                            .collect(Collectors.toList()), pageCities);
     }
 
     @Override
-    public ResponseData<DtoInColony> findColoniesByStateIdAndCityId(String stateId, String cityId, String colonyName, String postalCode, Integer page, Integer pageSize) {
+    public ResponseData<DtoInColony> findColoniesByStateIdAndCityId(String stateId, String cityId, String colonyName,
+            String postalCode, Integer page, Integer pageSize)
+    {
         log.debug("StateId: {}, cityId: {}, colonyName: {}, postalCode: {}", stateId, cityId, colonyName, postalCode);
+        if (StringUtils.isBlank(stateId) || StringUtils.isBlank(cityId)) {
+            throw new IllegalArgumentException(
+                    Utils.getLocalMessage(messageSource, I18Constants.INVALID_PARAMETERS.getKey(), stateId, cityId));
+        }
         Pageable pageable = PageRequest.of(page, pageSize, Sort.by("name"));
         postalCode = StringUtils.isNotBlank(postalCode) ? postalCode : "";
         colonyName = StringUtils.isNotBlank(colonyName) ? colonyName : "";
@@ -90,7 +100,7 @@ public class DemographicServiceImpl implements IDemographicService {
         if (StringUtils.isNotBlank(stateId) && StringUtils.isNotBlank(cityId)) {
             if (stateId.equalsIgnoreCase(Constants.ALL)) {
                 if (cityId.equalsIgnoreCase(Constants.ALL)) {
-                    log.debug("State: All, City: All, Colony: {},  Postal Code: {}", colonyName, postalCode);
+                    log.debug("State: All, City: All, Colony: " + colonyName + " Postal Code: " + postalCode);
                     pageColonies = colonyDao.findAllByColonyOrPostalCode(colonyName, postalCode, pageable);
                 } else {
                     pageColonies = colonyDao.findByCityId(cityId, colonyName, postalCode, pageable);
@@ -101,30 +111,48 @@ public class DemographicServiceImpl implements IDemographicService {
             }
         }
         Validator.validatePage(pageColonies, messageSource);
-        return new ResponseData<>(pageColonies.getContent().stream().map(colony -> colonyMapper.colonyToDtoInColony(colony))
-                .collect(Collectors.toList()), pageColonies);
+        return new ResponseData<>(
+                pageColonies.getContent().stream().map(colony -> colonyMapper.colonyToDtoInColony(colony))
+                            .collect(Collectors.toList()), pageColonies);
     }
 
     @Override
-    public ResponseData<DtoInColony> getAllColonies(String stateName, String cityName, String colonyName, String postalCode, Integer page, Integer pageSize) {
+    public ResponseData<DtoInColony> getAllColonies(String stateName, String cityName, String colonyName,
+            String postalCode, Integer page, Integer pageSize)
+    {
         log.debug("State: {}, city: {}, colony: {}, postalCode: {}", stateName, cityName, colonyName, postalCode);
         Pageable pageable = PageRequest.of(page, pageSize, Sort.by("name"));
-        Page<Colony> pageColonies;
-        List<City> listCities;
-        List<String> names = new ArrayList<>();
-
-        if (StringUtils.isNotBlank(stateName)) {
-            List<State> listState = stateDao.findAllByName(stateName);
-            listState.forEach(state -> state.getCities().forEach(city -> names.add(city.getId())));
-            listCities = cityDao.findAllByStateIdIn(names);
-            listCities.forEach(city -> city.getColonies().forEach(col -> names.add(col.getId())));
-        }
-        if (names.isEmpty()) {
+        Page<Colony> pageColonies = null;
+        if (StringUtils.isBlank(stateName) && StringUtils.isBlank(cityName)) {
+            log.debug("State blank and city blank");
             pageColonies = colonyDao.findAllByColonyOrPostalCode(colonyName, postalCode, pageable);
+        } else if (StringUtils.isNotBlank(stateName)) {
+            log.debug("State: {}", stateName);
+            List<State> states = stateDao.findAllByName(stateName.toUpperCase());
+            Validator.validateList(states, messageSource);
+            pageColonies = colonyDao.findByStateIdInAndNameContainingAndPostalCodeContaining(
+                    states.stream().map(State::getId).toList(), colonyName,
+                    postalCode, pageable);
+        } else if (StringUtils.isNotBlank(cityName)) {
+            log.debug("City: {}", cityName);
+            List<City> cities = cityDao.findAllByName(cityName.toUpperCase());
+            Validator.validateList(cities, messageSource);
+            pageColonies = colonyDao.findByCityIdInAndNameContainingAndPostalCodeContaining(
+                    cities.stream().map(City::getId).toList(), colonyName, postalCode, pageable);
         } else {
-            pageColonies = colonyDao.findByCityId(names, colonyName, postalCode, pageable);
+            log.debug("State: {}, city: {}", stateName, cityName);
+            List<State> states = stateDao.findAllByName(stateName.toUpperCase());
+            Validator.validateList(states, messageSource);
+            List<City> cities = cityDao.findAllByName(cityName.toUpperCase());
+            Validator.validateList(cities, messageSource);
+            pageColonies = colonyDao.findByStateIdInAndCityIdInAndNameContainingAndPostalCodeContaining(
+                    states.stream().map(State::getId).toList(), cities.stream().map(City::getId).toList(),
+                    colonyName, postalCode, pageable);
         }
         Validator.validatePage(pageColonies, messageSource);
-        return new ResponseData<>(pageColonies.getContent().stream().map(c -> colonyMapper.colonyToDtoInColony(c)).collect(Collectors.toList()), pageColonies);
+        return new ResponseData<>(pageColonies.getContent()
+                                              .stream()
+                                              .map(c -> colonyMapper.colonyToDtoInColony(c))
+                                              .collect(Collectors.toList()), pageColonies);
     }
 }

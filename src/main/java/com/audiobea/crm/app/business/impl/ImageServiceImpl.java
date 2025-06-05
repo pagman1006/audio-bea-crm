@@ -33,4 +33,9 @@ public class ImageServiceImpl implements IImageService {
                 .collect(Collectors.toList()), null, null, null, null);
     }
 
+    @Override
+    public DtoInImage addImageCollection(DtoInImage image) {
+        return imageMapper.imageToDtoInImage(imageDao.save(imageMapper.imageDtoInToImage(image)));
+    }
+
 }

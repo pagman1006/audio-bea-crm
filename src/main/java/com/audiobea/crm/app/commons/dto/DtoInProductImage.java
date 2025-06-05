@@ -17,6 +17,7 @@ public class DtoInProductImage implements Serializable {
 	private String id;
 	private String imageName;
 	private boolean selected;
+	private String productId;
 	
 	public DtoInProductImage() {
 		super();

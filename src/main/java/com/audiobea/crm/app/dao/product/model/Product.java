@@ -24,11 +24,12 @@ public class Product implements Serializable {
 	private String title;
 	private String description;
 	private Integer stock;
-	private String productTypeId;
+
+	@DocumentReference
+	private ProductType productType;
 
 	@DocumentReference
 	private List<ProductImage> images;
-
 	@DocumentReference
 	private List<ProductRanking> rankings;
 

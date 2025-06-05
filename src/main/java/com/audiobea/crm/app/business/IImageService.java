@@ -6,4 +6,6 @@ import com.audiobea.crm.app.commons.dto.DtoInImage;
 public interface IImageService {
 
 	ResponseData<DtoInImage> getImageCollection();
+
+    DtoInImage addImageCollection(DtoInImage image);
 }
