@@ -47,7 +47,7 @@ public class SubBrandServiceImpl implements ISubBrandService {
         Page<SubBrand> pageSubBrand = null;
         if (StringUtils.isNotBlank(brandId)) {
             if (brandId.equalsIgnoreCase(Constants.ALL)) {
-                log.debug("BrandId: " + brandId);
+                log.debug("BrandId: {}", brandId);
                 pageSubBrand = subBrandDao.findSubBrandBySubBrandNameContains(subBrand.toUpperCase(), pageable);
             } else {
                 pageSubBrand = subBrandDao.findSubBrandByBrandIdAndSubBrandNameContains(brandId, subBrand.toUpperCase(), pageable);

@@ -75,7 +75,7 @@ public class JWTServiceImpl implements IJWTService {
 
 	@Override
 	public String resolve(String token) {
-		log.debug("getRoles authentication");
+		log.debug("Resolve getRoles authentication");
 		if (token != null && token.startsWith(TOKEN_PREFIX)) {
 			return token.replace(TOKEN_PREFIX, "");
 		}

@@ -22,6 +22,6 @@ public interface IProductService {
 
     DtoInHotdeal getHotDeal();
 
-    DtoInHotdeal saveHotDeal(DtoInHotdeal hotdeal);
+    DtoInHotdeal saveHotDeal(DtoInHotdeal hotDeal);
 
 }

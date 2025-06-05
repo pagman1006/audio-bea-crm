@@ -94,15 +94,21 @@ public class DemographicServiceImpl implements IDemographicService {
                     Utils.getLocalMessage(messageSource, I18Constants.INVALID_PARAMETERS.getKey(), stateId, cityId));
         }
         Pageable pageable = PageRequest.of(page, pageSize, Sort.by("name"));
-        Page<Colony> pageColonies;
-        if (stateId.equalsIgnoreCase(Constants.ALL)) {
-            pageColonies = cityId.equalsIgnoreCase(Constants.ALL) ?
-                    colonyDao.findAllByColonyOrPostalCode(colonyName, postalCode, pageable)
-                    : colonyDao.findByCityId(cityId, colonyName, postalCode, pageable);
-        } else {
-            pageColonies = cityId.equalsIgnoreCase(Constants.ALL) ?
-                    colonyDao.findByStateId(stateId, colonyName, postalCode, pageable)
-                    : colonyDao.findByStateIdAndCityId(stateId, cityId, colonyName, postalCode, pageable);
+        postalCode = StringUtils.isNotBlank(postalCode) ? postalCode : "";
+        colonyName = StringUtils.isNotBlank(colonyName) ? colonyName : "";
+        Page<Colony> pageColonies = null;
+        if (StringUtils.isNotBlank(stateId) && StringUtils.isNotBlank(cityId)) {
+            if (stateId.equalsIgnoreCase(Constants.ALL)) {
+                if (cityId.equalsIgnoreCase(Constants.ALL)) {
+                    log.debug("State: All, City: All, Colony: " + colonyName + " Postal Code: " + postalCode);
+                    pageColonies = colonyDao.findAllByColonyOrPostalCode(colonyName, postalCode, pageable);
+                } else {
+                    pageColonies = colonyDao.findByCityId(cityId, colonyName, postalCode, pageable);
+                }
+            } else {
+                log.debug("State: {} City: {}, Colony: {}, Postal Code: {}", stateId, cityId, colonyName, postalCode);
+                pageColonies = colonyDao.findByStateIdAndCityId(stateId, cityId, colonyName, postalCode, pageable);
+            }
         }
         Validator.validatePage(pageColonies, messageSource);
         return new ResponseData<>(
