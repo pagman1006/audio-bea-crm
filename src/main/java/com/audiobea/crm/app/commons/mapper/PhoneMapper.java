@@ -1,15 +1,14 @@
-package com.audiobea.crm.app.controller.mapper;
-
-import org.apache.commons.lang.StringUtils;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.Named;
+package com.audiobea.crm.app.commons.mapper;
 
 import com.audiobea.crm.app.commons.dto.DtoInPhone;
 import com.audiobea.crm.app.commons.dto.EnumPhoneType;
 import com.audiobea.crm.app.dao.customer.model.Phone;
 import com.audiobea.crm.app.dao.customer.model.PhoneType;
 import com.audiobea.crm.app.utils.Constants;
+import org.apache.commons.lang3.StringUtils;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.Named;
 
 @Mapper(componentModel = Constants.SPRING)
 public interface PhoneMapper {

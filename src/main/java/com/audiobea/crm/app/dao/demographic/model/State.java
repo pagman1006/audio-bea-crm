@@ -1,47 +1,37 @@
 package com.audiobea.crm.app.dao.demographic.model;
 
+import lombok.Data;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
+import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.DocumentReference;
+import org.springframework.lang.NonNull;
+
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.List;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
-import javax.validation.constraints.Size;
-
-import org.apache.commons.lang.StringUtils;
-
-import lombok.Data;
-
 @Data
-@Entity
-@Table(name = "states")
+@Document("states")
 public class State implements Serializable, Comparable<State> {
-	
+
+	@Serial
 	private static final long serialVersionUID = 1L;
-	
+
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
-	
-	@Size(min = 3, max = 60)
-	@Column(length = 60)
+	private String id;
+	@Indexed(unique = true)
 	private String name;
-	
-	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-	@JoinColumn(name = "state_id")
+
+	@DocumentReference(lazy = true)
 	private List<City> cities;
 
 	@Override
-	public int compareTo(State s) {
+	public int compareTo(@NonNull State s) {
 		if (StringUtils.isBlank(name) || StringUtils.isBlank(s.getName())) {
 			return 0;
+
 		}
 		return name.compareTo(s.getName());
 	}

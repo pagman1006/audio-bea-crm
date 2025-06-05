@@ -1,21 +1,27 @@
 package com.audiobea.crm.app.dao.demographic;
 
+import com.audiobea.crm.app.dao.demographic.model.City;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.PagingAndSortingRepository;
+import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.data.mongodb.repository.Query;
 
-import com.audiobea.crm.app.dao.demographic.model.City;
-import com.audiobea.crm.app.utils.Constants;
+import java.util.List;
 
-public interface ICityDao extends PagingAndSortingRepository<City, Long> {
+public interface ICityDao extends MongoRepository<City, String> {
 
-	City findByName(String name);
+	@Query(value = "{'name': {$regex: ?0, $options: 'i'}}")
+	List<City> findAllByName(String name);
 
-	@Query(value = Constants.FIND_CITIES_BY_STATE_ID, nativeQuery = true)
-	Page<City> findByStateId(Long stateId, Pageable pageable);
+	Page<City> findByNameContaining(String name, Pageable pageable);
 
-	@Query(value = Constants.FIND_CITIES_BY_STATE_NAME_CITY_NAME, nativeQuery = true)
-	Page<City> findByStateNameAndCityName(String state, String city, Pageable pageable);
+	@Query(value = "{'stateId': ?0, 'name': {'$regex': ?1, '$options': 'i'}}")
+	Page<City> findByStateIdAndName(String stateId, String name, Pageable pageable);
+
+	@Query(value = "{'_id': {'$in': ?0}}")
+	List<City> findAllByStateIdIn(List<String> names);
+
+	@Query(value = "{'stateId': ?0}")
+	Page<City> findByStateId(String stateId, Pageable pageable);
 
 }

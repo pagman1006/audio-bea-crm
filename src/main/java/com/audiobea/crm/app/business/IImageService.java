@@ -1,10 +1,11 @@
 package com.audiobea.crm.app.business;
 
-import java.util.List;
-
-import com.audiobea.crm.app.dao.product.model.Image;
+import com.audiobea.crm.app.commons.ResponseData;
+import com.audiobea.crm.app.commons.dto.DtoInImage;
 
 public interface IImageService {
 
-	public List<Image> getImageCollection();
+	ResponseData<DtoInImage> getImageCollection();
+
+    DtoInImage addImageCollection(DtoInImage image);
 }

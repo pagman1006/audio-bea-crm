@@ -1,67 +1,42 @@
 package com.audiobea.crm.app.dao.product.model;
 
+import lombok.Data;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.DocumentReference;
+
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.List;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
-import javax.validation.constraints.Size;
-
-import lombok.Data;
-
 @Data
-@Entity
-@Table(name = "products")
+@Document("products")
 public class Product implements Serializable {
 
+	@Serial
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "product_id")
-	private Long id;
-
-	@Size(min = 3, max = 60)
-	@Column(length = 60)
+	private String id;
 	private String productName;
-
 	private Double price;
 	private Double discount;
-	
-	@Size(min = 3, max = 60)
-	@Column(length = 60)
 	private String title;
 	private String description;
 	private Integer stock;
-	
-	@OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-	@JoinColumn(name = "product_type_id")
+
+	@DocumentReference
 	private ProductType productType;
-	
-	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-	@JoinColumn(name = "product_id")
+
+	@DocumentReference
 	private List<ProductImage> images;
-	
-	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-	@JoinColumn(name = "product_id")
+	@DocumentReference
 	private List<ProductRanking> rankings;
-	
-	@ManyToOne
-	@JoinColumn(name = "sub_brand_id")
-	private SubBrand subBrand;
-	
-	private boolean newProduct;
-	
+
+	private String brandId;
+	private String subBrandId;
+
+	private boolean productNew;
 	private boolean enabled;
 
 }

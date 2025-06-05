@@ -1,23 +1,19 @@
 package com.audiobea.crm.app.business;
 
-import java.util.List;
-
-import org.springframework.data.domain.Page;
-
-import com.audiobea.crm.app.dao.demographic.model.City;
-import com.audiobea.crm.app.dao.demographic.model.Colony;
-import com.audiobea.crm.app.dao.demographic.model.State;
+import com.audiobea.crm.app.commons.ResponseData;
+import com.audiobea.crm.app.commons.dto.DtoInCity;
+import com.audiobea.crm.app.commons.dto.DtoInColony;
+import com.audiobea.crm.app.commons.dto.DtoInState;
 
 public interface IDemographicService {
 
-	List<State> getStates();
+    ResponseData<DtoInState> getStates();
 
-	Page<City> getAllCities(String state, String city, Integer page, Integer pageSize);
+    DtoInState getStateById(String stateId);
 
-	Page<City> getCitiesByStateId(String stateId, Integer page, Integer pageSize);
+    ResponseData<DtoInCity> getCitiesByStateId(String stateId, String cityName, Integer page, Integer pageSize);
 
-	Page<Colony> findColoniesByStateIdAndCityId(String stateId, String cityId, String colonyName, String postalCode, Integer page,
-			Integer pageSize);
+    ResponseData<DtoInColony> findColoniesByStateIdAndCityId(String stateId, String cityId, String colonyName, String postalCode, Integer page, Integer pageSize);
 
-	Page<Colony> getAllColonies(String state, String city, String colony, String codePostal, Integer page, Integer pageSize);
+    ResponseData<DtoInColony> getAllColonies(String state, String city, String colony, String postalCode, Integer page, Integer pageSize);
 }

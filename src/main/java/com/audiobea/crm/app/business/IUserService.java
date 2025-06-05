@@ -1,19 +1,18 @@
 package com.audiobea.crm.app.business;
 
-import org.springframework.data.domain.Page;
-
-import com.audiobea.crm.app.dao.user.model.User;
+import com.audiobea.crm.app.commons.ResponseData;
+import com.audiobea.crm.app.commons.dto.DtoInUser;
 
 public interface IUserService {
 
-	public Page<User> getUsers(String username, String role, Integer page, Integer pageSize);
+	ResponseData<DtoInUser> getUsers(String username, String role, Integer page, Integer pageSize);
 
-	public User saveUser(User user);
+	DtoInUser saveUser(DtoInUser user);
 
-	public User getUserById(Long id);
+	DtoInUser getUserById(String id);
 
-	public User updateUser(Long id, User user);
+	DtoInUser updateUser(String id, DtoInUser user);
 
-	public boolean deleteUserById(Long id);
+	void deleteUserById(String id);
 
 }

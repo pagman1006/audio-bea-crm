@@ -1,31 +1,34 @@
 package com.audiobea.crm.app.dao.demographic;
 
+import com.audiobea.crm.app.dao.demographic.model.Colony;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.PagingAndSortingRepository;
+import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.data.mongodb.repository.Query;
 
-import com.audiobea.crm.app.dao.demographic.model.Colony;
-import com.audiobea.crm.app.utils.Constants;
+import java.util.List;
 
-public interface IColonyDao extends PagingAndSortingRepository<Colony, Long> {
+public interface IColonyDao extends MongoRepository<Colony, String> {
 
-	@Query(value = Constants.FIND_COLONIES, nativeQuery = true)
-	Page<Colony> findAllByColonyOrPostalCode(String colony, String postalCode, Pageable pageable);
+    @Query(value = "{'name': {$regex: ?0, $options: 'i'}, 'postalCode': {$regex: ?1}}")
+    Page<Colony> findAllByColonyOrPostalCode(String colonyName, String postalCode, Pageable pageable);
 
-	@Query(value = Constants.FIND_COLONIES_BY_CITY_ID, nativeQuery = true)
-	Page<Colony> findByCityId(Long cityId, String colony, String postalCode, Pageable pageable);
+    @Query(value = "{'cityId': ?0, 'name': {$regex: ?1, $options: 'i'}, 'postalCode': {$regex: ?2}}")
+    Page<Colony> findByCityId(String cityId, String colonyName, String postalCode, Pageable pageable);
 
-	@Query(value = Constants.FIND_COLONIES_BY_STATE_ID, nativeQuery = true)
-	Page<Colony> findByStateId(Long stateId, String colony, String postalCode, Pageable pageable);
+    @Query(value = "{'stateId': ?0, 'cityId': ?1, 'name': {$regex: ?2, $options: 'i'}, 'postalCode': {$regex: ?3}}")
+    Page<Colony> findByStateIdAndCityId(String stateId, String cityId, String colonyName, String postalCode,
+            Pageable pageable);
 
-//	@Query(value = Constants.FIND_COLONIES_BY_STATE_ID_CITY_ID, nativeQuery = true)
-//	Page<Colony> findByStateIdAndCityId(Long stateId, Long cityId, String postalCode, Pageable pageable);
+    @Query(value = "{'stateId': ?0, 'name': {$regex: ?1, $options: 'i'}, 'postalCode': {$regex: ?2}}")
+    Page<Colony> findByStateId(String stateId, String colonyName, String postalCode, Pageable pageable);
 
-	@Query(value = Constants.FIND_COLONIES_BY_STATE_ID_CITY_ID_CODE_POSTAL, nativeQuery = true)
-	Page<Colony> findByStateIdAndCityAndCodePostalId(Long stateId, Long cityId, String colony, String postalCode, Pageable pageable);
+    Page<Colony> findByStateIdInAndNameContainingAndPostalCodeContaining(List<String> states, String colonyName,
+            String postalCode, Pageable pageable);
 
-	@Query(value = Constants.FIND_COLONIES_BY_STATE_NAME_CITY_NAME_COLONY_NAME_CODE_POSTAL, nativeQuery = true)
-	Page<Colony> findAllByStateNameAndCityNameAndColonyNameCodePostal(String state, String city, String colony, String postalCode,
-			Pageable pageable);
+    Page<Colony> findByCityIdInAndNameContainingAndPostalCodeContaining(List<String> cities, String colonyName,
+            String postalCode, Pageable pageable);
+
+    Page<Colony> findByStateIdInAndCityIdInAndNameContainingAndPostalCodeContaining(List<String> states, List<String> cities,
+            String colonyName, String postalCode, Pageable pageable);
 }

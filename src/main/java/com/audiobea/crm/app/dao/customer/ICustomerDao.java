@@ -1,17 +1,14 @@
 package com.audiobea.crm.app.dao.customer;
 
+import com.audiobea.crm.app.dao.customer.model.Customer;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.repository.PagingAndSortingRepository;
+import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.data.mongodb.repository.Query;
 
-import com.audiobea.crm.app.dao.customer.model.Customer;
+public interface ICustomerDao extends MongoRepository<Customer, String> {
 
-public interface ICustomerDao extends PagingAndSortingRepository<Customer, Long> {
-
-	Page<Customer> findByFirstNameContains(String firstName, Pageable pageable);
-
-	Page<Customer> findByFirstLastNameContains(String firstLastName, Pageable pageable);
-
-	Page<Customer> findByFirstNameContainsAndFirstLastNameContains(String firstName, String firstLastName, Pageable pageable);
+	@Query(value = "{'name': {$regex: ?0, $options: 'i'}, 'lastName': {$regex: ?1, $options: 'i'}}")
+	Page<Customer> findByNameContainsAndLastNameContains(String name, String lastName, Pageable pageable);
 
 }

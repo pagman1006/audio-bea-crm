@@ -1,8 +1,7 @@
 package com.audiobea.crm.app.dao.demographic;
 
-import org.springframework.data.repository.PagingAndSortingRepository;
-
 import com.audiobea.crm.app.dao.demographic.model.Address;
+import org.springframework.data.mongodb.repository.MongoRepository;
 
-public interface IAddressDao extends PagingAndSortingRepository<Address, Long> {
+public interface IAddressDao extends MongoRepository<Address, String> {
 }

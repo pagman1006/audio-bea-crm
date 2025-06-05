@@ -1,19 +1,18 @@
 package com.audiobea.crm.app.business;
 
-import org.springframework.data.domain.Page;
+import com.audiobea.crm.app.commons.ResponseData;
+import com.audiobea.crm.app.commons.dto.DtoInCustomer;
 import org.springframework.security.core.Authentication;
-
-import com.audiobea.crm.app.dao.customer.model.Customer;
 
 public interface ICustomerService {
 
-	Page<Customer> getCustomers(String firstName, String firstLastName, Integer page, Integer pageSize);
+	ResponseData<DtoInCustomer> getCustomers(String name, String lastName, Integer page, Integer pageSize);
 
-	Customer saveCustomer(Customer customer);
+	DtoInCustomer saveCustomer(DtoInCustomer customer);
 
-	Customer updateCustomer(Long customerId, Customer customer);
+	DtoInCustomer updateCustomer(String customerId, DtoInCustomer customer);
 
-	boolean deleteCustomer(Long customerId);
+	void deleteCustomer(String customerId);
 
-	Customer getCustomerById(Long customerId, Authentication auth);
+	DtoInCustomer getCustomerById(String customerId, Authentication auth);
 }
