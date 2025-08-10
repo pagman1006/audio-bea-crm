@@ -12,6 +12,7 @@ import com.audiobea.crm.app.commons.mapper.HotDealMapper;
 import com.audiobea.crm.app.commons.mapper.ProductMapper;
 import com.audiobea.crm.app.core.exception.NoSuchElementFoundException;
 import com.audiobea.crm.app.dao.product.*;
+import com.audiobea.crm.app.dao.product.model.IHotDealDao;
 import com.audiobea.crm.app.dao.product.model.Product;
 import com.audiobea.crm.app.dao.product.model.ProductImage;
 import com.audiobea.crm.app.dao.product.model.ProductRanking;
