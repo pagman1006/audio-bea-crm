@@ -13,7 +13,7 @@ import java.util.Date;
 
 @Data
 @JsonInclude(Include.NON_NULL)
-public class DtoInHotdeal implements Serializable {
+public class DtoInHotDeal implements Serializable {
 	
 	@Serial
 	private static final long serialVersionUID = 1L;

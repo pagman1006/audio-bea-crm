@@ -5,7 +5,7 @@ import com.audiobea.crm.app.business.IProductService;
 import com.audiobea.crm.app.business.IUploadService;
 import com.audiobea.crm.app.commons.I18Constants;
 import com.audiobea.crm.app.commons.ResponseData;
-import com.audiobea.crm.app.commons.dto.DtoInHotdeal;
+import com.audiobea.crm.app.commons.dto.DtoInHotDeal;
 import com.audiobea.crm.app.commons.dto.DtoInProduct;
 import com.audiobea.crm.app.commons.mapper.BrandMapper;
 import com.audiobea.crm.app.commons.mapper.HotDealMapper;
@@ -165,7 +165,7 @@ public class ProductServiceImpl implements IProductService {
     }
 
     @Override
-    public DtoInHotdeal getHotDeal() {
+    public DtoInHotDeal getHotDeal() {
 
         return hotdealMapper
                 .hotdealToDtoInHotdeal(
@@ -178,7 +178,7 @@ public class ProductServiceImpl implements IProductService {
 
     @Transactional
     @Override
-    public DtoInHotdeal saveHotDeal(DtoInHotdeal hotDeal) {
+    public DtoInHotDeal saveHotDeal(DtoInHotDeal hotDeal) {
         hotDealDao.findAll().stream().findFirst().ifPresent(hDeal -> hotDeal.setId(hDeal.getId()));
         return hotdealMapper.hotdealToDtoInHotdeal(hotDealDao.save(hotdealMapper.hotdealDtoInToHotdeal(hotDeal)));
     }

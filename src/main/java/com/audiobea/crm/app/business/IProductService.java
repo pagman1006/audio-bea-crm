@@ -1,7 +1,7 @@
 package com.audiobea.crm.app.business;
 
 import com.audiobea.crm.app.commons.ResponseData;
-import com.audiobea.crm.app.commons.dto.DtoInHotdeal;
+import com.audiobea.crm.app.commons.dto.DtoInHotDeal;
 import com.audiobea.crm.app.commons.dto.DtoInProduct;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -20,8 +20,8 @@ public interface IProductService {
 
     DtoInProduct uploadImages(String productId, MultipartFile[] files);
 
-    DtoInHotdeal getHotDeal();
+    DtoInHotDeal getHotDeal();
 
-    DtoInHotdeal saveHotDeal(DtoInHotdeal hotDeal);
+    DtoInHotDeal saveHotDeal(DtoInHotDeal hotDeal);
 
 }

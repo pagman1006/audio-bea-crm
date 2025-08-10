@@ -2,11 +2,11 @@
   {
     "name": "file.upload-dir",
     "type": "java.lang.String",
-    "description": "A description for 'file.upload-dir'."
+    "description": "Directory where uploaded files will be stored."
   },
   {
     "name": "reflectoring.trace",
     "type": "java.lang.String",
-    "description": "A description for 'reflector.trace'."
+    "description": "Identify the trace of the reflectoring."
   }
 ]}

@@ -6,20 +6,21 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.4.0</version>
-        <relativePath/> <!-- lookup parent from repository -->
+        <version>3.5.4</version>
+        <relativePath/>
     </parent>
     <groupId>com.audiobea.crm.app</groupId>
     <artifactId>audio-bea-crm</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>audio-bea-crm</name>
-    <description>Audio-Bea CRM's REST Service</description>
+    <description>Audio-Bea CRMs REST Service</description>
     <properties>
         <java.version>17</java.version>
         <org.mapstruct.version>1.5.5.Final</org.mapstruct.version>
-        <org.apache.poi.version>5.2.4</org.apache.poi.version>
+        <org.apache.poi.version>5.4.1</org.apache.poi.version>
         <io.jsonwebtoken.version>0.11.5</io.jsonwebtoken.version>
         <org.yaml.version>2.2</org.yaml.version>
+        <commons-lang3.version>3.18.0</commons-lang3.version>
     </properties>
     <dependencies>
         <dependency>
@@ -33,12 +34,6 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.yaml</groupId>
-                    <artifactId>snakeyaml</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.mapstruct</groupId>
@@ -52,7 +47,7 @@
             <exclusions>
                 <exclusion>
                     <groupId>org.apache.commons</groupId>
-                    <artifactId>commons-compress</artifactId>
+                    <artifactId>commons-lang3</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
@@ -77,6 +72,7 @@
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
+            <version>${commons-lang3.version}</version>
         </dependency>
 
         <!-- Dependency for Security & OAuth2-->

@@ -11,27 +11,28 @@ import java.util.Locale;
 import static com.audiobea.crm.app.utils.Constants.TYPE;
 
 public class Utils {
-	
-	private Utils() {}
 
-	public static void hasExcelFormat(MultipartFile file, MessageSource messageSource) {
-		if (file == null || StringUtils.isBlank(file.getContentType()) || !TYPE.equals(file.getContentType())) {
-			throw new ValidFileException(Utils.getLocalMessage(messageSource, I18Constants.NOT_VALID_EXCEL.getKey()));
-		}
-	}
-	
-	public static String getLocalMessage(MessageSource messageSource, String key, String... params){
+    private Utils() {
+    }
+
+    public static void hasExcelFormat(MultipartFile file, MessageSource messageSource) {
+        if (file == null || StringUtils.isBlank(file.getContentType()) || !TYPE.equals(file.getContentType())) {
+            throw new ValidFileException(Utils.getLocalMessage(messageSource, I18Constants.NOT_VALID_EXCEL.getKey()));
+        }
+    }
+
+    public static String getLocalMessage(MessageSource messageSource, String key, String... params) {
         return messageSource.getMessage(key,
                 params,
                 Locale.ENGLISH);
     }
-	
-	public static String removeAccents(String txt) {
-		if (StringUtils.isBlank(txt)) {
-			return null;
-		}
-		return txt
-				.toUpperCase().replace("Á", "A").replace("É", "E")
-				.replace("Í", "I").replace("Ó", "O").replace("Ú", "U");
-	}
+
+    public static String removeAccents(String txt) {
+        if (StringUtils.isBlank(txt)) {
+            return null;
+        }
+        return txt
+                .toUpperCase().replace("Á", "A").replace("É", "E")
+                .replace("Í", "I").replace("Ó", "O").replace("Ú", "U");
+    }
 }
