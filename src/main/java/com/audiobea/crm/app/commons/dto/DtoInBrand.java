@@ -13,14 +13,13 @@ import java.util.List;
 @JsonInclude(Include.NON_EMPTY)
 public class DtoInBrand implements Serializable {
 
-	@Serial
-	private static final long serialVersionUID = 1L;
-	
-	private String id;
-	@NotEmpty
-	private String brandName;
-	List<DtoInSubBrand> subBrands;
-	List<DtoInProduct> products;
-	private boolean enabled;
+    @Serial
+    private static final long serialVersionUID = 1L;
+    List<DtoInSubBrand> subBrands;
+    List<DtoInProduct> products;
+    private String id;
+    @NotEmpty
+    private String brandName;
+    private boolean enabled;
 
 }

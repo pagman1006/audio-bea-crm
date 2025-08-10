@@ -2,7 +2,7 @@ package com.audiobea.crm.app.controller.product;
 
 import com.audiobea.crm.app.business.IProductService;
 import com.audiobea.crm.app.commons.ResponseData;
-import com.audiobea.crm.app.commons.dto.DtoInHotdeal;
+import com.audiobea.crm.app.commons.dto.DtoInHotDeal;
 import com.audiobea.crm.app.commons.dto.DtoInProduct;
 import com.audiobea.crm.app.utils.Constants;
 import lombok.AllArgsConstructor;
@@ -77,13 +77,13 @@ public class ProductController {
 	}
 
 	@GetMapping(path = "/hot-deal", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<DtoInHotdeal> getHotDeal() {
+	public ResponseEntity<DtoInHotDeal> getHotDeal() {
 		log.debug("getHotDeal");
 		return new ResponseEntity<>(productService.getHotDeal(), HttpStatus.OK);
 	}
 
 	@PostMapping(path = "/hot-deal", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<DtoInHotdeal> saveHotDeal(@RequestBody DtoInHotdeal hotDeal) {
+	public ResponseEntity<DtoInHotDeal> saveHotDeal(@RequestBody DtoInHotDeal hotDeal) {
 		log.debug("saveHotDeal");
 		return new ResponseEntity<>(productService.saveHotDeal(hotDeal), HttpStatus.CREATED);
 	}
