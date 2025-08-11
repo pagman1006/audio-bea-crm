@@ -1,7 +1,7 @@
-package com.audiobea.crm.app.core.security.jwt.business.impl;
+package com.audiobea.crm.app.core.security.jwt.service.impl;
 
 import com.audiobea.crm.app.core.security.jwt.SimpleGrantedAuthorityMixin;
-import com.audiobea.crm.app.core.security.jwt.business.IJWTService;
+import com.audiobea.crm.app.core.security.jwt.service.IJWTService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;

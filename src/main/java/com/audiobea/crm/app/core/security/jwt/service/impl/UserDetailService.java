@@ -1,4 +1,4 @@
-package com.audiobea.crm.app.core.security.jwt.business.impl;
+package com.audiobea.crm.app.core.security.jwt.service.impl;
 
 import com.audiobea.crm.app.dao.user.IUserDao;
 import com.audiobea.crm.app.dao.user.model.Role;
