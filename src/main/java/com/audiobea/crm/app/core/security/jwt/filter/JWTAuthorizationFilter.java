@@ -1,7 +1,7 @@
 package com.audiobea.crm.app.core.security.jwt.filter;
 
-import com.audiobea.crm.app.core.security.jwt.business.IJWTService;
-import com.audiobea.crm.app.core.security.jwt.business.impl.JWTServiceImpl;
+import com.audiobea.crm.app.core.security.jwt.service.IJWTService;
+import com.audiobea.crm.app.core.security.jwt.service.impl.JWTServiceImpl;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
