@@ -21,12 +21,13 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 import javax.security.sasl.AuthenticationException;
 import java.util.Objects;
 
-@Slf4j(topic = "GLOBAL_EXCEPTION_HANDLER")
+import static com.audiobea.crm.app.core.exception.ConstantsError.*;
+
+@Slf4j(topic = GLOBAL_EXCEPTION_HANDLER)
 @RestControllerAdvice
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     public static final String TRACE = "trace";
-    private static final String UNKNOWN_MESSAGE_ERROR = "Unknown error occurred";
 
     @Value("${reflectoring.trace:false}")
     private boolean printStackTrace;
@@ -34,37 +35,31 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @Override
     @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
     protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
-                                                                  @NonNull HttpHeaders headers,
-                                                                  @NonNull HttpStatusCode status,
-                                                                  @NonNull WebRequest request) {
+            @NonNull HttpHeaders headers, @NonNull HttpStatusCode status, @NonNull WebRequest request) {
 
-        ErrorResponse errorResponse = new ErrorResponse(HttpStatus.UNPROCESSABLE_ENTITY.value(),
-                "Validation error. Check 'errors' field for details.");
+        final ErrorResponse errorResponse = new ErrorResponse(HttpStatus.UNPROCESSABLE_ENTITY.value(), VALIDATION_ERROR);
 
         for (FieldError fieldError : ex.getBindingResult().getFieldErrors()) {
             errorResponse.addValidationError(fieldError.getField(), fieldError.getDefaultMessage());
         }
-
         return ResponseEntity.unprocessableEntity().body(errorResponse);
     }
 
 
     @Override
     public ResponseEntity<Object> handleExceptionInternal(@NonNull Exception ex, @Nullable Object body,
-                                                          @NonNull HttpHeaders headers, @NonNull HttpStatusCode status,
-                                                          @NonNull WebRequest request) {
-
+            @NonNull HttpHeaders headers, @NonNull HttpStatusCode status, @NonNull WebRequest request) {
         return buildErrorResponse(ex, status, request);
     }
 
     private ResponseEntity<Object> buildErrorResponse(Exception exception, HttpStatusCode httpStatus,
-                                                      WebRequest request) {
+            WebRequest request) {
         return buildErrorResponse(exception, exception.getMessage(), httpStatus, request);
     }
 
     private ResponseEntity<Object> buildErrorResponse(Exception exception, String message, HttpStatusCode httpStatus,
-                                                      WebRequest request) {
-        ErrorResponse errorResponse = new ErrorResponse(httpStatus.value(), message);
+            WebRequest request) {
+        final ErrorResponse errorResponse = new ErrorResponse(httpStatus.value(), message);
         if (printStackTrace && isTraceOn(request)) {
             errorResponse.setStackTrace(ExceptionUtils.getStackTrace(exception));
         }
@@ -73,85 +68,84 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     private boolean isTraceOn(WebRequest request) {
         String[] value = request.getParameterValues(TRACE);
-        return Objects.nonNull(value) && value.length > 0 && value[0].contentEquals("true");
+        return Objects.nonNull(value) && value.length > 0 && value[0].contentEquals(TRUE);
     }
 
     @ExceptionHandler(NoSuchElementFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ResponseEntity<Object> handleNoSuchElementFoundException(NoSuchElementFoundException itemNotFoundException,
-                                                                    WebRequest request) {
-        log.error("Failed to find the requested element {}", itemNotFoundException.getMessage());
+            WebRequest request) {
+        log.error(FAILED_FIND_ELEMENT_ERROR, itemNotFoundException.getMessage());
         return buildErrorResponse(itemNotFoundException, HttpStatus.NOT_FOUND, request);
     }
 
     @ExceptionHandler(NoSuchElementsFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ResponseEntity<Object> handleNoSuchElementsFoundException(
-            NoSuchElementsFoundException itemsNotFoundException,
-            WebRequest request) {
-        log.error("Failed to find the requested elements {}", itemsNotFoundException.getMessage());
+            NoSuchElementsFoundException itemsNotFoundException, WebRequest request) {
+        log.error(FAILED_FIND_ELEMENTS_ERROR, itemsNotFoundException.getMessage());
         return buildErrorResponse(itemsNotFoundException, HttpStatus.NOT_FOUND, request);
     }
 
     @ExceptionHandler(ValidFileException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseEntity<Object> handleValidFileException(ValidFileException fileNotValidException,
-                                                           WebRequest request) {
-        log.error("Is not a valid excel file! {}", fileNotValidException.getMessage());
+            WebRequest request) {
+        log.error(INVALID_EXCEL_FILE_ERROR, fileNotValidException.getMessage());
         return buildErrorResponse(fileNotValidException, HttpStatus.BAD_REQUEST, request);
     }
 
     @ExceptionHandler(UploadFileException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ResponseEntity<Object> handleUploadFileException(UploadFileException uploadFileException,
-                                                            WebRequest request) {
-        log.error("Failed to upload file, {}", uploadFileException.getMessage());
+            WebRequest request) {
+        log.error(UPLOAD_FILE_ERROR, uploadFileException.getMessage());
         return buildErrorResponse(uploadFileException, HttpStatus.INTERNAL_SERVER_ERROR, request);
     }
 
     @ExceptionHandler(ParseFileException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ResponseEntity<Object> handleParseFileException(ParseFileException parseFileException, WebRequest request) {
-        log.error("Failed to parse excel file, {}", parseFileException.getMessage());
+        log.error(PARSE_FILE_EXCEL_ERROR, parseFileException.getMessage());
         return buildErrorResponse(parseFileException, HttpStatus.INTERNAL_SERVER_ERROR, request);
     }
 
     @ExceptionHandler(NoSuchFileException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ResponseEntity<Object> handleNoSuchFileException(NoSuchFileException noSuchFileException,
-                                                            WebRequest request) {
-        log.error("Failed to find file, {}", noSuchFileException.getMessage());
+            WebRequest request) {
+        log.error(FIND_FILE_ERROR, noSuchFileException.getMessage());
         return buildErrorResponse(noSuchFileException, HttpStatus.INTERNAL_SERVER_ERROR, request);
     }
 
     @ExceptionHandler(AuthenticationException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ResponseEntity<Object> handleAuthenticationFailedException(AuthenticationException authenticationException,
-                                                                      WebRequest request) {
-        log.error("Failed authorization, {}", authenticationException.getMessage());
+            WebRequest request) {
+        log.error(AUTHORIZATION_ERROR, authenticationException.getMessage());
         return buildErrorResponse(authenticationException, "Failed authorization", HttpStatus.FORBIDDEN, request);
     }
 
     @ExceptionHandler(AccessDeniedException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ResponseEntity<Object> handleAccessDeniedException(AccessDeniedException accessDeniedException,
-                                                              WebRequest request) {
-        log.error("AccessDenied, {}", accessDeniedException.getMessage());
+            WebRequest request) {
+        log.error(ACCESS_DENIED_ERROR, accessDeniedException.getMessage());
         return buildErrorResponse(accessDeniedException, "AccessDenied ", HttpStatus.FORBIDDEN, request);
     }
 
     @ExceptionHandler(ForbiddenException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ResponseEntity<Object> handleForbiddenException(ForbiddenException forbiddenException, WebRequest request) {
-        log.error("You do not have privileges to consult this information: {}", forbiddenException.getMessage());
+        log.error(FORBIDDEN_ERROR, forbiddenException.getMessage());
         return buildErrorResponse(forbiddenException, HttpStatus.FORBIDDEN, request);
     }
 
     @ExceptionHandler(DuplicateRecordException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ResponseEntity<Object> handleConstraintViolationException(DuplicateRecordException exception,
-                                                                     WebRequest request) {
-        log.error("Duplicate Entry: {}", exception.getMessage());
+            WebRequest request) {
+        log.error(DUPLICATE_ERROR, exception.getMessage());
         return buildErrorResponse(exception, exception.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR, request);
     }
 

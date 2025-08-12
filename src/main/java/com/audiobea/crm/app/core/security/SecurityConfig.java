@@ -1,9 +1,9 @@
 package com.audiobea.crm.app.core.security;
 
 import com.audiobea.crm.app.core.security.jwt.NoRedirectStrategy;
-import com.audiobea.crm.app.core.security.jwt.business.IJWTService;
 import com.audiobea.crm.app.core.security.jwt.filter.JWTAuthenticationFilter;
 import com.audiobea.crm.app.core.security.jwt.filter.JWTAuthorizationFilter;
+import com.audiobea.crm.app.core.security.jwt.service.IJWTService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
@@ -23,57 +23,68 @@ import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.security.web.servlet.util.matcher.PathPatternRequestMatcher;
 import org.springframework.security.web.util.matcher.OrRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
+
+import static com.audiobea.crm.app.utils.ConstantsController.BASE_PATH;
+import static org.springframework.security.web.servlet.util.matcher.PathPatternRequestMatcher.withDefaults;
 
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
 public class SecurityConfig {
 
-	private static final RequestMatcher PUBLIC_URLS = new OrRequestMatcher(new AntPathRequestMatcher("/audio-bea/v1/api/"));
+    private static final PathPatternRequestMatcher patternRequestMatcher = withDefaults().matcher(BASE_PATH);
+    private static final RequestMatcher PUBLIC_URLS = new OrRequestMatcher(patternRequestMatcher);
 
-	@Bean
-	SecurityFilterChain securityFilterChain(HttpSecurity http, UserDetailsService userDetailsService, IJWTService jwtService)
-			throws Exception {
+    @Bean
+    SecurityFilterChain securityFilterChain(HttpSecurity http, UserDetailsService userDetailsService,
+            IJWTService jwtService)
+            throws Exception {
 
-		return http.sessionManagement(management -> management.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-				.authorizeHttpRequests(
-						requests -> requests.requestMatchers("/**", "/audio-bea/v1/api/**").permitAll().anyRequest().authenticated())
-				.addFilter(new JWTAuthenticationFilter(authenticationManager(userDetailsService, passwordEncoder()), jwtService))
-				.addFilter(new JWTAuthorizationFilter(authenticationManager(userDetailsService, passwordEncoder()), jwtService))
-				.csrf(AbstractHttpConfigurer::disable).build();
-	}
+        return http.sessionManagement(management -> management
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authorizeHttpRequests(requests -> requests
+                        .requestMatchers("/**", "/audio-bea/v1/api/**")
+                        .permitAll()
+                        .anyRequest()
+                        .authenticated())
+                .addFilter(new JWTAuthenticationFilter(authenticationManager(userDetailsService, passwordEncoder()),
+                        jwtService))
+                .addFilter(new JWTAuthorizationFilter(authenticationManager(userDetailsService, passwordEncoder()),
+                        jwtService))
+                .csrf(AbstractHttpConfigurer::disable).build();
+    }
 
-	@Bean
-	WebSecurityCustomizer webSecurityCustomizer() {
-		return web -> web.ignoring().requestMatchers(PUBLIC_URLS);
-	}
+    @Bean
+    AuthenticationManager authenticationManager(UserDetailsService userDetailsService,
+            PasswordEncoder passwordEncoder) {
+        DaoAuthenticationProvider provider = new DaoAuthenticationProvider(userDetailsService);
+        provider.setPasswordEncoder(passwordEncoder);
+        return new ProviderManager(provider);
+    }
 
-	@Bean
-	AuthenticationEntryPoint forbiddenEntryPoint() {
-		return new HttpStatusEntryPoint(HttpStatus.FORBIDDEN);
-	}
+    @Bean
+    PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
 
-	@Bean
-	SimpleUrlAuthenticationSuccessHandler successHandler() {
-		final SimpleUrlAuthenticationSuccessHandler successHandler = new SimpleUrlAuthenticationSuccessHandler();
-		successHandler.setRedirectStrategy(new NoRedirectStrategy());
-		return successHandler;
-	}
+    @Bean
+    WebSecurityCustomizer webSecurityCustomizer() {
+        return web -> web.ignoring().requestMatchers(PUBLIC_URLS);
+    }
 
-	@Bean
-	AuthenticationManager authenticationManager(UserDetailsService userDetailsService, PasswordEncoder passwordEncoder) {
-		DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
-		provider.setUserDetailsService(userDetailsService);
-		provider.setPasswordEncoder(passwordEncoder);
-		return new ProviderManager(provider);
-	}
-	
-	@Bean
-	PasswordEncoder passwordEncoder() {
-		return new BCryptPasswordEncoder();
-	}
+    @Bean
+    AuthenticationEntryPoint forbiddenEntryPoint() {
+        return new HttpStatusEntryPoint(HttpStatus.FORBIDDEN);
+    }
+
+    @Bean
+    SimpleUrlAuthenticationSuccessHandler successHandler() {
+        final SimpleUrlAuthenticationSuccessHandler successHandler = new SimpleUrlAuthenticationSuccessHandler();
+        successHandler.setRedirectStrategy(new NoRedirectStrategy());
+        return successHandler;
+    }
 
 }

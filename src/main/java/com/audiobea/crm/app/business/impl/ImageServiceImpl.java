@@ -13,7 +13,8 @@ import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
+
+import static com.audiobea.crm.app.utils.ConstantsLog.LOG_IMAGE_COLLECTION_SIZE;
 
 @Slf4j
 @AllArgsConstructor
@@ -26,15 +27,14 @@ public class ImageServiceImpl implements IImageService {
 
     @Override
     public ResponseData<DtoInImage> getImageCollection() {
-        List<Image> images = imageDao.findAll();
+        final List<Image> images = imageDao.findAll();
         Validator.validateList(images, messageSource);
-        log.debug("Image-collection size: {}", images.size());
-        return new ResponseData<>(images.stream().map(img -> imageMapper.imageToDtoInImage(img))
-                .collect(Collectors.toList()), null, null, null, null);
+        log.debug(LOG_IMAGE_COLLECTION_SIZE, images.size());
+        return new ResponseData<>(images.stream().map(imageMapper::imageToDtoInImage).toList(), null, null, null, null);
     }
 
     @Override
-    public DtoInImage addImageCollection(DtoInImage image) {
+    public DtoInImage addImageCollection(final DtoInImage image) {
         return imageMapper.imageToDtoInImage(imageDao.save(imageMapper.imageDtoInToImage(image)));
     }
 

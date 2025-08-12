@@ -1,7 +1,7 @@
-package com.audiobea.crm.app.core.security.jwt.business.impl;
+package com.audiobea.crm.app.core.security.jwt.service.impl;
 
 import com.audiobea.crm.app.core.security.jwt.SimpleGrantedAuthorityMixin;
-import com.audiobea.crm.app.core.security.jwt.business.IJWTService;
+import com.audiobea.crm.app.core.security.jwt.service.IJWTService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
@@ -22,15 +22,19 @@ import java.util.Base64;
 import java.util.Collection;
 import java.util.Date;
 
+import static com.audiobea.crm.app.utils.Constants.AUTHORITIES;
+import static com.audiobea.crm.app.utils.Constants.EXPIRATION_DATE;
+import static com.audiobea.crm.app.utils.Constants.TOKEN_PREFIX;
+import static com.audiobea.crm.app.utils.ConstantsLog.LOG_GET_ROLES_AUTHENTICATION;
+import static com.audiobea.crm.app.utils.ConstantsLog.LOG_GET_USERNAME_AUTHENTICATION;
+import static com.audiobea.crm.app.utils.ConstantsLog.LOG_RESOLVE_ROLES;
+import static com.audiobea.crm.app.utils.ConstantsLog.LOG_VALIDATE_AUTHENTICATION;
+
 @Slf4j
 @Service
 public class JWTServiceImpl implements IJWTService {
 
 	public static final String SECRET = Base64.getEncoder().encodeToString("Some.Key.Secret.123456".getBytes());
-
-	public static final long EXPIRATION_DATE = 604800000L;
-	public static final String TOKEN_PREFIX = "Bearer ";
-	public static final String HEADER_STRING = "Authorization";
 
 	@Override
 	public String create(Authentication auth) throws IOException {
@@ -38,14 +42,14 @@ public class JWTServiceImpl implements IJWTService {
 		String username = ((User) auth.getPrincipal()).getUsername();
 		Collection<? extends GrantedAuthority> roles = auth.getAuthorities();
 		Claims claims = Jwts.claims();
-		claims.put("authorities", new ObjectMapper().writeValueAsString(roles));
+		claims.put(AUTHORITIES, new ObjectMapper().writeValueAsString(roles));
 		return Jwts.builder().setClaims(claims).setSubject(username).signWith(getSigningKey()).setIssuedAt(new Date())
 				.setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_DATE)).compact();
 	}
 
 	@Override
 	public boolean validate(String token) {
-		log.debug("validate authentication");
+		log.debug(LOG_VALIDATE_AUTHENTICATION);
 		try {
 			getClaims(token);
 			return true;
@@ -61,21 +65,21 @@ public class JWTServiceImpl implements IJWTService {
 
 	@Override
 	public String getUsername(String token) {
-		log.debug("getUsername authentication");
+		log.debug(LOG_GET_USERNAME_AUTHENTICATION);
 		return getClaims(token).getSubject();
 	}
 
 	@Override
 	public Collection<GrantedAuthority> getRoles(String token) throws IOException {
-		log.debug("getRoles authentication");
-		Object roles = getClaims(token).get("authorities");
+		log.debug(LOG_GET_ROLES_AUTHENTICATION);
+		Object roles = getClaims(token).get(AUTHORITIES);
 		return Arrays.asList(new ObjectMapper().addMixIn(SimpleGrantedAuthority.class, SimpleGrantedAuthorityMixin.class)
 				.readValue(roles.toString().getBytes(), SimpleGrantedAuthority[].class));
 	}
 
 	@Override
 	public String resolve(String token) {
-		log.debug("Resolve getRoles authentication");
+		log.debug(LOG_RESOLVE_ROLES);
 		if (token != null && token.startsWith(TOKEN_PREFIX)) {
 			return token.replace(TOKEN_PREFIX, "");
 		}

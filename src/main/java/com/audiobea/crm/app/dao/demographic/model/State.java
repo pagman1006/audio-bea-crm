@@ -16,23 +16,22 @@ import java.util.List;
 @Document("states")
 public class State implements Serializable, Comparable<State> {
 
-	@Serial
-	private static final long serialVersionUID = 1L;
+    @Serial
+    private static final long serialVersionUID = 1L;
 
-	@Id
-	private String id;
-	@Indexed(unique = true)
-	private String name;
+    @Id
+    private String id;
+    @Indexed(unique = true)
+    private String name;
 
-	@DocumentReference(lazy = true)
-	private List<City> cities;
+    @DocumentReference(lazy = true)
+    private List<City> cities;
 
-	@Override
-	public int compareTo(@NonNull State s) {
-		if (StringUtils.isBlank(name) || StringUtils.isBlank(s.getName())) {
-			return 0;
-
-		}
-		return name.compareTo(s.getName());
-	}
+    @Override
+    public int compareTo(@NonNull State s) {
+        if (StringUtils.isBlank(name) || StringUtils.isBlank(s.getName())) {
+            return 0;
+        }
+        return name.compareTo(s.getName());
+    }
 }

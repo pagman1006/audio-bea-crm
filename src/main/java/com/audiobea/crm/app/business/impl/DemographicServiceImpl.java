@@ -30,7 +30,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static com.audiobea.crm.app.utils.ConstantsLog.*;
 
@@ -50,24 +49,24 @@ public class DemographicServiceImpl implements IDemographicService {
 
     @Override
     public ResponseData<DtoInState> getStates() {
-        List<State> listStates = stateDao.findAll();
+        final List<State> listStates = stateDao.findAll();
         Validator.validateList(listStates, messageSource);
-        ResponseData<DtoInState> response = new ResponseData<>();
-        response.setData(
-                listStates.stream().map(state -> stateMapper.stateToDtoInState(state)).collect(Collectors.toList()));
+        final ResponseData<DtoInState> response = new ResponseData<>();
+        response.setData(listStates.stream().map(stateMapper::stateToDtoInState).toList());
         return response;
     }
 
     @Override
-    public DtoInState getStateById(String stateId) {
+    public DtoInState getStateById(final String stateId) {
         return stateMapper.stateToDtoInState(
                 stateDao.findById(stateId).orElseThrow(() -> new NoSuchElementFoundException(
                         Utils.getLocalMessage(messageSource, I18Constants.NO_ITEM_FOUND.getKey(), stateId))));
     }
 
     @Override
-    public ResponseData<DtoInCity> getCitiesByStateId(String stateId, String cityName, Integer page, Integer pageSize) {
-        Pageable pageable = PageRequest.of(page, pageSize, Sort.by("name"));
+    public ResponseData<DtoInCity> getCitiesByStateId(final String stateId, final String cityName, final Integer page,
+            final Integer pageSize) {
+        final Pageable pageable = PageRequest.of(page, pageSize, Sort.by("name"));
         log.debug(LOG_STATE, stateId);
         Page<City> pageCities = null;
         if (StringUtils.isNotBlank(stateId)) {
@@ -82,19 +81,20 @@ public class DemographicServiceImpl implements IDemographicService {
             }
         }
         Validator.validatePage(pageCities, messageSource);
-        return new ResponseData<>(pageCities.getContent().stream().map(city -> cityMapper.cityToDtoInCity(city))
-                .collect(Collectors.toList()), pageCities);
+        return new ResponseData<>(
+                pageCities.getContent().stream().map(cityMapper::cityToDtoInCity).peek(c -> c.setColonies(null))
+                        .toList(), pageCities);
     }
 
     @Override
-    public ResponseData<DtoInColony> findColoniesByStateIdAndCityId(String stateId, String cityId, String colonyName,
-            String postalCode, Integer page, Integer pageSize) {
+    public ResponseData<DtoInColony> findColoniesByStateIdAndCityId(final String stateId, final String cityId,
+            String colonyName, String postalCode, final Integer page, final Integer pageSize) {
         log.debug(LOG_STATE_CITY_COLONY_POSTAL_CODE, stateId, cityId, colonyName, postalCode);
         if (StringUtils.isBlank(stateId) || StringUtils.isBlank(cityId)) {
             throw new IllegalArgumentException(
                     Utils.getLocalMessage(messageSource, I18Constants.INVALID_PARAMETERS.getKey(), stateId, cityId));
         }
-        Pageable pageable = PageRequest.of(page, pageSize, Sort.by("name"));
+        final Pageable pageable = PageRequest.of(page, pageSize, Sort.by("name"));
         postalCode = StringUtils.isNotBlank(postalCode) ? postalCode : "";
         colonyName = StringUtils.isNotBlank(colonyName) ? colonyName : "";
         Page<Colony> pageColonies = null;
@@ -107,43 +107,42 @@ public class DemographicServiceImpl implements IDemographicService {
                     pageColonies = colonyDao.findByCityId(cityId, colonyName, postalCode, pageable);
                 }
             } else {
-                log.debug("State: {} City: {}, Colony: {}, Postal Code: {}", stateId, cityId, colonyName, postalCode);
+                log.debug(LOG_STATE_CITY_ALL_COLONY_POSTAL_CODE, stateId, cityId, colonyName, postalCode);
                 pageColonies = colonyDao.findByStateIdAndCityId(stateId, cityId, colonyName, postalCode, pageable);
             }
         }
         Validator.validatePage(pageColonies, messageSource);
         return new ResponseData<>(
-                pageColonies.getContent().stream().map(colony -> colonyMapper.colonyToDtoInColony(colony))
-                        .collect(Collectors.toList()), pageColonies);
+                pageColonies.getContent().stream().map(colonyMapper::colonyToDtoInColony).toList(), pageColonies);
     }
 
     @Override
-    public ResponseData<DtoInColony> getAllColonies(String stateName, String cityName, String colonyName,
-            String postalCode, Integer page, Integer pageSize) {
-        log.debug("State: {}, city: {}, colony: {}, postalCode: {}", stateName, cityName, colonyName, postalCode);
-        Pageable pageable = PageRequest.of(page, pageSize, Sort.by("name"));
-        Page<Colony> pageColonies;
+    public ResponseData<DtoInColony> getAllColonies(final String stateName, final String cityName,
+            final String colonyName, final String postalCode, final Integer page, final Integer pageSize) {
+        log.debug(LOG_STATE_CITY_ALL_COLONY_POSTAL_CODE, stateName, cityName, colonyName, postalCode);
+        final Pageable pageable = PageRequest.of(page, pageSize, Sort.by("name"));
+        final Page<Colony> pageColonies;
         if (StringUtils.isBlank(stateName) && StringUtils.isBlank(cityName)) {
-            log.debug("State blank and city blank");
+            log.debug(LOG_STATE_CITY_BLANK);
             pageColonies = colonyDao.findAllByColonyOrPostalCode(colonyName, postalCode, pageable);
         } else if (StringUtils.isNotBlank(stateName)) {
-            log.debug("State: {}", stateName);
-            List<State> states = stateDao.findAllByName(stateName.toUpperCase());
+            log.debug(LOG_STATE, stateName);
+            final List<State> states = stateDao.findAllByName(stateName.toUpperCase());
             Validator.validateList(states, messageSource);
             pageColonies = colonyDao.findByStateIdInAndNameContainingAndPostalCodeContaining(
                     states.stream().map(State::getId).toList(), colonyName,
                     postalCode, pageable);
         } else if (StringUtils.isNotBlank(cityName)) {
-            log.debug("City: {}", cityName);
-            List<City> cities = cityDao.findAllByName(cityName.toUpperCase());
+            log.debug(LOG_CITY, cityName);
+            final List<City> cities = cityDao.findAllByName(cityName.toUpperCase());
             Validator.validateList(cities, messageSource);
             pageColonies = colonyDao.findByCityIdInAndNameContainingAndPostalCodeContaining(
                     cities.stream().map(City::getId).toList(), colonyName, postalCode, pageable);
         } else {
-            log.debug("State: {}, city: {}", stateName, cityName);
-            List<State> states = stateDao.findAllByName(stateName.toUpperCase());
+            log.debug(LOG_STATE_CITY, stateName, cityName);
+            final List<State> states = stateDao.findAllByName(stateName.toUpperCase());
             Validator.validateList(states, messageSource);
-            List<City> cities = cityDao.findAllByName(cityName.toUpperCase());
+            final List<City> cities = cityDao.findAllByName(cityName.toUpperCase());
             Validator.validateList(cities, messageSource);
             pageColonies = colonyDao.findByStateIdInAndCityIdInAndNameContainingAndPostalCodeContaining(
                     states.stream().map(State::getId).toList(), cities.stream().map(City::getId).toList(),
@@ -151,8 +150,6 @@ public class DemographicServiceImpl implements IDemographicService {
         }
         Validator.validatePage(pageColonies, messageSource);
         return new ResponseData<>(pageColonies.getContent()
-                .stream()
-                .map(c -> colonyMapper.colonyToDtoInColony(c))
-                .collect(Collectors.toList()), pageColonies);
+                .stream().map(colonyMapper::colonyToDtoInColony).toList(), pageColonies);
     }
 }

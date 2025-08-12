@@ -1,4 +1,4 @@
-package com.audiobea.crm.app.core.security.jwt.business;
+package com.audiobea.crm.app.core.security.jwt.service;
 
 import io.jsonwebtoken.Claims;
 import org.springframework.security.core.Authentication;

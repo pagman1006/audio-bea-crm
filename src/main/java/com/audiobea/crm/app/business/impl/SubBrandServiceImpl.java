@@ -27,6 +27,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.stream.Collectors;
 
+import static com.audiobea.crm.app.utils.ConstantsLog.LOG_BRAND;
+
 @Service
 @Slf4j
 @AllArgsConstructor
@@ -41,48 +43,52 @@ public class SubBrandServiceImpl implements ISubBrandService {
     private MessageSource messageSource;
 
     @Override
-    public ResponseData<DtoInSubBrand> getSubBrandsByBrandId(String brandId, String subBrand, Integer page, Integer pageSize) {
-        Pageable pageable = PageRequest.of(page, pageSize, Sort.by(Constants.SUB_BRAND_BRAND_NAME).and(Sort.by(Constants.SUB_BRAND)));
+    public ResponseData<DtoInSubBrand> getSubBrandsByBrandId(final String brandId, final String subBrand,
+            final Integer page, final Integer pageSize) {
+        final Pageable pageable = PageRequest.of(page, pageSize,
+                Sort.by(Constants.SUB_BRAND_BRAND_NAME).and(Sort.by(Constants.SUB_BRAND)));
         log.debug("MarcaId: {}, SubBrand: {}, Page: {}, PageSize: {}", brandId, subBrand, page, pageSize);
         Page<SubBrand> pageSubBrand = null;
         if (StringUtils.isNotBlank(brandId)) {
             if (brandId.equalsIgnoreCase(Constants.ALL)) {
-                log.debug("BrandId: {}", brandId);
+                log.debug(LOG_BRAND, brandId);
                 pageSubBrand = subBrandDao.findSubBrandBySubBrandNameContains(subBrand.toUpperCase(), pageable);
             } else {
-                pageSubBrand = subBrandDao.findSubBrandByBrandIdAndSubBrandNameContains(brandId, subBrand.toUpperCase(), pageable);
+                pageSubBrand = subBrandDao.findSubBrandByBrandIdAndSubBrandNameContains(brandId, subBrand.toUpperCase(),
+                        pageable);
             }
         }
         Validator.validatePage(pageSubBrand, messageSource);
-        return new ResponseData<>(pageSubBrand.getContent().stream().map(sb -> subBrandMapper.subBrandToDtoInSubBrand(sb))
-                .collect(Collectors.toList()), pageSubBrand);
+        return new ResponseData<>(
+                pageSubBrand.getContent().stream().map(subBrandMapper::subBrandToDtoInSubBrand).toList(), pageSubBrand);
     }
 
     @Override
-    public DtoInSubBrand getSubBrandById(String subBrandId) {
-        return subBrandMapper.subBrandToDtoInSubBrand(subBrandDao.findById(subBrandId).orElseThrow(() -> new NoSuchElementFoundException(
-                Utils.getLocalMessage(messageSource, I18Constants.NO_ITEM_FOUND.getKey(), subBrandId))));
+    public DtoInSubBrand getSubBrandById(final String subBrandId) {
+        return subBrandMapper.subBrandToDtoInSubBrand(
+                subBrandDao.findById(subBrandId).orElseThrow(() -> new NoSuchElementFoundException(
+                        Utils.getLocalMessage(messageSource, I18Constants.NO_ITEM_FOUND.getKey(), subBrandId))));
     }
 
     @Override
-    public DtoInSubBrand saveSubBrand(String brandId, DtoInSubBrand subBrand) {
+    public DtoInSubBrand saveSubBrand(final String brandId, final DtoInSubBrand subBrand) {
         if (StringUtils.isBlank(subBrand.getSubBrandName())) {
             return null;
         }
-        Brand brand = brandDao.findById(brandId).orElseThrow(() -> new NoSuchElementFoundException(
+        final Brand brand = brandDao.findById(brandId).orElseThrow(() -> new NoSuchElementFoundException(
                 Utils.getLocalMessage(messageSource, I18Constants.NO_ITEM_FOUND.getKey(), brandId)));
         if (brand.getSubBrands() == null || brand.getSubBrands().isEmpty()) {
             brand.setSubBrands(new java.util.ArrayList<>());
         }
-        SubBrand subBrandSaved = subBrandDao.save(subBrandMapper.subBrandDtoInToSubBrand(subBrand));
+        final SubBrand subBrandSaved = subBrandDao.save(subBrandMapper.subBrandDtoInToSubBrand(subBrand));
         brand.getSubBrands().add(subBrandSaved);
         brandDao.save(brand);
         return subBrandMapper.subBrandToDtoInSubBrand(subBrandSaved);
     }
 
     @Override
-    public DtoInSubBrand updateSubBrand(String subBrandId, DtoInSubBrand subBrand) {
-        SubBrand sbToSave = subBrandDao.findById(subBrandId).orElseThrow(() -> new NoSuchElementFoundException(
+    public DtoInSubBrand updateSubBrand(final String subBrandId, final DtoInSubBrand subBrand) {
+        final SubBrand sbToSave = subBrandDao.findById(subBrandId).orElseThrow(() -> new NoSuchElementFoundException(
                 Utils.getLocalMessage(messageSource, I18Constants.NO_ITEM_FOUND.getKey(), subBrandId)));
         if (sbToSave != null) {
             sbToSave.setSubBrandName(subBrand.getSubBrandName().toUpperCase());
