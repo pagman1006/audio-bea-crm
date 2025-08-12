@@ -22,17 +22,14 @@ public class Utils {
     }
 
     public static String getLocalMessage(MessageSource messageSource, String key, String... params) {
-        return messageSource.getMessage(key,
-                params,
-                Locale.ENGLISH);
+        return messageSource.getMessage(key, params, Locale.ENGLISH);
     }
 
     public static String removeAccents(String txt) {
         if (StringUtils.isBlank(txt)) {
             return null;
         }
-        return txt
-                .toUpperCase().replace("Á", "A").replace("É", "E")
-                .replace("Í", "I").replace("Ó", "O").replace("Ú", "U");
+        return txt.toUpperCase().replace("Á", "A").replace("É", "E").replace("Í", "I").replace("Ó", "O")
+                .replace("Ú", "U");
     }
 }

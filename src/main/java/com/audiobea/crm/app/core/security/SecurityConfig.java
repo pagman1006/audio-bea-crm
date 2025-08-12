@@ -27,6 +27,7 @@ import org.springframework.security.web.servlet.util.matcher.PathPatternRequestM
 import org.springframework.security.web.util.matcher.OrRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
+import static com.audiobea.crm.app.utils.ConstantsController.BASE_PATH;
 import static org.springframework.security.web.servlet.util.matcher.PathPatternRequestMatcher.withDefaults;
 
 @Configuration
@@ -34,7 +35,7 @@ import static org.springframework.security.web.servlet.util.matcher.PathPatternR
 @EnableMethodSecurity
 public class SecurityConfig {
 
-    private static final PathPatternRequestMatcher patternRequestMatcher = withDefaults().matcher("/audio-bea/v1/api/");
+    private static final PathPatternRequestMatcher patternRequestMatcher = withDefaults().matcher(BASE_PATH);
     private static final RequestMatcher PUBLIC_URLS = new OrRequestMatcher(patternRequestMatcher);
 
     @Bean
@@ -60,7 +61,6 @@ public class SecurityConfig {
     AuthenticationManager authenticationManager(UserDetailsService userDetailsService,
             PasswordEncoder passwordEncoder) {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider(userDetailsService);
-        //provider.setUserDetailsService(userDetailsService);
         provider.setPasswordEncoder(passwordEncoder);
         return new ProviderManager(provider);
     }

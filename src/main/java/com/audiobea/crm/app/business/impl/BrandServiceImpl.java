@@ -20,7 +20,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.stream.Collectors;
+import static com.audiobea.crm.app.utils.ConstantsLog.LOG_BRAND_PAGE_PAGE_SIZE;
 
 @Slf4j
 @Service
@@ -34,58 +34,57 @@ public class BrandServiceImpl implements IBrandService {
     private MessageSource messageSource;
 
     @Override
-    public ResponseData<DtoInBrand> getBrands(String brandName, Integer page, Integer pageSize) {
-        Pageable pageable = PageRequest.of(page, pageSize);
-        log.debug("Marca: {}, Page: {}, PageSize: {}", brandName, page, pageSize);
-        Page<Brand> pageBrand;
+    public ResponseData<DtoInBrand> getBrands(final String brandName, final Integer page, final Integer pageSize) {
+        final Pageable pageable = PageRequest.of(page, pageSize);
+        log.debug(LOG_BRAND_PAGE_PAGE_SIZE, brandName, page, pageSize);
+        final Page<Brand> pageBrand;
         if (StringUtils.isNotBlank(brandName)) {
             pageBrand = brandDao.findByBrandNameContains(brandName.toUpperCase(), pageable);
         } else {
             pageBrand = brandDao.findAll(pageable);
         }
         Validator.validatePage(pageBrand, messageSource);
-        return new ResponseData<>(pageBrand.getContent().stream().map(b -> brandMapper.brandToDtoInBrand(b))
-                                           .collect(Collectors.toList()), pageBrand);
+        return new ResponseData<>(pageBrand.getContent().stream().map(brandMapper::brandToDtoInBrand).toList(),
+                pageBrand);
     }
 
     @Override
-    public DtoInBrand getBrandById(String brandId) {
+    public DtoInBrand getBrandById(final String brandId) {
         return brandMapper.brandToDtoInBrand(
                 brandDao.findById(brandId).orElseThrow(() -> new NoSuchElementFoundException(
                         Utils.getLocalMessage(messageSource, I18Constants.NO_ITEM_FOUND.getKey(), brandId))));
     }
 
     @Override
-    public DtoInBrand getBrandByName(String brandName) {
+    public DtoInBrand getBrandByName(final String brandName) {
         return brandMapper.brandToDtoInBrand(brandDao.findByBrandName(brandName)
-                                                     .orElseThrow(() -> new NoSuchElementFoundException(
-                                                             Utils.getLocalMessage(messageSource, I18Constants.NO_ITEM_FOUND.getKey(), brandName))));
+                .orElseThrow(() -> new NoSuchElementFoundException(
+                        Utils.getLocalMessage(messageSource, I18Constants.NO_ITEM_FOUND.getKey(), brandName))));
     }
 
     @Transactional
     @Override
-    public DtoInBrand saveBrand(DtoInBrand brand) {
+    public DtoInBrand saveBrand(final DtoInBrand brand) {
         brand.setBrandName(brand.getBrandName().toUpperCase());
-        Brand brandToSave = brandDao.findByBrandName(brand.getBrandName()).orElse(brandMapper.brandDtoInToBrand(brand));
+        final Brand brandToSave = brandDao.findByBrandName(brand.getBrandName())
+                .orElse(brandMapper.brandDtoInToBrand(brand));
         return brandMapper.brandToDtoInBrand(brandDao.save(brandToSave));
     }
 
     @Transactional
     @Override
-    public DtoInBrand updateBrand(String brandId, DtoInBrand brand) {
-        Brand brandToSave = brandDao.findById(brandId).orElseThrow(() -> new NoSuchElementFoundException(
+    public DtoInBrand updateBrand(final String brandId, final DtoInBrand brand) {
+        final Brand brandToSave = brandDao.findById(brandId).orElseThrow(() -> new NoSuchElementFoundException(
                 Utils.getLocalMessage(messageSource, I18Constants.NO_ITEM_FOUND.getKey(), brandId)));
-        if (brandToSave != null) {
-            brandToSave.setBrandName(brand.getBrandName().toUpperCase());
-            brandToSave.setEnabled(brand.isEnabled());
-            brandDao.save(brandToSave);
-        }
+        brandToSave.setBrandName(brand.getBrandName().toUpperCase());
+        brandToSave.setEnabled(brand.isEnabled());
+        brandDao.save(brandToSave);
         return brandMapper.brandToDtoInBrand(brandToSave);
     }
 
     @Transactional
     @Override
-    public void deleteBrandById(String brandId) {
+    public void deleteBrandById(final String brandId) {
         brandDao.deleteById(brandId);
     }
 }

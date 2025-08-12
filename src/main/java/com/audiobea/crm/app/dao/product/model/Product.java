@@ -1,5 +1,6 @@
 package com.audiobea.crm.app.dao.product.model;
 
+import lombok.Builder;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -10,6 +11,7 @@ import java.io.Serializable;
 import java.util.List;
 
 @Data
+@Builder
 @Document("products")
 public class Product implements Serializable {
 

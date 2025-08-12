@@ -5,7 +5,17 @@ public class Constants {
 
 	public static final String SPRING = "spring";
 
-	public static final String URL_BASE = "/audio-bea/v1/api";
+    public static final String TOKEN = "token";
+    public static final long EXPIRATION_DATE = 604800000L;
+    public static final String TOKEN_PREFIX = "Bearer ";
+    public static final String HEADER_STRING = "Authorization";
+    public static final String USER = "user";
+    public static final String AUTHORITIES = "authorities";
+    public static final String MESSAGE = "message";
+    public static final String MESSAGE_BODY = "Hi %s, you have logged in successfully!";
+    public static final String MESSAGE_BODY_ERROR = "Authentication error: user or password wrong!";
+    public static final String ERROR = "error";
+
 	public static final String XS_NAMESPACE = "http://www.w3.org/2001/XMLSchema";
 	public static final String TITLE_WADL = "API REST AUDIO-BEA WADL";
 	

@@ -16,24 +16,27 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import static com.audiobea.crm.app.utils.ConstantsController.IMAGE_COLLECTION_PATH;
+import static com.audiobea.crm.app.utils.ConstantsLog.LOG_IMAGE_COLLECTION_START;
+
 @Slf4j
 @AllArgsConstructor
 @RestController
-@RequestMapping(Constants.URL_BASE + "/image-collection")
+@RequestMapping(IMAGE_COLLECTION_PATH)
 public class ImageController {
 
     private final IImageService imageService;
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ResponseData<DtoInImage>> getImagesCollection() {
-        log.debug("image-collection start");
+        log.debug(LOG_IMAGE_COLLECTION_START);
         return new ResponseEntity<>(imageService.getImageCollection(), HttpStatus.OK);
     }
 
     @PreAuthorize("hasAuthority('ADMIN')")
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<DtoInImage> addImageCollection(@RequestBody DtoInImage dtoInImage) {
-        log.debug("image-collection start");
+        log.debug(LOG_IMAGE_COLLECTION_START);
         return new ResponseEntity<>(imageService.addImageCollection(dtoInImage), HttpStatus.OK);
     }
 
