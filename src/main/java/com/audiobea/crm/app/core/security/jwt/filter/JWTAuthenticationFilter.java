@@ -2,7 +2,6 @@ package com.audiobea.crm.app.core.security.jwt.filter;
 
 import com.audiobea.crm.app.commons.dto.DtoInUser;
 import com.audiobea.crm.app.core.security.jwt.service.IJWTService;
-import com.audiobea.crm.app.core.security.jwt.service.impl.JWTServiceImpl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;
@@ -11,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -22,13 +22,17 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.audiobea.crm.app.utils.Constants.*;
+import static com.audiobea.crm.app.utils.ConstantsController.JWT_LOGIN_PATH;
+import static com.audiobea.crm.app.utils.ConstantsLog.LOG_OBJECT_REQUEST;
+import static com.audiobea.crm.app.utils.ConstantsLog.LOG_START_DESERIALIZATION;
 import static org.springframework.security.web.servlet.util.matcher.PathPatternRequestMatcher.withDefaults;
 
 @Slf4j
 public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
     private static final PathPatternRequestMatcher DEFAULT_ANT_PATH_REQUEST_MATCHER =
-            withDefaults().matcher(HttpMethod.POST, "/audio-bea/v1/api/login");
+            withDefaults().matcher(HttpMethod.POST, JWT_LOGIN_PATH);
     final private AuthenticationManager authenticationManager;
     final private IJWTService jwtService;
 
@@ -50,16 +54,11 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         if (username == null || password == null) {
             DtoInUser user;
             try {
-                logger.debug("Start deserialization of the request");
-                log.debug("Object request: {}", request.getInputStream());
+                log.debug(LOG_START_DESERIALIZATION);
+                log.debug(LOG_OBJECT_REQUEST, request.getInputStream());
                 user = new ObjectMapper().readValue(request.getInputStream(), DtoInUser.class);
-
                 username = user.getUsername();
                 password = user.getPassword();
-
-                logger.info("Username from request InputStream (raw): " + username);
-                logger.info("Password from request InputStream (raw): " + password);
-
             } catch (IOException e) {
                 log.error(e.getMessage());
             }
@@ -75,19 +74,18 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain,
             Authentication authResult) throws IOException {
-        String token = jwtService.create(authResult);
+        final String token = jwtService.create(authResult);
 
-        response.addHeader(JWTServiceImpl.HEADER_STRING, JWTServiceImpl.TOKEN_PREFIX + token);
+        response.addHeader(HEADER_STRING, TOKEN_PREFIX.concat(token));
 
         Map<String, Object> body = new HashMap<>();
-        body.put("token", token);
-        body.put("user", authResult.getPrincipal());
-        body.put("message", String.format("Hi %s, you have logged in successfully!",
+        body.put(TOKEN, token);
+        body.put(USER, authResult.getPrincipal());
+        body.put(MESSAGE, String.format(MESSAGE_BODY,
                 ((org.springframework.security.core.userdetails.User) authResult.getPrincipal()).getUsername()));
-
         response.getWriter().write(new ObjectMapper().writeValueAsString(body));
         response.setStatus(200);
-        response.setContentType("application/json");
+        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
     }
 
     @Override
@@ -95,12 +93,12 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
             AuthenticationException failed)
             throws IOException {
         Map<String, Object> body = new HashMap<>();
-        body.put("message", "Authentication error: user or password wrong!");
-        body.put("error", failed.getMessage());
+        body.put(MESSAGE, MESSAGE_BODY_ERROR);
+        body.put(ERROR, failed.getMessage());
 
         response.getWriter().write(new ObjectMapper().writeValueAsString(body));
         response.setStatus(401);
-        response.setContentType("application/json");
+        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
     }
 
 }
