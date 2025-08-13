@@ -7,11 +7,13 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -25,14 +27,14 @@ import java.util.Date;
 import static com.audiobea.crm.app.utils.Constants.AUTHORITIES;
 import static com.audiobea.crm.app.utils.Constants.EXPIRATION_DATE;
 import static com.audiobea.crm.app.utils.Constants.TOKEN_PREFIX;
-import static com.audiobea.crm.app.utils.ConstantsLog.LOG_GET_ROLES_AUTHENTICATION;
-import static com.audiobea.crm.app.utils.ConstantsLog.LOG_GET_USERNAME_AUTHENTICATION;
-import static com.audiobea.crm.app.utils.ConstantsLog.LOG_RESOLVE_ROLES;
-import static com.audiobea.crm.app.utils.ConstantsLog.LOG_VALIDATE_AUTHENTICATION;
+import static com.audiobea.crm.app.utils.ConstantsLog.*;
 
 @Slf4j
+@RequiredArgsConstructor
 @Service
 public class JWTServiceImpl implements IJWTService {
+
+	private final UserDetailsService userDetailsService;
 
 	public static final String SECRET = Base64.getEncoder().encodeToString("Some.Key.Secret.123456".getBytes());
 
@@ -65,8 +67,10 @@ public class JWTServiceImpl implements IJWTService {
 
 	@Override
 	public String getUsername(String token) {
-		log.debug(LOG_GET_USERNAME_AUTHENTICATION);
-		return getClaims(token).getSubject();
+		log.debug(LOG_GET_USERNAME_AUTHENTICATION);;
+		String username = getClaims(token).getSubject();
+		validUser(username);
+		return username;
 	}
 
 	@Override
@@ -84,6 +88,11 @@ public class JWTServiceImpl implements IJWTService {
 			return token.replace(TOKEN_PREFIX, "");
 		}
 		return null;
+	}
+
+	private void validUser(String username) {
+		log.debug(LOG_VALIDATE_USER);
+		userDetailsService.loadUserByUsername(username);
 	}
 
 	private Key getSigningKey() {

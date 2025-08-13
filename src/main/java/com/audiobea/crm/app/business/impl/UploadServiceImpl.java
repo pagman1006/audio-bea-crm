@@ -50,7 +50,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.DecimalFormat;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static com.audiobea.crm.app.utils.ConstantsLog.*;
 
@@ -265,7 +264,9 @@ public class UploadServiceImpl implements IUploadService {
 
     private void setStateFromSetStates(final Set<State> listSetStates, final String nameState, final String nameCity,
             final String nameColony, final String codePostal) {
-        State state = listSetStates.stream().filter(s -> s.getName().equals(nameState)).findFirst().orElse(null);
+        State state = listSetStates.stream()
+                .filter(s -> s!=null && s.getName() !=null)
+                .filter(s -> s.getName().equals(nameState)).findFirst().orElse(null);
 
         if (state == null) {
             state = new State();
@@ -436,7 +437,8 @@ public class UploadServiceImpl implements IUploadService {
                     file.setType(Utils.removeAccents(currentCell.getStringCellValue()));
                     log.debug(file.getType());
                 }
-                default -> {}
+                default -> {
+                }
             }
             cellIdx++;
         }

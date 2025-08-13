@@ -103,4 +103,5 @@ public class ConstantsLog {
     public static final String LOG_RESOLVE_ROLES = "Resolve getRoles authentication";
     public static final String LOG_ROLE = "Role: {}";
     public static final String LOG_NO_REDIRECT_STRATEGY = "No redirect strategy";
+    public static final String LOG_VALIDATE_USER = "Validate user";
 }

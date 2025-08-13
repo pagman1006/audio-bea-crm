@@ -25,10 +25,12 @@ public class AuthController {
 		return ResponseEntity.ok().build();
 	}
 
+	/*
 	@GetMapping(path = REFRESH_TOKEN_PATH, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<DtoInUser> refreshToken(Principal principal) {
 		log.debug(LOG_REFRESH_TOKEN);
 		return ResponseEntity.ok().build();
 	}
+	 */
 
 }
