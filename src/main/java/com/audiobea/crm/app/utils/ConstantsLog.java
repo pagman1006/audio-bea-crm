@@ -2,6 +2,8 @@ package com.audiobea.crm.app.utils;
 
 public class ConstantsLog {
 
+    private ConstantsLog() { }
+
     public static final String LOG_BRAND_PAGE_PAGE_SIZE = "Marca: {}, Page: {}, PageSize: {}";
     public static final String LOG_BRAND = "Brand: {}";
     public static final String LOG_CUSTOMER = "Customer: {}";

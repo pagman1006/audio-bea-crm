@@ -67,7 +67,7 @@ public class JWTServiceImpl implements IJWTService {
 
 	@Override
 	public String getUsername(String token) {
-		log.debug(LOG_GET_USERNAME_AUTHENTICATION);;
+		log.debug(LOG_GET_USERNAME_AUTHENTICATION);
 		String username = getClaims(token).getSubject();
 		validUser(username);
 		return username;

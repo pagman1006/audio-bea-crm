@@ -57,7 +57,7 @@ class CustomerControllerTest {
                 .andExpect(jsonPath("$.totalElements").value(0))
                 .andExpect(jsonPath("$.totalPages").value(0));
 
-        verify(customerService).getCustomers(eq("John"), eq("Doe"), eq(1), eq(10));
+        verify(customerService).getCustomers("John", "Doe", 1, 10);
     }
 
     @Test

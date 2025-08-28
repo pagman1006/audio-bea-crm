@@ -27,7 +27,7 @@ import com.audiobea.crm.app.dao.product.model.ProductType;
 import com.audiobea.crm.app.dao.product.model.SubBrand;
 import com.audiobea.crm.app.utils.Constants;
 import com.audiobea.crm.app.utils.Utils;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
@@ -54,26 +54,30 @@ import java.util.*;
 import static com.audiobea.crm.app.utils.ConstantsLog.*;
 
 @Slf4j
-@AllArgsConstructor
+@RequiredArgsConstructor
 @Service
 public class UploadServiceImpl implements IUploadService {
 
     private static final DecimalFormat decimalF = new DecimalFormat("00.00");
     private static final DecimalFormat df = new DecimalFormat("#,###");
+    private final IStateDao stateDao;
+    private final ICityDao cityDao;
+    private final IColonyDao colonyDao;
+    private final IProductDao productDao;
+    private final IBrandDao brandDao;
+    private final ISubBrandDao subBrandDao;
+    private final IProductTypeDao productTypeDao;
+    private final MessageSource messageSource;
+    private final ProductMapper productMapper;
+    private Integer statesCount = 0;
+    private Integer citiesCount = 0;
+    private Integer coloniesCount = 0;
 
-    private static Integer statesCount = 0;
-    private static Integer citiesCount = 0;
-    private static Integer coloniesCount = 0;
-
-    private IStateDao stateDao;
-    private ICityDao cityDao;
-    private IColonyDao colonyDao;
-    private IProductDao productDao;
-    private IBrandDao brandDao;
-    private ISubBrandDao subBrandDao;
-    private IProductTypeDao productTypeDao;
-    private MessageSource messageSource;
-    private ProductMapper productMapper;
+    private void initLoad() {
+        statesCount = 0;
+        citiesCount = 0;
+        coloniesCount = 0;
+    }
 
     @Override
     public Resource load(final String filename) throws MalformedURLException {
@@ -124,9 +128,7 @@ public class UploadServiceImpl implements IUploadService {
     public DtoInFileResponse uploadExcelFile(final MultipartFile file) {
         long timeStart = new Date().getTime();
         Utils.hasExcelFormat(file, messageSource);
-        statesCount = 0;
-        citiesCount = 0;
-        coloniesCount = 0;
+        initLoad();
 
         try {
             final List<State> listStates = setupListStates(excelToListStates(file.getInputStream()));
@@ -228,7 +230,7 @@ public class UploadServiceImpl implements IUploadService {
                 st.setCities(cityDao.saveAll(st.getCities()));
                 stateDao.save(st);
                 elements += state.getCities().stream().mapToInt(city -> city.getColonies().size()).sum();
-                final double progress = (elements * 100) / (double) totalElements;
+                final double progress = (elements * 100) / totalElements;
                 log.debug(LOG_FORMAT_PROGRESS, decimalF.format(progress), state.getName(), df.format(elements),
                         df.format(totalElements));
             }
@@ -253,9 +255,7 @@ public class UploadServiceImpl implements IUploadService {
                 case 1 -> file.setCodePostal(Utils.removeAccents(currentCell.getStringCellValue()));
                 case 2 -> file.setColony(Utils.removeAccents(currentCell.getStringCellValue()));
                 case 3 -> file.setCity(Utils.removeAccents(currentCell.getStringCellValue()));
-                case 4 -> file.setState(Utils.removeAccents(currentCell.getStringCellValue()));
-                default -> {
-                }
+                default -> file.setState(Utils.removeAccents(currentCell.getStringCellValue()));
             }
             cellIdx++;
         }
@@ -265,7 +265,7 @@ public class UploadServiceImpl implements IUploadService {
     private void setStateFromSetStates(final Set<State> listSetStates, final String nameState, final String nameCity,
             final String nameColony, final String codePostal) {
         State state = listSetStates.stream()
-                .filter(s -> s!=null && s.getName() !=null)
+                .filter(s -> s != null && s.getName() != null)
                 .filter(s -> s.getName().equals(nameState)).findFirst().orElse(null);
 
         if (state == null) {
@@ -432,12 +432,10 @@ public class UploadServiceImpl implements IUploadService {
                     file.setTitle(Utils.removeAccents(currentCell.getStringCellValue()));
                     log.debug(file.getTitle());
                 }
-                case 10 -> {
+                default -> {
                     log.debug(LOG_GET_TYPE);
                     file.setType(Utils.removeAccents(currentCell.getStringCellValue()));
                     log.debug(file.getType());
-                }
-                default -> {
                 }
             }
             cellIdx++;

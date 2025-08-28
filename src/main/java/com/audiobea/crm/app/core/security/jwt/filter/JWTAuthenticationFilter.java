@@ -33,8 +33,8 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
     private static final PathPatternRequestMatcher DEFAULT_ANT_PATH_REQUEST_MATCHER =
             withDefaults().matcher(HttpMethod.POST, JWT_LOGIN_PATH);
-    final private AuthenticationManager authenticationManager;
-    final private IJWTService jwtService;
+    private final AuthenticationManager authenticationManager;
+    private final IJWTService jwtService;
 
     public JWTAuthenticationFilter(AuthenticationManager authenticationManager, IJWTService jwtService) {
         this.authenticationManager = authenticationManager;

@@ -14,6 +14,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import static com.audiobea.crm.app.utils.ConstantsController.LOGIN_PATH;
 import static com.audiobea.crm.app.utils.ConstantsController.USERS_PATH;
 import static com.audiobea.crm.app.utils.ConstantsLog.*;
 
@@ -35,6 +36,7 @@ public class UserController {
             @RequestParam(name = "page", defaultValue = "0", required = false) Integer page,
             @RequestParam(name = "pageSize", defaultValue = "10", required = false) Integer pageSize) {
         log.debug(LOG_GET_USERS);
+        log.debug(LOGIN_PATH);
         return new ResponseEntity<>(userService.getUsers(username, role, page, pageSize), HttpStatus.OK);
     }
 

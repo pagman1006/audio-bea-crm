@@ -22,6 +22,7 @@ public class AuthController {
 	@PostMapping(path = LOGIN_PATH, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<DtoInUser> login(@RequestBody DtoInUser requestUser) {
 		log.debug(LOG_LOGIN);
+		log.debug(LOGIN_PATH);
 		return ResponseEntity.ok().build();
 	}
 

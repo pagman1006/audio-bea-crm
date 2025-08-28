@@ -77,7 +77,7 @@ public class CustomerServiceImpl implements ICustomerService {
         }
         Validator.validatePage(pageCustomer, messageSource);
         final List<DtoInCustomer> listCustomer = pageCustomer.getContent().stream()
-                .map(customerMapper::customerToDtoInCustomer).collect(Collectors.toList());
+                .map(customerMapper::customerToDtoInCustomer).toList();
         return new ResponseData<>(listCustomer, pageCustomer);
     }
 

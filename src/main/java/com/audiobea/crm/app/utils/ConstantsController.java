@@ -2,6 +2,8 @@ package com.audiobea.crm.app.utils;
 
 public class ConstantsController {
 
+    private ConstantsController() { }
+
     public static final String LOGIN_PATH = "/login";
     public static final String REFRESH_TOKEN_PATH = "/refreshToken";
     public static final String ADMIN_CUSTOMER_PATH = "/admin/customers";
