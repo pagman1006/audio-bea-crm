@@ -73,12 +73,6 @@ public class UploadServiceImpl implements IUploadService {
     private Integer citiesCount = 0;
     private Integer coloniesCount = 0;
 
-    private void initLoad() {
-        statesCount = 0;
-        citiesCount = 0;
-        coloniesCount = 0;
-    }
-
     @Override
     public Resource load(final String filename) throws MalformedURLException {
         final Path pathImage = getPath(filename);
@@ -144,6 +138,12 @@ public class UploadServiceImpl implements IUploadService {
             log.error(e.getMessage());
         }
         return null;
+    }
+
+    private void initLoad() {
+        statesCount = 0;
+        citiesCount = 0;
+        coloniesCount = 0;
     }
 
     private List<State> setupListStates(final Set<State> setState) {
@@ -251,6 +251,10 @@ public class UploadServiceImpl implements IUploadService {
         int cellIdx = 0;
         while (cellsInRow.hasNext()) {
             final Cell currentCell = cellsInRow.next();
+            if (cellIdx < 1) {
+                cellIdx++;
+                continue;
+            }
             switch (cellIdx) {
                 case 1 -> file.setCodePostal(Utils.removeAccents(currentCell.getStringCellValue()));
                 case 2 -> file.setColony(Utils.removeAccents(currentCell.getStringCellValue()));

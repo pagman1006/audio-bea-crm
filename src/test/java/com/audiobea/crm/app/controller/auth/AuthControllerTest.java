@@ -7,6 +7,8 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import static com.audiobea.crm.app.constant.TestConstants.LOGIN_PATH;
+import static com.audiobea.crm.app.constant.TestConstants.LOGIN_PATH_VALUE;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -17,7 +19,9 @@ class AuthControllerTest {
     @BeforeEach
     void setup() {
         // Standalone setup avoids loading the full Spring context
-        this.mockMvc = MockMvcBuilders.standaloneSetup(new AuthController()).build();
+        this.mockMvc = MockMvcBuilders.standaloneSetup(new AuthController())
+                        .addPlaceholderValue(LOGIN_PATH, LOGIN_PATH_VALUE)
+                        .build();
     }
 
     @Test

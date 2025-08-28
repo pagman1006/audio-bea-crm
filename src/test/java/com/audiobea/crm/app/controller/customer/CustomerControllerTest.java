@@ -14,6 +14,8 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.util.Collections;
 
+import static com.audiobea.crm.app.constant.TestConstants.ADMIN_CUSTOMER_PATH;
+import static com.audiobea.crm.app.constant.TestConstants.ADMIN_CUSTOMER_PATH_VALUE;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
@@ -30,7 +32,8 @@ class CustomerControllerTest {
     void setup() {
         customerService = Mockito.mock(ICustomerService.class);
         CustomerController controller = new CustomerController(customerService);
-        this.mockMvc = MockMvcBuilders.standaloneSetup(controller).build();
+        this.mockMvc = MockMvcBuilders.standaloneSetup(controller)
+                .addPlaceholderValue(ADMIN_CUSTOMER_PATH, ADMIN_CUSTOMER_PATH_VALUE).build();
     }
 
     @Test

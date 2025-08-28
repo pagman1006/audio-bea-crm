@@ -23,7 +23,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static com.audiobea.crm.app.utils.Constants.*;
-import static com.audiobea.crm.app.utils.ConstantsController.JWT_LOGIN_PATH;
+import static com.audiobea.crm.app.utils.ConstantsController.LOGIN_PATH;
 import static com.audiobea.crm.app.utils.ConstantsLog.LOG_OBJECT_REQUEST;
 import static com.audiobea.crm.app.utils.ConstantsLog.LOG_START_DESERIALIZATION;
 import static org.springframework.security.web.servlet.util.matcher.PathPatternRequestMatcher.withDefaults;
@@ -32,7 +32,7 @@ import static org.springframework.security.web.servlet.util.matcher.PathPatternR
 public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
     private static final PathPatternRequestMatcher DEFAULT_ANT_PATH_REQUEST_MATCHER =
-            withDefaults().matcher(HttpMethod.POST, JWT_LOGIN_PATH);
+            withDefaults().matcher(HttpMethod.POST, LOGIN_PATH);
     private final AuthenticationManager authenticationManager;
     private final IJWTService jwtService;
 

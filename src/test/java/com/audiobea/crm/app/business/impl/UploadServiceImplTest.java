@@ -4,12 +4,10 @@ import com.audiobea.crm.app.commons.ResponseData;
 import com.audiobea.crm.app.commons.dto.DtoInFileResponse;
 import com.audiobea.crm.app.commons.dto.DtoInProduct;
 import com.audiobea.crm.app.commons.mapper.ProductMapper;
-import com.audiobea.crm.app.core.exception.NoSuchFileException;
 import com.audiobea.crm.app.core.exception.UploadFileException;
 import com.audiobea.crm.app.dao.demographic.ICityDao;
 import com.audiobea.crm.app.dao.demographic.IColonyDao;
 import com.audiobea.crm.app.dao.demographic.IStateDao;
-import com.audiobea.crm.app.dao.demographic.model.State;
 import com.audiobea.crm.app.dao.product.IBrandDao;
 import com.audiobea.crm.app.dao.product.IProductDao;
 import com.audiobea.crm.app.dao.product.IProductTypeDao;
@@ -22,8 +20,12 @@ import com.audiobea.crm.app.utils.Constants;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.junit.jupiter.api.*;
-import org.mockito.Mockito;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.MessageSource;
 import org.springframework.core.io.Resource;
 import org.springframework.mock.web.MockMultipartFile;
@@ -41,9 +43,13 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
+@ExtendWith(MockitoExtension.class)
 class UploadServiceImplTest {
 
     private IStateDao stateDao;
@@ -56,6 +62,7 @@ class UploadServiceImplTest {
     private MessageSource messageSource;
     private ProductMapper productMapper;
 
+    @InjectMocks
     private UploadServiceImpl service;
 
     private Path uploadsDir;
@@ -72,7 +79,8 @@ class UploadServiceImplTest {
         messageSource = mock(MessageSource.class);
         productMapper = mock(ProductMapper.class);
 
-        service = new UploadServiceImpl(stateDao, cityDao, colonyDao, productDao, brandDao, subBrandDao, productTypeDao, messageSource, productMapper);
+        service = new UploadServiceImpl(stateDao, cityDao, colonyDao, productDao, brandDao, subBrandDao, productTypeDao,
+                messageSource, productMapper);
 
         // Ensure uploads directory exists fresh for tests
         uploadsDir = Paths.get(Constants.UPLOADS_FOLDER).toAbsolutePath();
@@ -119,7 +127,8 @@ class UploadServiceImplTest {
 
         String savedName = service.copy(file);
         assertNotNull(savedName);
-        assertTrue(savedName.endsWith("_" + file.getOriginalFilename()) || savedName.contains(file.getOriginalFilename()));
+        assertTrue(
+                savedName.endsWith("_" + file.getOriginalFilename()) || savedName.contains(file.getOriginalFilename()));
 
         Path savedPath = uploadsDir.resolve(savedName);
         assertTrue(Files.exists(savedPath));
@@ -227,8 +236,10 @@ class UploadServiceImplTest {
         workbook.write(bos);
         workbook.close();
 
-        MultipartFile file = new MockMultipartFile("file", "demo.xlsx", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", new ByteArrayInputStream(bos.toByteArray()));
-        when(messageSource.getMessage(anyString(), any(), any())).thenReturn("ok");
+        MultipartFile file = new MockMultipartFile("file", "demo.xlsx",
+                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                new ByteArrayInputStream(bos.toByteArray()));
+        //when(messageSource.getMessage(anyString(), any(), any())).thenReturn("ok");
 
         // Mock DAOs used by async thread to just return argument
         when(stateDao.save(any())).thenAnswer(inv -> inv.getArgument(0));
@@ -279,8 +290,9 @@ class UploadServiceImplTest {
         workbook.write(bos);
         workbook.close();
 
-        MultipartFile file = new MockMultipartFile("file", "products.xlsx", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", new ByteArrayInputStream(bos.toByteArray()));
-        when(messageSource.getMessage(anyString(), any(), any())).thenReturn("ok");
+        MultipartFile file = new MockMultipartFile("file", "products.xlsx",
+                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                new ByteArrayInputStream(bos.toByteArray()));
 
         // Mock lookups to return existing entities, and saves to echo back
         Brand brand = new Brand();
