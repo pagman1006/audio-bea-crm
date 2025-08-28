@@ -22,6 +22,6 @@ public class HotDeal implements Serializable {
 	private String name;
 	@JsonFormat(pattern = "yyyy-MM-dd")
 	@DateTimeFormat(pattern = "yyyy-MM-dd")
-	private Date hotDeal;
+	private Date hotDealDate;
 
 }
