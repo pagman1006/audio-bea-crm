@@ -15,8 +15,8 @@ public class DtoInBrand implements Serializable {
 
     @Serial
     private static final long serialVersionUID = 1L;
-    List<DtoInSubBrand> subBrands;
-    List<DtoInProduct> products;
+    private List<DtoInSubBrand> subBrands;
+    private List<DtoInProduct> products;
     private String id;
     @NotEmpty
     private String brandName;

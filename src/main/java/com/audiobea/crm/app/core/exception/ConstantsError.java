@@ -2,6 +2,8 @@ package com.audiobea.crm.app.core.exception;
 
 public class ConstantsError {
 
+    private ConstantsError() {  }
+
     public static final String GLOBAL_EXCEPTION_HANDLER = "GLOBAL_EXCEPTION_HANDLER";
     public static final String UNKNOWN_MESSAGE_ERROR = "Unknown error occurred";
     public static final String VALIDATION_ERROR = "Validation error. Check 'errors' field for details.";

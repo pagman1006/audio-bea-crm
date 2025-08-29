@@ -48,7 +48,7 @@ public class SubBrandServiceImpl implements ISubBrandService {
         final Pageable pageable = PageRequest.of(page, pageSize,
                 Sort.by(Constants.SUB_BRAND_BRAND_NAME).and(Sort.by(Constants.SUB_BRAND)));
         log.debug("MarcaId: {}, SubBrand: {}, Page: {}, PageSize: {}", brandId, subBrand, page, pageSize);
-        Page<SubBrand> pageSubBrand = null;
+        Page<SubBrand> pageSubBrand = Page.empty();
         if (StringUtils.isNotBlank(brandId)) {
             if (brandId.equalsIgnoreCase(Constants.ALL)) {
                 log.debug(LOG_BRAND, brandId);

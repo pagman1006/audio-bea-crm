@@ -6,7 +6,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.5.4</version>
+        <version>3.5.5</version>
         <relativePath/>
     </parent>
     <groupId>com.audiobea.crm.app</groupId>
@@ -16,12 +16,14 @@
     <description>Audio-Bea CRMs REST Service</description>
     <properties>
         <java.version>17</java.version>
-        <org.mapstruct.version>1.5.5.Final</org.mapstruct.version>
+        <org.mapstruct.version>1.6.3</org.mapstruct.version>
+        <lombok-mapstruct-binding.version>0.2.0</lombok-mapstruct-binding.version>
         <org.apache.poi.version>5.4.1</org.apache.poi.version>
         <io.jsonwebtoken.version>0.11.5</io.jsonwebtoken.version>
         <org.yaml.version>2.2</org.yaml.version>
         <commons-lang3.version>3.18.0</commons-lang3.version>
     </properties>
+
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -135,7 +137,7 @@
                             <dependency>
                                 <groupId>org.projectlombok</groupId>
                                 <artifactId>lombok-mapstruct-binding</artifactId>
-                                <version>0.2.0</version>
+                                <version>${lombok-mapstruct-binding.version}</version>
                             </dependency>
                         </annotationProcessorPaths>
                     </configuration>

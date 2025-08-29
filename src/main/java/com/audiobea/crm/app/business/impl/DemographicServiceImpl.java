@@ -10,6 +10,7 @@ import com.audiobea.crm.app.commons.mapper.CityMapper;
 import com.audiobea.crm.app.commons.mapper.ColonyMapper;
 import com.audiobea.crm.app.commons.mapper.StateMapper;
 import com.audiobea.crm.app.core.exception.NoSuchElementFoundException;
+import com.audiobea.crm.app.core.exception.NoSuchElementsFoundException;
 import com.audiobea.crm.app.dao.demographic.ICityDao;
 import com.audiobea.crm.app.dao.demographic.IColonyDao;
 import com.audiobea.crm.app.dao.demographic.IStateDao;
@@ -48,7 +49,7 @@ public class DemographicServiceImpl implements IDemographicService {
     private ColonyMapper colonyMapper;
 
     @Override
-    public ResponseData<DtoInState> getStates() {
+    public ResponseData<DtoInState> getStates() throws NoSuchElementsFoundException {
         final List<State> listStates = stateDao.findAll();
         Validator.validateList(listStates, messageSource);
         final ResponseData<DtoInState> response = new ResponseData<>();
@@ -57,7 +58,7 @@ public class DemographicServiceImpl implements IDemographicService {
     }
 
     @Override
-    public DtoInState getStateById(final String stateId) {
+    public DtoInState getStateById(final String stateId) throws NoSuchElementFoundException {
         return stateMapper.stateToDtoInState(
                 stateDao.findById(stateId).orElseThrow(() -> new NoSuchElementFoundException(
                         Utils.getLocalMessage(messageSource, I18Constants.NO_ITEM_FOUND.getKey(), stateId))));
@@ -65,10 +66,10 @@ public class DemographicServiceImpl implements IDemographicService {
 
     @Override
     public ResponseData<DtoInCity> getCitiesByStateId(final String stateId, final String cityName, final Integer page,
-            final Integer pageSize) {
+            final Integer pageSize) throws NoSuchElementsFoundException {
         final Pageable pageable = PageRequest.of(page, pageSize, Sort.by("name"));
         log.debug(LOG_STATE, stateId);
-        Page<City> pageCities = null;
+        Page<City> pageCities = Page.empty();
         if (StringUtils.isNotBlank(stateId)) {
             if (stateId.equalsIgnoreCase(Constants.ALL)) {
                 log.debug(LOG_CITY, cityName);
@@ -82,13 +83,15 @@ public class DemographicServiceImpl implements IDemographicService {
         }
         Validator.validatePage(pageCities, messageSource);
         return new ResponseData<>(
-                pageCities.getContent().stream().map(cityMapper::cityToDtoInCity).peek(c -> c.setColonies(null))
+                pageCities.getContent().stream().map(cityMapper::cityToDtoInCity)
+                        .map(c -> {c.getColonies().clear(); return c;})
                         .toList(), pageCities);
     }
 
     @Override
     public ResponseData<DtoInColony> findColoniesByStateIdAndCityId(final String stateId, final String cityId,
-            String colonyName, String postalCode, final Integer page, final Integer pageSize) {
+            String colonyName, String postalCode, final Integer page, final Integer pageSize)
+            throws NoSuchElementsFoundException {
         log.debug(LOG_STATE_CITY_COLONY_POSTAL_CODE, stateId, cityId, colonyName, postalCode);
         if (StringUtils.isBlank(stateId) || StringUtils.isBlank(cityId)) {
             throw new IllegalArgumentException(
@@ -97,7 +100,7 @@ public class DemographicServiceImpl implements IDemographicService {
         final Pageable pageable = PageRequest.of(page, pageSize, Sort.by("name"));
         postalCode = StringUtils.isNotBlank(postalCode) ? postalCode : "";
         colonyName = StringUtils.isNotBlank(colonyName) ? colonyName : "";
-        Page<Colony> pageColonies = null;
+        Page<Colony> pageColonies = Page.empty();
         if (StringUtils.isNotBlank(stateId) && StringUtils.isNotBlank(cityId)) {
             if (stateId.equalsIgnoreCase(Constants.ALL)) {
                 if (cityId.equalsIgnoreCase(Constants.ALL)) {
@@ -118,7 +121,8 @@ public class DemographicServiceImpl implements IDemographicService {
 
     @Override
     public ResponseData<DtoInColony> getAllColonies(final String stateName, final String cityName,
-            final String colonyName, final String postalCode, final Integer page, final Integer pageSize) {
+            final String colonyName, final String postalCode, final Integer page, final Integer pageSize)
+            throws NoSuchElementsFoundException {
         log.debug(LOG_STATE_CITY_ALL_COLONY_POSTAL_CODE, stateName, cityName, colonyName, postalCode);
         final Pageable pageable = PageRequest.of(page, pageSize, Sort.by("name"));
         final Page<Colony> pageColonies;
