@@ -54,7 +54,8 @@ public class SecurityConfig {
                         jwtService))
                 .addFilter(new JWTAuthorizationFilter(authenticationManager(userDetailsService, passwordEncoder()),
                         jwtService))
-                .csrf(AbstractHttpConfigurer::disable).build();
+                //.csrf(AbstractHttpConfigurer::disable)
+                .build();
     }
 
     @Bean

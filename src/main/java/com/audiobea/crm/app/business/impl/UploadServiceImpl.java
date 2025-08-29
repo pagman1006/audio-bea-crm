@@ -87,6 +87,9 @@ public class UploadServiceImpl implements IUploadService {
     @Override
     public String copy(final MultipartFile file) throws IOException {
         final String uniqueFileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
+        if (uniqueFileName.contains("..") || uniqueFileName.contains("/") || uniqueFileName.contains("\\")) {
+            throw new IllegalArgumentException("Invalid filename");
+        }
         log.debug(LOG_FILE_NAME, uniqueFileName);
         final Path rootPath = getPath(uniqueFileName);
         log.debug(LOG_ROOT_PATH, rootPath.getFileName());
